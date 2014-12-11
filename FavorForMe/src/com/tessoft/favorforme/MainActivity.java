@@ -1,16 +1,33 @@
 package com.tessoft.favorforme;
 
-import android.support.v7.app.ActionBarActivity;
+import org.codehaus.jackson.map.ObjectMapper;
+
+import com.tessoft.domain.User;
+
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		
+		try
+		{
+			super.onCreate(savedInstanceState);
+			setContentView(R.layout.activity_main);
+			
+			ObjectMapper mapper = new ObjectMapper();
+			
+			User user = new User();
+			
+			execTransReturningString("/getPosts.do", mapper.writeValueAsString(user), 1);
+		}
+		catch( Exception ex )
+		{
+			
+		}
 	}
 
 	@Override
@@ -30,5 +47,11 @@ public class MainActivity extends ActionBarActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	@Override
+	public void doPostTransaction(int requestCode, Object result) {
+		// TODO Auto-generated method stub
+		super.doPostTransaction(requestCode, result);
 	}
 }

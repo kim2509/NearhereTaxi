@@ -1,2 +1,3 @@
 *.class
-bin/*
+FavorForMe/bin
+FavorForMe/bin/*
