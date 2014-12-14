@@ -1,15 +1,24 @@
 package com.tessoft.favorforme;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import java.util.List;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
+
+import com.tessoft.common.MainArrayAdapter;
+import com.tessoft.domain.ListItemModel;
+import com.tessoft.domain.Post;
 import com.tessoft.domain.User;
 
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 
 public class MainActivity extends BaseActivity {
 
+	ListView listMain = null;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
@@ -17,6 +26,8 @@ public class MainActivity extends BaseActivity {
 		{
 			super.onCreate(savedInstanceState);
 			setContentView(R.layout.activity_main);
+			
+			listMain = (ListView) findViewById(R.id.listMain);
 			
 			ObjectMapper mapper = new ObjectMapper();
 			
@@ -52,6 +63,20 @@ public class MainActivity extends BaseActivity {
 	@Override
 	public void doPostTransaction(int requestCode, Object result) {
 		// TODO Auto-generated method stub
-		super.doPostTransaction(requestCode, result);
+		try
+		{
+			super.doPostTransaction(requestCode, result);
+			
+			ObjectMapper mapper = new ObjectMapper();
+			List<ListItemModel> postList = mapper.readValue(result.toString(), new TypeReference<List<Post>>(){});
+			
+			MainArrayAdapter adapter = new MainArrayAdapter( getApplicationContext(), 0 );
+			adapter.setItemList( postList );
+			listMain.setAdapter( adapter );
+		}
+		catch(Exception ex )
+		{
+			showToastMessage(ex.getMessage());
+		}
 	}
 }

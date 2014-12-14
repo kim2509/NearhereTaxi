@@ -2,7 +2,7 @@ package com.tessoft.domain;
 
 import java.util.List;
 
-public class Post {
+public class Post extends ListItemModel {
 
 	private String postID;
 	private String latitude;
