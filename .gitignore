@@ -1,3 +1,5 @@
 *.class
 FavorForMe/bin
 FavorForMe/bin/*
+appcompat_v7/bin
+appcompat_v7/bin/*
