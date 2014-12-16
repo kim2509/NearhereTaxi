@@ -67,6 +67,8 @@ public class MainActivity extends BaseActivity {
 		{
 			super.doPostTransaction(requestCode, result);
 			
+			showToastMessage(result.toString());
+			
 			ObjectMapper mapper = new ObjectMapper();
 			List<ListItemModel> postList = mapper.readValue(result.toString(), new TypeReference<List<Post>>(){});
 			
