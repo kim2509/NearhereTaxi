@@ -40,7 +40,14 @@ public class HttpTransactionReturningString extends AsyncTask<Object, Integer, S
 			
 			Object json = data[0];
 			
-			HttpPost post = new HttpPost( Constants.serverURL + url );
+			String serverURL = Constants.serverURL + url;
+			
+			Log.d("HTTPRequest", "Connecting to URL:" + serverURL );
+			
+			HttpPost post = new HttpPost( serverURL );
+			
+			Log.d("HTTPRequest", "Request String:" + json.toString() );
+			
 			StringEntity se = new StringEntity( json.toString(), "UTF-8");
 			se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json;charset=utf-8"));
 			post.setEntity(se);
@@ -48,12 +55,18 @@ public class HttpTransactionReturningString extends AsyncTask<Object, Integer, S
 
 			String responseString = EntityUtils.toString(response.getEntity());
 
+			Log.d("HTTPRequest", "Successfully got response!!" );
+			
+			Log.d("HTTPRequest", "ResponseString:" + json.toString() );
+			
 			return responseString;
 
 		}
 		catch(Exception e){
 			e.printStackTrace();
-
+			
+			Log.e("HTTPRequest", "Error while connecting to server." );
+			
 			writeLog( e.getMessage() );
 
 			return Constants.FAIL;
@@ -72,6 +85,6 @@ public class HttpTransactionReturningString extends AsyncTask<Object, Integer, S
 
 	public void writeLog( String log )
 	{
-		Log.i("FavorForMe", log );
+		Log.e("FavorForMe", log );
 	}
 }
