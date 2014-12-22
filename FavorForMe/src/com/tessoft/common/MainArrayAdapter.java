@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tessoft.domain.ListItemModel;
+import com.tessoft.domain.Post;
 import com.tessoft.favorforme.R;
 
 import android.content.Context;
@@ -18,7 +19,7 @@ import android.widget.TextView;
 
 public class MainArrayAdapter extends ArrayAdapter<ListItemModel> {
 
-	private TextView txtChatBubble;
+	private TextView txtUserID;
 	private List<ListItemModel> postList = new ArrayList<ListItemModel>();
 	private LinearLayout wrapper;
 
@@ -53,12 +54,11 @@ public class MainArrayAdapter extends ArrayAdapter<ListItemModel> {
 			row = inflater.inflate(R.layout.list_post_item, parent, false);
 		}
 
-		/*
-		wrapper = (LinearLayout) row.findViewById(R);
-		Post post = getItem(position);
-		txtChatBubble = (TextView) row.findViewById(R.id.comment);
-		txtChatBubble.setText(post.getMsg());
-*/
+		Post post = (Post) getItem(position);
+		txtUserID = (TextView) row.findViewById(R.id.txtUserID);
+		txtUserID.setText(post.getUserID());
+		TextView txtMsg = (TextView) row.findViewById(R.id.txtMessage);
+		txtMsg.setText( post.getMessage() );
 		
 		return row;
 	}
