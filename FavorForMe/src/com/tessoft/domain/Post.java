@@ -8,6 +8,7 @@ public class Post extends ListItemModel {
 	private String latitude;
 	private String longitude;
 	private String message;
+	private Object tag;
 	
 	private String userID;
 	private String userName;
@@ -16,6 +17,11 @@ public class Post extends ListItemModel {
 	
 	private List<PostLike> postLikes;
 	private List<PostReply> postReplies;
+	
+	public Post()
+	{
+		setItemType("POST");
+	}
 	
 	public String getLatitude() {
 		return latitude;
@@ -76,5 +82,13 @@ public class Post extends ListItemModel {
 	}
 	public void setPostReplies(List<PostReply> postReplies) {
 		this.postReplies = postReplies;
+	}
+
+	public Object getTag() {
+		return tag;
+	}
+
+	public void setTag(Object tag) {
+		this.tag = tag;
 	}
 }

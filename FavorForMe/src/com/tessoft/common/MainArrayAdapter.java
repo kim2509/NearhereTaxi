@@ -2,7 +2,9 @@ package com.tessoft.common;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tessoft.domain.ListItemModel;
 import com.tessoft.domain.Post;
 import com.tessoft.favorforme.R;
@@ -14,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -22,6 +25,8 @@ public class MainArrayAdapter extends ArrayAdapter<ListItemModel> {
 	private TextView txtUserID;
 	private List<ListItemModel> postList = new ArrayList<ListItemModel>();
 	private LinearLayout wrapper;
+	
+	LayoutInflater inflater = null;
 
 	@Override
 	public void add(ListItemModel object) {
@@ -31,6 +36,7 @@ public class MainArrayAdapter extends ArrayAdapter<ListItemModel> {
 
 	public MainArrayAdapter(Context context, int textViewResourceId) {
 		super(context, textViewResourceId);
+		inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
 	public int getCount() {
@@ -49,16 +55,39 @@ public class MainArrayAdapter extends ArrayAdapter<ListItemModel> {
 
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View row = convertView;
+		
+		ListItemModel item = getItem(position);
+		
 		if (row == null) {
-			LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			row = inflater.inflate(R.layout.list_post_item, parent, false);
+			
+			if ( item instanceof Post )
+				row = inflater.inflate(R.layout.list_post_item, parent, false);
+			else if ( item instanceof Map )
+				row = inflater.inflate(R.layout.list_map_item, parent, false);
+		}
+		else
+		{
+			// 현재 보여줄 아이템은 Post 이나 reuse 하는 row 는 Post view 가 아닐때
+			if (  item instanceof Post && row.getTag() instanceof Post == false )
+				row = inflater.inflate(R.layout.list_post_item, parent, false);
+
+			// 현재 보여줄 아이템은 Map 이나 reuse 하는 row 는 Map view 가 아닐 때
+			if ( item instanceof Map && row.getTag() instanceof Map == false )
+				row = inflater.inflate(R.layout.list_map_item, parent, false);
 		}
 
-		Post post = (Post) getItem(position);
-		txtUserID = (TextView) row.findViewById(R.id.txtUserID);
-		txtUserID.setText(post.getUserID());
-		TextView txtMsg = (TextView) row.findViewById(R.id.txtMessage);
-		txtMsg.setText( post.getMessage() );
+		if ( item instanceof Post )
+		{
+			Post post = (Post) item;
+			txtUserID = (TextView) row.findViewById(R.id.txtDistance);
+			txtUserID.setText( Util.getDistance( post.getDistance()) );
+			TextView txtMsg = (TextView) row.findViewById(R.id.txtMessage);
+			txtMsg.setText( post.getMessage() );
+			ImageView imageView = (ImageView) row.findViewById(R.id.imgPic);
+			ImageLoader.getInstance().displayImage("https://www.gravatar.com/avatar/e0b3e3d0b29b541cd13a60a9236f02ac?s=32&d=identicon&r=PG", imageView);
+		}
+		
+		row.setTag( item );
 		
 		return row;
 	}

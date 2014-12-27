@@ -8,6 +8,7 @@ public class User {
 	private String latitude;
 	
 	private String longitude;
+	private String distance;
 	
 	private String regID;
 
@@ -49,6 +50,14 @@ public class User {
 
 	public void setRegID(String regID) {
 		this.regID = regID;
+	}
+
+	public String getDistance() {
+		return distance;
+	}
+
+	public void setDistance(String distance) {
+		this.distance = distance;
 	}
 	
 }
