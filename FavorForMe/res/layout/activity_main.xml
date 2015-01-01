@@ -5,7 +5,7 @@
     android:orientation="vertical"
     tools:context="com.tessoft.favorforme.MainActivity" >
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="5dp" >
@@ -15,7 +15,17 @@
             android:name="com.google.android.gms.maps.MapFragment"
             android:layout_width="match_parent"
             android:layout_height="200dp" />
-    </LinearLayout>
+        
+        <RelativeLayout android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <Button android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:textSize="8sp"
+                android:layout_alignParentRight="true"
+                android:text="크게보기"/>
+        </RelativeLayout>
+        
+    </FrameLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"

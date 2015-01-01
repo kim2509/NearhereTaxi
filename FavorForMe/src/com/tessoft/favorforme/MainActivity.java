@@ -1,6 +1,11 @@
 package com.tessoft.favorforme;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
@@ -9,6 +14,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,6 +34,7 @@ import com.tessoft.domain.MainInfo;
 import com.tessoft.domain.Post;
 import com.tessoft.domain.User;
 
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -42,7 +49,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class MainActivity extends BaseActivity implements OnMapReadyCallback, OnItemClickListener, 
-	OnCameraChangeListener, OnMarkerClickListener{ //, OnScrollListener{
+	OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener{ //, OnScrollListener{
 
 	ListView listMain = null;
 	GoogleMap map = null;
@@ -50,6 +57,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, On
 	//	ScrollView mainScrollView = null;
 	int ZoomLevel = 16;
 	ObjectMapper mapper = new ObjectMapper();
+	private HashMap<Marker, Post> markersMap = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +83,6 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, On
 			listMain.setOnItemClickListener(this);
 			
 			initImageLoader();
-			//mainScrollView = (ScrollView) findViewById(R.id.mainScrollView);
 		}
 		catch( Exception ex )
 		{
@@ -159,11 +166,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, On
 			}
 				
 			putMarkersOnMap( postList );
-			
-			Post post = (Post) postList.get(0);
-			Marker marker = (Marker) post.getTag();
-			marker.showInfoWindow();	
-		}
+				}
 		catch(Exception ex )
 		{
 			showToastMessage(ex.getMessage());
@@ -180,7 +183,8 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, On
 			.position(new LatLng(Double.parseDouble( post.getLatitude() ), Double.parseDouble(post.getLongitude())))
 			.title(post.getMessage()));
 			
-			post.setTag( marker );
+			//post.setTag( marker );
+			markersMap.put( marker, post);
 		}
 	}
 
@@ -198,8 +202,11 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, On
 			CameraUpdate zoom=CameraUpdateFactory.zoomTo(ZoomLevel);
 			map.animateCamera(zoom);
 			
+			markersMap = new HashMap<Marker, Post>();
+			
 			map.setOnCameraChangeListener(this);
 			map.setOnMarkerClickListener(this);
+			map.setOnInfoWindowClickListener(this);
 
 			ObjectMapper mapper = new ObjectMapper();
 
@@ -239,9 +246,9 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, On
 			bItemClicked = true;
 			
 			Post post = (Post) arg1.getTag();
-			Marker marker = (Marker) post.getTag();
 			moveMap(getPostLocation(post) );
-			marker.showInfoWindow();
+			
+			showInfoWindowWithPost( post );
 		}
 	}
 	
@@ -311,33 +318,34 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, On
 		return false;
 	}
 
-	/*
 	@Override
-	public void onScrollStateChanged(AbsListView view, int scrollState) {
+	public void onInfoWindowClick(Marker arg0) {
 		// TODO Auto-generated method stub
-
-		if (scrollState == SCROLL_STATE_IDLE )
+		try
 		{
-			int first = view.getFirstVisiblePosition();
-			MainArrayAdapter adapter = (MainArrayAdapter) view.getAdapter();
-			Post post = (Post) adapter.getItem(first);
-			moveMap(getPostLocation(post), ZoomLevel );
-			Marker marker = (Marker) post.getTag();
-			marker.showInfoWindow();
+			Post post = markersMap.get(arg0);
+			Intent intent = new Intent( this, PostDetailActivity.class);
+			intent.putExtra("post", post );
+			startActivity(intent);	
 		}
-		
+		catch( Exception ex )
+		{
+			Log.e("error", ex.getMessage());
+		}
 	}
-	
-	@Override
-	public void onScroll(AbsListView view, int firstVisibleItem,
-			int visibleItemCount, int totalItemCount) {
-		// TODO Auto-generated method stub
-		switch(view.getId()) {
-		case R.id.listMain:  
 
-			break;
+	private void showInfoWindowWithPost( Post post )
+	{
+		Iterator<Entry<Marker, Post>> it = markersMap.entrySet().iterator();
+		while( it.hasNext() )
+		{
+			Entry<Marker,Post> entry = it.next();
+			if ( entry.getValue() == post )
+			{
+				entry.getKey().showInfoWindow();
+				break;
+			}
 		}
 	}
 	
-	*/
 }

@@ -67,11 +67,9 @@ public class MainArrayAdapter extends ArrayAdapter<ListItemModel> {
 		}
 		else
 		{
-			// 현재 보여줄 아이템은 Post 이나 reuse 하는 row 는 Post view 가 아닐때
 			if (  item instanceof Post && row.getTag() instanceof Post == false )
 				row = inflater.inflate(R.layout.list_post_item, parent, false);
 
-			// 현재 보여줄 아이템은 Map 이나 reuse 하는 row 는 Map view 가 아닐 때
 			if ( item instanceof Map && row.getTag() instanceof Map == false )
 				row = inflater.inflate(R.layout.list_map_item, parent, false);
 		}

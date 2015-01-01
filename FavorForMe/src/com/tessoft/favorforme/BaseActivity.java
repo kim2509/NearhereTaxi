@@ -11,6 +11,7 @@ import com.tessoft.common.TransactionDelegate;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -78,7 +79,7 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage( message )
 		       .setCancelable(false)
-		       .setPositiveButton("Ȯ��", new DialogInterface.OnClickListener() {
+		       .setPositiveButton("확占쏙옙", new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
 		                okClicked( param );
 		           }
@@ -97,12 +98,12 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage( message )
 		       .setCancelable(false)
-		       .setPositiveButton("��", new DialogInterface.OnClickListener() {
+		       .setPositiveButton("占쏙옙", new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
 		        	   yesClicked( param );
 		           }
 		       })
-		       .setNegativeButton("�ƴϿ�", new DialogInterface.OnClickListener() {
+		       .setNegativeButton("占싣니울옙", new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
 		        	   noClicked( param );
 		           }
@@ -171,12 +172,12 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		locationManager = (LocationManager)getSystemService(context);
 		
 		Criteria criteria = new Criteria();
-		criteria.setAccuracy(Criteria.ACCURACY_COARSE);// ��Ȯ��
-		criteria.setPowerRequirement(Criteria.POWER_LOW); // ��� �Һ�
-		criteria.setAltitudeRequired(false); // �? ��뿩��
+		criteria.setAccuracy(Criteria.ACCURACY_COARSE);// 占쏙옙확占쏙옙
+		criteria.setPowerRequirement(Criteria.POWER_LOW); // 占쏙옙占� 占쌀븝옙
+		criteria.setAltitudeRequired(false); // 占�? 占쏙옙肉⑼옙占�
 		criteria.setBearingRequired(false); //
-		criteria.setSpeedRequired(false); // �ӵ�
-		criteria.setCostAllowed(true); // ��������
+		criteria.setSpeedRequired(false); // 占쌈듸옙
+		criteria.setCostAllowed(true); // 占쏙옙占쏙옙占쏙옙占쏙옙
 		
 		String provider = locationManager.getBestProvider(criteria, true);
 		return locationManager.getLastKnownLocation(provider);
@@ -186,8 +187,8 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 	{
 		if ( location == null ) return "";
 		
-		double latitude = location.getLatitude(); // ����
-		double longitude = location.getLongitude(); // �浵
+		double latitude = location.getLatitude(); // 占쏙옙占쏙옙
+		double longitude = location.getLongitude(); // 占썸도
 		
 		Geocoder gcK = new Geocoder(getApplicationContext(),Locale.KOREA);
 		
@@ -223,5 +224,23 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
         }
 		
 		return "";
+	}
+	
+	@Override
+	public void startActivity(Intent intent) {
+		// TODO Auto-generated method stub
+		super.startActivity(intent);
+		
+		//this.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+		this.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+	}
+	
+	@Override
+	public void finish() {
+		// TODO Auto-generated method stub
+		super.finish();
+		
+		//overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+		this.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
 }

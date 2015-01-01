@@ -1,7 +1,13 @@
 package com.tessoft.domain;
 
-public class PostLike {
+import java.io.Serializable;
 
+public class PostLike implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String likeID;
 	private String postID;
 	private String userID;

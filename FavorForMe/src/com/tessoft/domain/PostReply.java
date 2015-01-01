@@ -1,7 +1,13 @@
 package com.tessoft.domain;
 
-public class PostReply {
+import java.io.Serializable;
 
+public class PostReply implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String replyID;
 	private String postID;
 	private String userID;
