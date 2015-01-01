@@ -2,7 +2,7 @@ package com.tessoft.domain;
 
 import java.io.Serializable;
 
-public class PostReply implements Serializable {
+public class PostReply extends ListItemModel implements Serializable {
 
 	/**
 	 * 

@@ -240,7 +240,10 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		// TODO Auto-generated method stub
 		super.finish();
 		
+		if ( this.getClass().getName().indexOf("MainActivity") < 0 )
+		{
+			this.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);	
+		}
 		//overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-		this.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
 }

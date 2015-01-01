@@ -42,14 +42,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 public class MainActivity extends BaseActivity implements OnMapReadyCallback, OnItemClickListener, 
-	OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener{ //, OnScrollListener{
+OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener{ //, OnScrollListener{
 
 	ListView listMain = null;
 	GoogleMap map = null;
@@ -71,8 +74,8 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, On
 
 			setContentView(R.layout.activity_main);
 
-			mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, mLocationListener);
+			//mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+			//mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, mLocationListener);
 
 			MapFragment mapFragment = (MapFragment) getFragmentManager()
 					.findFragmentById(R.id.map);
@@ -81,8 +84,13 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, On
 			listMain = (ListView) findViewById(R.id.listMain);
 			//listMain.setOnScrollListener(this);
 			listMain.setOnItemClickListener(this);
-			
+
 			initImageLoader();
+			
+			mainScrollView = (ScrollView) findViewById(R.id.scrollView);
+			mainScrollView.fullScroll(ScrollView.FOCUS_UP);
+			
+			makeMapScrollable();
 		}
 		catch( Exception ex )
 		{
@@ -146,13 +154,13 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, On
 
 			MainArrayAdapter adapter = new MainArrayAdapter( getApplicationContext(), 0 );
 			List<ListItemModel> postList = null;
-			
+
 			if ( requestCode == 1 )
 			{
 				MainInfo mainInfo = mapper.readValue(result.toString(), new TypeReference<MainInfo>(){});
 
 				TextView txtNotice1 = (TextView) findViewById(R.id.txtNotice1);
-				txtNotice1.setText("±Ÿ√≥ø° " + mainInfo.getPostCount() + "∞≥¿« Ω…∫Œ∏ß¿Ã ¿÷Ω¿¥œ¥Ÿ.");
+				txtNotice1.setText("Í∑ºÏ≤òÏóê " + mainInfo.getPostCount() + " Í∞úÏùò Ïã¨Î∂ÄÎ¶ÑÏù¥ ÏûàÏäµÎãàÎã§.");
 
 				postList = (List<ListItemModel>) (Object) mainInfo.getPostList();
 				adapter.setItemList( postList );
@@ -164,9 +172,9 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, On
 				adapter.setItemList( postList );
 				listMain.setAdapter( adapter );
 			}
-				
+
 			putMarkersOnMap( postList );
-				}
+		}
 		catch(Exception ex )
 		{
 			showToastMessage(ex.getMessage());
@@ -182,7 +190,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, On
 			Marker marker = map.addMarker(new MarkerOptions()
 			.position(new LatLng(Double.parseDouble( post.getLatitude() ), Double.parseDouble(post.getLongitude())))
 			.title(post.getMessage()));
-			
+
 			//post.setTag( marker );
 			markersMap.put( marker, post);
 		}
@@ -198,12 +206,12 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, On
 			map.setMyLocationEnabled(true);
 
 			moveMap( new LatLng(37.470763 , 126.968209 ) );
-			
+
 			CameraUpdate zoom=CameraUpdateFactory.zoomTo(ZoomLevel);
 			map.animateCamera(zoom);
-			
+
 			markersMap = new HashMap<Marker, Post>();
-			
+
 			map.setOnCameraChangeListener(this);
 			map.setOnMarkerClickListener(this);
 			map.setOnInfoWindowClickListener(this);
@@ -222,7 +230,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, On
 			showToastMessage(ex.getMessage());
 		}
 	}
-	
+
 	private void moveMap( LatLng location )
 	{
 		CameraUpdate center=
@@ -237,42 +245,42 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, On
 	}
 
 	boolean bItemClicked = false;
-	
+
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		// TODO Auto-generated method stub
 		if ( arg0.getId() == R.id.listMain )
 		{
 			bItemClicked = true;
-			
+
 			Post post = (Post) arg1.getTag();
 			moveMap(getPostLocation(post) );
-			
+
 			showInfoWindowWithPost( post );
 		}
 	}
-	
+
 	public void initImageLoader()
 	{
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
-        .memoryCacheExtraOptions(100, 100) // default = device screen dimensions
-        .diskCacheExtraOptions(100, 100, null)
-        .threadPoolSize(3) // default
-        .threadPriority(Thread.NORM_PRIORITY - 2) // default
-        .tasksProcessingOrder(QueueProcessingType.FIFO) // default
-        .denyCacheImageMultipleSizesInMemory()
-        .memoryCache(new LruMemoryCache(2 * 1024 * 1024))
-        .memoryCacheSize(2 * 1024 * 1024)
-        .memoryCacheSizePercentage(13) // default
-        .diskCacheSize(50 * 1024 * 1024)
-        .diskCacheFileCount(100)
-        .diskCacheFileNameGenerator(new HashCodeFileNameGenerator()) // default
-        .defaultDisplayImageOptions(DisplayImageOptions.createSimple()) // default
-        .writeDebugLogs()
-        .build();
+		.memoryCacheExtraOptions(100, 100) // default = device screen dimensions
+		.diskCacheExtraOptions(100, 100, null)
+		.threadPoolSize(3) // default
+		.threadPriority(Thread.NORM_PRIORITY - 2) // default
+		.tasksProcessingOrder(QueueProcessingType.FIFO) // default
+		.denyCacheImageMultipleSizesInMemory()
+		.memoryCache(new LruMemoryCache(2 * 1024 * 1024))
+		.memoryCacheSize(2 * 1024 * 1024)
+		.memoryCacheSizePercentage(13) // default
+		.diskCacheSize(50 * 1024 * 1024)
+		.diskCacheFileCount(100)
+		.diskCacheFileNameGenerator(new HashCodeFileNameGenerator()) // default
+		.defaultDisplayImageOptions(DisplayImageOptions.createSimple()) // default
+		.writeDebugLogs()
+		.build();
 		ImageLoader.getInstance().init(config);
 	}
-	
+
 	boolean bSkipPostListLoading = true;
 
 	@Override
@@ -280,16 +288,16 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, On
 		// TODO Auto-generated method stub
 		double latitude = arg0.target.latitude;
 		double longitude = arg0.target.longitude;
-		
+
 		Log.d("debug", "oncameraChange bItemClicked:" + bItemClicked + " position " + latitude + " " + longitude );
-		
+
 		if ( bItemClicked )
 		{
 			bItemClicked = false;
 		}
 		else
 		{
-			// ¡ˆµµ∏¶ øÚ¡˜ø¥¿ª ∂ß
+			// ÏßÄÎèÑÎ•º ÏõÄÏßÅÏòÄÏùÑ Îïå
 			try
 			{
 				if ( bSkipPostListLoading == false )
@@ -300,7 +308,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, On
 					user.setLongitude( String.valueOf( longitude ) );
 					execTransReturningString("/getPosts.do", mapper.writeValueAsString(user), 2);
 				}
-				
+
 				bSkipPostListLoading = false;
 			}
 			catch( Exception ex )
@@ -314,7 +322,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, On
 	public boolean onMarkerClick(Marker arg0) {
 		// TODO Auto-generated method stub
 		bSkipPostListLoading = true;
-		
+
 		return false;
 	}
 
@@ -347,5 +355,37 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, On
 			}
 		}
 	}
-	
+
+	ScrollView mainScrollView = null;
+	private void makeMapScrollable() {
+		
+		ImageView transparentImageView = (ImageView) findViewById(R.id.transparent_image);
+
+		transparentImageView.setOnTouchListener(new View.OnTouchListener() {
+
+		    @Override
+		    public boolean onTouch(View v, MotionEvent event) {
+		        int action = event.getAction();
+		        switch (action) {
+		           case MotionEvent.ACTION_DOWN:
+		                // Disallow ScrollView to intercept touch events.
+		                mainScrollView.requestDisallowInterceptTouchEvent(true);
+		                // Disable touch on transparent view
+		                return false;
+
+		           case MotionEvent.ACTION_UP:
+		                // Allow ScrollView to intercept touch events.
+		                mainScrollView.requestDisallowInterceptTouchEvent(false);
+		                return true;
+
+		           case MotionEvent.ACTION_MOVE:
+		                mainScrollView.requestDisallowInterceptTouchEvent(true);
+		                return false;
+
+		           default: 
+		                return true;
+		        }   
+		    }
+		});
+	}
 }

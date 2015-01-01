@@ -7,6 +7,7 @@ import java.util.Map;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tessoft.domain.ListItemModel;
 import com.tessoft.domain.Post;
+import com.tessoft.domain.PostReply;
 import com.tessoft.favorforme.R;
 
 import android.content.Context;
@@ -23,14 +24,13 @@ import android.widget.TextView;
 public class MainArrayAdapter extends ArrayAdapter<ListItemModel> {
 
 	private TextView txtUserID;
-	private List<ListItemModel> postList = new ArrayList<ListItemModel>();
-	private LinearLayout wrapper;
+	private List<ListItemModel> itemList = new ArrayList<ListItemModel>();
 	
 	LayoutInflater inflater = null;
 
 	@Override
 	public void add(ListItemModel object) {
-		postList.add(object);
+		itemList.add(object);
 		super.add(object);
 	}
 
@@ -40,16 +40,16 @@ public class MainArrayAdapter extends ArrayAdapter<ListItemModel> {
 	}
 
 	public int getCount() {
-		return this.postList.size();
+		return this.itemList.size();
 	}
 
 	public ListItemModel getItem(int index) {
-		return this.postList.get(index);
+		return this.itemList.get(index);
 	}
 	
-	public void setItemList( List<ListItemModel> chatList )
+	public void setItemList( List<ListItemModel> itemList )
 	{
-		this.postList = chatList;
+		this.itemList = itemList;
 		notifyDataSetChanged();
 	}
 
@@ -64,14 +64,17 @@ public class MainArrayAdapter extends ArrayAdapter<ListItemModel> {
 				row = inflater.inflate(R.layout.list_post_item, parent, false);
 			else if ( item instanceof Map )
 				row = inflater.inflate(R.layout.list_map_item, parent, false);
+			else if ( item instanceof PostReply )
+				row = inflater.inflate(R.layout.list_post_item, parent, false);
 		}
 		else
 		{
 			if (  item instanceof Post && row.getTag() instanceof Post == false )
 				row = inflater.inflate(R.layout.list_post_item, parent, false);
-
-			if ( item instanceof Map && row.getTag() instanceof Map == false )
+			else if ( item instanceof Map && row.getTag() instanceof Map == false )
 				row = inflater.inflate(R.layout.list_map_item, parent, false);
+			else if ( item instanceof PostReply && row.getTag() instanceof PostReply == false )
+				row = inflater.inflate(R.layout.list_post_item, parent, false);
 		}
 
 		if ( item instanceof Post )
@@ -83,6 +86,11 @@ public class MainArrayAdapter extends ArrayAdapter<ListItemModel> {
 			txtMsg.setText( post.getMessage() );
 			ImageView imageView = (ImageView) row.findViewById(R.id.imgPic);
 			ImageLoader.getInstance().displayImage("https://www.gravatar.com/avatar/e0b3e3d0b29b541cd13a60a9236f02ac?s=32&d=identicon&r=PG", imageView);
+		}
+		else if ( item instanceof PostReply )
+		{
+			PostReply postReply = (PostReply) item;
+			
 		}
 		
 		row.setTag( item );
