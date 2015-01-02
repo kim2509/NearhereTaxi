@@ -1,7 +1,11 @@
 package com.tessoft.domain;
 
-public class User {
+public class User extends ListItemModel{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String userID;
 	private String userName;
 	
@@ -11,6 +15,8 @@ public class User {
 	private String distance;
 	
 	private String regID;
+	
+	private String profileImageURL;
 
 	public String getUserID() {
 		return userID;
@@ -58,6 +64,14 @@ public class User {
 
 	public void setDistance(String distance) {
 		this.distance = distance;
+	}
+
+	public String getProfileImageURL() {
+		return profileImageURL;
+	}
+
+	public void setProfileImageURL(String profileImageURL) {
+		this.profileImageURL = profileImageURL;
 	}
 	
 }

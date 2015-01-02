@@ -1,8 +1,6 @@
 package com.tessoft.domain;
 
-import java.io.Serializable;
-
-public class PostReply extends ListItemModel implements Serializable {
+public class PostReply extends ListItemModel {
 
 	/**
 	 * 
@@ -10,9 +8,9 @@ public class PostReply extends ListItemModel implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String replyID;
 	private String postID;
-	private String userID;
-	private String userName;
 	private String message;
+	private User user;
+	
 	private String createDate;
 	public String getPostID() {
 		return postID;
@@ -26,12 +24,6 @@ public class PostReply extends ListItemModel implements Serializable {
 	public void setReplyID(String replyID) {
 		this.replyID = replyID;
 	}
-	public String getUserID() {
-		return userID;
-	}
-	public void setUserID(String userID) {
-		this.userID = userID;
-	}
 	public String getMessage() {
 		return message;
 	}
@@ -44,10 +36,10 @@ public class PostReply extends ListItemModel implements Serializable {
 	public void setCreateDate(String createDate) {
 		this.createDate = createDate;
 	}
-	public String getUserName() {
-		return userName;
+	public User getUser() {
+		return user;
 	}
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setUser(User user) {
+		this.user = user;
 	}
 }

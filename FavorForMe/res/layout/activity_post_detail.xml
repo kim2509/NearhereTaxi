@@ -73,9 +73,10 @@
                 android:layout_marginTop="30dp" >
 
                 <TextView
+                    android:id="@+id/txtPostDetailMsg"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="휴대폰은 갤럭시S3 입니다. 일반 삼성 케이블이면 가능하겠지요. 오늘까지 가능할까요? 제가 6시에 퇴근이니깐 그 전까지 갖다주세요."
+                    android:text=""
                     android:textSize="17sp" />
             </RelativeLayout>
 

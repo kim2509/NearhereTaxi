@@ -1,8 +1,6 @@
 package com.tessoft.domain;
 
-import java.io.Serializable;
-
-public class PostLike implements Serializable {
+public class PostLike extends ListItemModel {
 
 	/**
 	 * 

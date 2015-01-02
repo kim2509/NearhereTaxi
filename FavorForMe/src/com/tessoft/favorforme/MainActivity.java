@@ -160,7 +160,7 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener{ //, On
 				MainInfo mainInfo = mapper.readValue(result.toString(), new TypeReference<MainInfo>(){});
 
 				TextView txtNotice1 = (TextView) findViewById(R.id.txtNotice1);
-				txtNotice1.setText("근처에 " + mainInfo.getPostCount() + " 개의 심부름이 있습니다.");
+				txtNotice1.setText("근처에 " + mainInfo.getPostCount() + " 개의 HELP들이 있습니다.");
 
 				postList = (List<ListItemModel>) (Object) mainInfo.getPostList();
 				adapter.setItemList( postList );

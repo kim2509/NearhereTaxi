@@ -2,36 +2,54 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal" 
-    android:paddingTop="10dp"
-    android:paddingLeft="10dp"
+    android:orientation="horizontal"
+    android:paddingBottom="10dp"
     android:paddingRight="10dp"
-    android:paddingBottom="10dp">
-    
+    android:paddingTop="10dp" >
+
     <ImageView
-        android:id="@+id/imgPic" 
-        android:layout_width="50dp"
-        android:layout_height="50dp"/>
+        android:id="@+id/imgProfile"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_launcher" />
 
     <TextView
-        android:id="@+id/txtMessage"
+        android:id="@+id/txtPostReply"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/imgPic"
-        android:layout_toRightOf="@+id/imgPic"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:text="abc"
-        android:textColor="@android:color/black"
-        android:textSize="12sp" />
+        android:layout_alignTop="@+id/imgProfile"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/imgProfile"
+        android:text="reply"
+        android:textColor="@android:color/black" />
 
+    <TextView
+        android:id="@+id/txtUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/imgProfile"
+        android:layout_below="@+id/txtPostReply"
+        android:layout_marginTop="5dp"
+        android:text="abc"
+        android:textColor="#3B5D98" />
+
+    <TextView
+        android:id="@+id/txtDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/txtUserName"
+        android:layout_centerHorizontal="true"
+        android:text="2015년 1월 2일 오후 9시 40분"
+        android:textSize="10sp" />
+    
     <TextView
         android:id="@+id/txtDistance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/imgPic"
+        android:layout_alignBaseline="@+id/txtUserName"
         android:layout_alignParentRight="true"
         android:text="500m"
-        android:textColor="@android:color/black" />
+        android:textSize="10sp" />
 
 </RelativeLayout>

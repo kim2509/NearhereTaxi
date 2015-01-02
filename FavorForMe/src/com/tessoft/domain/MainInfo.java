@@ -2,8 +2,12 @@ package com.tessoft.domain;
 
 import java.util.List;
 
-public class MainInfo {
+public class MainInfo extends ListItemModel{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private List<Post> postList = null;
 	private List<User> userList = null;
 	private int postCount = 0;

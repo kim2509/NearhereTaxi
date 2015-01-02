@@ -49,7 +49,7 @@ public class PostDetailActivity extends BaseActivity implements OnMapReadyCallba
 
 			setContentView(R.layout.activity_post_detail);
 			
-			getActionBar().setTitle( "심부름 상세" );
+			getActionBar().setTitle( "HELP 상세" );
 			
 			post = (Post) getIntent().getExtras().get("post");
 			
@@ -154,6 +154,10 @@ public class PostDetailActivity extends BaseActivity implements OnMapReadyCallba
 			{
 				MainArrayAdapter adapter = (MainArrayAdapter) listPostReplies.getAdapter();
 				post = mapper.readValue(result.toString(), new TypeReference<Post>(){});
+				
+				TextView txtPostDetailMsg = (TextView) findViewById(R.id.txtPostDetailMsg);
+				txtPostDetailMsg.setText( post.getContent() );
+				
 				List<ListItemModel> listReplies = (List<ListItemModel>) (Object) post.getPostReplies();
 				adapter.setItemList(listReplies);
 				adapter.notifyDataSetChanged();

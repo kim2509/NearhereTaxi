@@ -1,23 +1,24 @@
 package com.tessoft.domain;
 
-import java.io.Serializable;
 import java.util.List;
 
-public class Post extends ListItemModel implements Serializable{
+public class Post extends ListItemModel {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
 	private String postID;
 	private String latitude;
 	private String longitude;
 	private String message;
+	
+	private String content;
+	
 	private Object tag;
 	
-	private String userID;
-	private String userName;
+	private User user;
+	
 	private String distance;
 	private String createDate;
 	
@@ -47,23 +48,11 @@ public class Post extends ListItemModel implements Serializable{
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	public String getUserID() {
-		return userID;
-	}
-	public void setUserID(String userID) {
-		this.userID = userID;
-	}
 	public String getDistance() {
 		return distance;
 	}
 	public void setDistance(String distance) {
 		this.distance = distance;
-	}
-	public String getUserName() {
-		return userName;
-	}
-	public void setUserName(String userName) {
-		this.userName = userName;
 	}
 	public String getPostID() {
 		return postID;
@@ -99,4 +88,20 @@ public class Post extends ListItemModel implements Serializable{
 		this.tag = tag;
 	}
 	*/
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
 }

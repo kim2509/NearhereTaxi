@@ -1,7 +1,16 @@
 package com.tessoft.domain;
 
-public class ListItemModel {
+import java.io.Serializable;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ListItemModel implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String itemType = "";
 
 	public String getItemType() {
