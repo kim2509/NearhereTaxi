@@ -10,6 +10,7 @@ public class PostReply extends ListItemModel {
 	private String postID;
 	private String message;
 	private User user;
+	private String distance;
 	
 	private String createDate;
 	public String getPostID() {
@@ -41,5 +42,11 @@ public class PostReply extends ListItemModel {
 	}
 	public void setUser(User user) {
 		this.user = user;
+	}
+	public String getDistance() {
+		return distance;
+	}
+	public void setDistance(String distance) {
+		this.distance = distance;
 	}
 }

@@ -5,60 +5,12 @@
     android:orientation="vertical"
     tools:context="com.tessoft.favorforme.MainActivity" >
 
-    <ScrollView
-        android:id="@+id/scrollView"
+    <ListView
+        android:id="@+id/listMain"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-
-            <RelativeLayout
-                android:id="@+id/map_layout"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_marginTop="10dp" >
-
-                <fragment
-                    android:id="@+id/map"
-                    android:name="com.google.android.gms.maps.MapFragment"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="-100dp"
-                    android:layout_marginTop="-100dp" />
-
-                <ImageView
-                    android:id="@+id/transparent_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@color/transparent" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="10dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="10dp" >
-
-                <TextView
-                    android:id="@+id/txtNotice1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="" />
-            </RelativeLayout>
-
-            <ListView
-                android:id="@+id/listMain"
-                android:layout_width="match_parent"
-                android:layout_height="400dp"
-                android:divider="#00000000"
-                android:listSelector="@android:color/transparent" >
-            </ListView>
-        </LinearLayout>
-    </ScrollView>
+        android:layout_height="match_parent"
+        android:divider="#00000000"
+        android:listSelector="@android:color/transparent" >
+    </ListView>
 
 </LinearLayout>

@@ -57,10 +57,11 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener{ //, On
 	ListView listMain = null;
 	GoogleMap map = null;
 	LocationManager mLocationManager = null;
-	//	ScrollView mainScrollView = null;
 	int ZoomLevel = 16;
 	ObjectMapper mapper = new ObjectMapper();
 	private HashMap<Marker, Post> markersMap = null;
+	MainArrayAdapter adapter = null;
+	View header = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -69,26 +70,23 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener{ //, On
 		{
 			super.onCreate(savedInstanceState);
 
-			//getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-			//getActionBar().hide();
-
 			setContentView(R.layout.activity_main);
 
-			//mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-			//mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, mLocationListener);
-
-			MapFragment mapFragment = (MapFragment) getFragmentManager()
-					.findFragmentById(R.id.map);
-			mapFragment.getMapAsync(this);
-
+			header = getLayoutInflater().inflate(R.layout.list_main_header, null);
+			
 			listMain = (ListView) findViewById(R.id.listMain);
-			//listMain.setOnScrollListener(this);
+			listMain.addHeaderView(header);
+			
+			adapter = new MainArrayAdapter( getApplicationContext(), 0 );
+			listMain.setAdapter(adapter);
+			adapter.setDelegate(this);
 			listMain.setOnItemClickListener(this);
 
 			initImageLoader();
 			
-			mainScrollView = (ScrollView) findViewById(R.id.scrollView);
-			mainScrollView.fullScroll(ScrollView.FOCUS_UP);
+			MapFragment mapFragment = (MapFragment) getFragmentManager()
+					.findFragmentById(R.id.map);
+			mapFragment.getMapAsync(this);
 			
 			makeMapScrollable();
 		}
@@ -97,33 +95,6 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener{ //, On
 			showToastMessage(ex.getMessage());
 		}
 	}
-
-	private final LocationListener mLocationListener = new LocationListener() {
-		@Override
-		public void onLocationChanged(final Location location) {
-			//your code here
-
-		}
-
-		@Override
-		public void onProviderDisabled(String provider) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onProviderEnabled(String provider) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onStatusChanged(String provider, int status, Bundle extras) {
-			// TODO Auto-generated method stub
-
-		}
-	};
-
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -152,7 +123,6 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener{ //, On
 		{
 			super.doPostTransaction(requestCode, result);
 
-			MainArrayAdapter adapter = new MainArrayAdapter( getApplicationContext(), 0 );
 			List<ListItemModel> postList = null;
 
 			if ( requestCode == 1 )
@@ -164,13 +134,13 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener{ //, On
 
 				postList = (List<ListItemModel>) (Object) mainInfo.getPostList();
 				adapter.setItemList( postList );
-				listMain.setAdapter( adapter );
+				adapter.notifyDataSetChanged();
 			}
 			else if ( requestCode == 2 )
 			{
 				postList = (List<ListItemModel>) mapper.readValue(result.toString(), new TypeReference<List<Post>>(){});
 				adapter.setItemList( postList );
-				listMain.setAdapter( adapter );
+				adapter.notifyDataSetChanged();
 			}
 
 			putMarkersOnMap( postList );
@@ -335,6 +305,7 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener{ //, On
 			Intent intent = new Intent( this, PostDetailActivity.class);
 			intent.putExtra("post", post );
 			startActivity(intent);	
+			overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 		}
 		catch( Exception ex )
 		{
@@ -356,6 +327,36 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener{ //, On
 		}
 	}
 
+	@Override
+	public void doAction(int actionCode, Object param) {
+		try
+		{
+			// TODO Auto-generated method stub
+			super.doAction(actionCode, param);
+			
+			if ( actionCode == 1 && param != null && param instanceof User )
+			{
+				User user = (User) param;
+				Intent intent = new Intent( getApplicationContext(), UserProfileActivity.class);
+				intent.putExtra("user", user );
+				startActivity(intent);
+				overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
+			}
+			else if ( actionCode == 2 && param != null && param instanceof Post )
+			{
+				Post post = (Post) param;
+				Intent intent = new Intent( this, PostDetailActivity.class);
+				intent.putExtra("post", post );
+				startActivity(intent);	
+				overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+			}
+		}
+		catch( Exception ex )
+		{
+			Log.e("error", ex.getMessage());
+		}
+	}
+	
 	ScrollView mainScrollView = null;
 	private void makeMapScrollable() {
 		
@@ -365,26 +366,36 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener{ //, On
 
 		    @Override
 		    public boolean onTouch(View v, MotionEvent event) {
-		        int action = event.getAction();
-		        switch (action) {
-		           case MotionEvent.ACTION_DOWN:
-		                // Disallow ScrollView to intercept touch events.
-		                mainScrollView.requestDisallowInterceptTouchEvent(true);
-		                // Disable touch on transparent view
-		                return false;
+		    	
+		    	try
+		    	{
+		    		int action = event.getAction();
+			        switch (action) {
+			           case MotionEvent.ACTION_DOWN:
+			                // Disallow ScrollView to intercept touch events.
+			                listMain.requestDisallowInterceptTouchEvent(true);
+			                // Disable touch on transparent view
+			                return false;
 
-		           case MotionEvent.ACTION_UP:
-		                // Allow ScrollView to intercept touch events.
-		                mainScrollView.requestDisallowInterceptTouchEvent(false);
-		                return true;
+			           case MotionEvent.ACTION_UP:
+			                // Allow ScrollView to intercept touch events.
+			        	   	listMain.requestDisallowInterceptTouchEvent(false);
+			                return true;
 
-		           case MotionEvent.ACTION_MOVE:
-		                mainScrollView.requestDisallowInterceptTouchEvent(true);
-		                return false;
+			           case MotionEvent.ACTION_MOVE:
+			        	   	listMain.requestDisallowInterceptTouchEvent(true);
+			                return false;
 
-		           default: 
-		                return true;
-		        }   
+			           default: 
+			                return true;
+			        }	
+		    	}
+		    	catch( Exception ex )
+		    	{
+		    		Log.e("error", ex.getMessage());
+		    	}
+		           
+		    	return true;
 		    }
 		});
 	}

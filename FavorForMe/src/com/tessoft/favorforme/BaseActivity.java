@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+import com.tessoft.common.ActivityDelegate;
 import com.tessoft.common.HttpTransactionReturningString;
 import com.tessoft.common.TransactionDelegate;
 
@@ -28,7 +29,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 
-public class BaseActivity extends ActionBarActivity implements TransactionDelegate{
+public class BaseActivity extends ActionBarActivity implements TransactionDelegate, ActivityDelegate {
 
 	LocationManager locationManager;
 	Location location;
@@ -225,25 +226,10 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		
 		return "";
 	}
-	
+
 	@Override
-	public void startActivity(Intent intent) {
+	public void doAction(int actionCode, Object param) {
 		// TODO Auto-generated method stub
-		super.startActivity(intent);
 		
-		//this.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-		this.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-	}
-	
-	@Override
-	public void finish() {
-		// TODO Auto-generated method stub
-		super.finish();
-		
-		if ( this.getClass().getName().indexOf("MainActivity") < 0 )
-		{
-			this.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);	
-		}
-		//overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 	}
 }

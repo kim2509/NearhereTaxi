@@ -8,15 +8,20 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tessoft.domain.ListItemModel;
 import com.tessoft.domain.Post;
 import com.tessoft.domain.PostReply;
+import com.tessoft.domain.User;
 import com.tessoft.favorforme.R;
+import com.tessoft.favorforme.UserProfileActivity;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,7 +31,8 @@ public class MainArrayAdapter extends ArrayAdapter<ListItemModel> {
 
 	private TextView txtUserID;
 	private List<ListItemModel> itemList = new ArrayList<ListItemModel>();
-	
+	private ActivityDelegate delegate = null;
+
 	LayoutInflater inflater = null;
 
 	@Override
@@ -47,7 +53,7 @@ public class MainArrayAdapter extends ArrayAdapter<ListItemModel> {
 	public ListItemModel getItem(int index) {
 		return this.itemList.get(index);
 	}
-	
+
 	public void setItemList( List<ListItemModel> itemList )
 	{
 		this.itemList = itemList;
@@ -55,15 +61,15 @@ public class MainArrayAdapter extends ArrayAdapter<ListItemModel> {
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
-		
+
 		View row = convertView;
-		
+
 		try
 		{
 			ListItemModel item = getItem(position);
-			
+
 			if (row == null) {
-				
+
 				if ( item instanceof Post )
 					row = inflater.inflate(R.layout.list_post_item, parent, false);
 				else if ( item instanceof Map )
@@ -88,8 +94,38 @@ public class MainArrayAdapter extends ArrayAdapter<ListItemModel> {
 				txtUserID.setText( Util.getDistance( post.getDistance()) );
 				TextView txtMsg = (TextView) row.findViewById(R.id.txtMessage);
 				txtMsg.setText( post.getMessage() );
-				ImageView imageView = (ImageView) row.findViewById(R.id.imgPic);
-				ImageLoader.getInstance().displayImage("https://www.gravatar.com/avatar/e0b3e3d0b29b541cd13a60a9236f02ac?s=32&d=identicon&r=PG", imageView);
+				ImageView imageView = (ImageView) row.findViewById(R.id.imgProfile);
+				ImageLoader.getInstance().displayImage( Constants.imageServerURL + post.getUser().getProfileImageURL() , imageView);
+
+				TextView txtUserName = (TextView) row.findViewById(R.id.txtUserName);
+				txtUserName.setText( post.getUser().getUserName() );
+				txtUserName.setTag( post.getUser() );
+				txtUserName.setOnClickListener( new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						User user = (User) v.getTag();
+						if ( delegate != null )
+							delegate.doAction(1, user);
+					}
+				});
+				
+				TextView txtShowDetail = (TextView) row.findViewById(R.id.txtShowDetail);
+				txtShowDetail.setTag(post);
+				txtShowDetail.setOnClickListener( new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						Post post = (Post) v.getTag();
+						if ( delegate != null )
+							delegate.doAction(2, post);
+					}
+				});
+				
+				TextView txtReward = (TextView) row.findViewById(R.id.txtReward);
+				txtReward.setText( post.getReward() + "원");
 			}
 			else if ( item instanceof PostReply )
 			{
@@ -97,23 +133,47 @@ public class MainArrayAdapter extends ArrayAdapter<ListItemModel> {
 				TextView txtPostReply = (TextView) row.findViewById(R.id.txtPostReply);
 				txtPostReply.setText( postReply.getMessage() );
 				TextView txtUserName = (TextView) row.findViewById(R.id.txtUserName);
+
+				txtUserName.setOnClickListener( new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						User user = (User) v.getTag();
+						if ( delegate != null )
+							delegate.doAction(1, user);
+					}
+				});
+
+				txtUserName.setTag( postReply.getUser() );
 				txtUserName.setText( postReply.getUser().getUserName() );
 				ImageView imageProfile = (ImageView) row.findViewById(R.id.imgProfile);
-				ImageLoader.getInstance().displayImage(Constants.imageServerURL + "d.png", imageProfile);
+				ImageLoader.getInstance().displayImage(Constants.imageServerURL + postReply.getUser().getProfileImageURL(), imageProfile);
+
+				TextView txtDistance = (TextView) row.findViewById(R.id.txtDistance);
+				txtDistance.setText( Util.getDistance( postReply.getDistance() ) );
 			}
-			
+
 			row.setTag( item );
 		}
 		catch( Exception ex )
 		{
 			Log.e("error", ex.getMessage());
 		}
-		
+
 		return row;
 	}
 
 	public Bitmap decodeToBitmap(byte[] decodedByte) {
 		return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
+	}
+
+	public ActivityDelegate getDelegate() {
+		return delegate;
+	}
+
+	public void setDelegate(ActivityDelegate delegate) {
+		this.delegate = delegate;
 	}
 
 }

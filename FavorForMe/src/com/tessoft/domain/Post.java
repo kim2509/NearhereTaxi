@@ -22,6 +22,8 @@ public class Post extends ListItemModel {
 	private String distance;
 	private String createDate;
 	
+	private String reward;
+	
 	private List<PostLike> postLikes;
 	private List<PostReply> postReplies;
 	
@@ -103,5 +105,13 @@ public class Post extends ListItemModel {
 
 	public void setContent(String content) {
 		this.content = content;
+	}
+
+	public String getReward() {
+		return reward;
+	}
+
+	public void setReward(String reward) {
+		this.reward = reward;
 	}
 }
