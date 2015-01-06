@@ -10,6 +10,11 @@ import java.util.Set;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -52,7 +57,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 public class MainActivity extends BaseActivity implements OnMapReadyCallback, OnItemClickListener, 
-OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener{ //, OnScrollListener{
+OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener, ConnectionCallbacks, OnConnectionFailedListener{ //, OnScrollListener{
 
 	ListView listMain = null;
 	GoogleMap map = null;
@@ -62,6 +67,7 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener{ //, On
 	private HashMap<Marker, Post> markersMap = null;
 	MainArrayAdapter adapter = null;
 	View header = null;
+	GoogleApiClient mGoogleApiClient = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -73,27 +79,55 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener{ //, On
 			setContentView(R.layout.activity_main);
 
 			header = getLayoutInflater().inflate(R.layout.list_main_header, null);
-			
+
 			listMain = (ListView) findViewById(R.id.listMain);
 			listMain.addHeaderView(header);
-			
+
 			adapter = new MainArrayAdapter( getApplicationContext(), 0 );
 			listMain.setAdapter(adapter);
 			adapter.setDelegate(this);
 			listMain.setOnItemClickListener(this);
 
-			initImageLoader();
+			markersMap = new HashMap<Marker, Post>();
 			
+			initImageLoader();
+
 			MapFragment mapFragment = (MapFragment) getFragmentManager()
 					.findFragmentById(R.id.map);
 			mapFragment.getMapAsync(this);
-			
+
 			makeMapScrollable();
+
+			buildGoogleApiClient();
 		}
 		catch( Exception ex )
 		{
 			showToastMessage(ex.getMessage());
 		}
+	}
+
+	@Override
+	protected void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+
+		mGoogleApiClient.connect();
+	}
+
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
+		
+		//mGoogleApiClient.disconnect();
+	}
+
+	protected synchronized void buildGoogleApiClient() {
+		mGoogleApiClient = new GoogleApiClient.Builder(this)
+		.addConnectionCallbacks(this)
+		.addOnConnectionFailedListener(this)
+		.addApi(LocationServices.API)
+		.build();
 	}
 
 	@Override
@@ -135,19 +169,30 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener{ //, On
 				postList = (List<ListItemModel>) (Object) mainInfo.getPostList();
 				adapter.setItemList( postList );
 				adapter.notifyDataSetChanged();
+				
+				putMarkersOnMap( postList );
+
+				if ( map != null )
+				{
+					double latitude = Double.parseDouble(getMetaInfoString("latitude"));
+					double longitude = Double.parseDouble(getMetaInfoString("longitude"));
+					moveMap(new LatLng(latitude, longitude));
+					CameraUpdate zoom=CameraUpdateFactory.zoomTo(ZoomLevel);
+					map.animateCamera(zoom);
+				}
 			}
 			else if ( requestCode == 2 )
 			{
 				postList = (List<ListItemModel>) mapper.readValue(result.toString(), new TypeReference<List<Post>>(){});
 				adapter.setItemList( postList );
 				adapter.notifyDataSetChanged();
+				
+				putMarkersOnMap( postList );
 			}
-
-			putMarkersOnMap( postList );
 		}
 		catch(Exception ex )
 		{
-			showToastMessage(ex.getMessage());
+			Log.e("doPostTransaction", "exception" );
 		}
 	}
 
@@ -174,13 +219,18 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener{ //, On
 			this.map = map;
 
 			map.setMyLocationEnabled(true);
+			
+			Log.i("onMapReady", "onMapReady");
 
-			moveMap( new LatLng(37.470763 , 126.968209 ) );
-
-			CameraUpdate zoom=CameraUpdateFactory.zoomTo(ZoomLevel);
-			map.animateCamera(zoom);
-
-			markersMap = new HashMap<Marker, Post>();
+			if ( !"".equals( getMetaInfoString("latitude")))
+			{
+				double latitude = Double.parseDouble( getMetaInfoString("latitude"));
+				double longitude = Double.parseDouble( getMetaInfoString("longitude"));
+				//moveMap( new LatLng(37.470763 , 126.968209 ) );	
+				moveMap( new LatLng( latitude , longitude ) );
+				CameraUpdate zoom=CameraUpdateFactory.zoomTo(ZoomLevel);
+				map.animateCamera(zoom);
+			}
 
 			map.setOnCameraChangeListener(this);
 			map.setOnMarkerClickListener(this);
@@ -190,14 +240,14 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener{ //, On
 
 			User user = new User();
 			user.setUserID("kim2509");
-			user.setLatitude("37.470763");
-			user.setLongitude("126.968209");
+			user.setLatitude(getMetaInfoString("latitude"));
+			user.setLongitude(getMetaInfoString("longitude"));
 
 			execTransReturningString("/getMainInfo.do", mapper.writeValueAsString(user), 1);
 		}
 		catch( Exception ex )
 		{
-			showToastMessage(ex.getMessage());
+			Log.e("onMapReady", ex.getMessage());
 		}
 	}
 
@@ -333,7 +383,7 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener{ //, On
 		{
 			// TODO Auto-generated method stub
 			super.doAction(actionCode, param);
-			
+
 			if ( actionCode == 1 && param != null && param instanceof User )
 			{
 				User user = (User) param;
@@ -356,47 +406,92 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener{ //, On
 			Log.e("error", ex.getMessage());
 		}
 	}
-	
+
 	ScrollView mainScrollView = null;
 	private void makeMapScrollable() {
-		
+
 		ImageView transparentImageView = (ImageView) findViewById(R.id.transparent_image);
 
 		transparentImageView.setOnTouchListener(new View.OnTouchListener() {
 
-		    @Override
-		    public boolean onTouch(View v, MotionEvent event) {
-		    	
-		    	try
-		    	{
-		    		int action = event.getAction();
-			        switch (action) {
-			           case MotionEvent.ACTION_DOWN:
-			                // Disallow ScrollView to intercept touch events.
-			                listMain.requestDisallowInterceptTouchEvent(true);
-			                // Disable touch on transparent view
-			                return false;
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
 
-			           case MotionEvent.ACTION_UP:
-			                // Allow ScrollView to intercept touch events.
-			        	   	listMain.requestDisallowInterceptTouchEvent(false);
-			                return true;
+				try
+				{
+					int action = event.getAction();
+					switch (action) {
+					case MotionEvent.ACTION_DOWN:
+						// Disallow ScrollView to intercept touch events.
+						listMain.requestDisallowInterceptTouchEvent(true);
+						// Disable touch on transparent view
+						return false;
 
-			           case MotionEvent.ACTION_MOVE:
-			        	   	listMain.requestDisallowInterceptTouchEvent(true);
-			                return false;
+					case MotionEvent.ACTION_UP:
+						// Allow ScrollView to intercept touch events.
+						listMain.requestDisallowInterceptTouchEvent(false);
+						return true;
 
-			           default: 
-			                return true;
-			        }	
-		    	}
-		    	catch( Exception ex )
-		    	{
-		    		Log.e("error", ex.getMessage());
-		    	}
-		           
-		    	return true;
-		    }
+					case MotionEvent.ACTION_MOVE:
+						listMain.requestDisallowInterceptTouchEvent(true);
+						return false;
+
+					default: 
+						return true;
+					}	
+				}
+				catch( Exception ex )
+				{
+					Log.e("error", ex.getMessage());
+				}
+
+				return true;
+			}
 		});
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		
+		try
+		{
+			Log.i("onConnected", "onConnected");
+			// TODO Auto-generated method stub
+			Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+					mGoogleApiClient);
+			if (mLastLocation != null) {
+				
+				if ( map != null )
+				{
+					// 최초 위치 로딩시 지도 이동.
+					moveMap( new LatLng( mLastLocation.getLatitude() , mLastLocation.getLongitude() ) );
+					CameraUpdate zoom=CameraUpdateFactory.zoomTo(ZoomLevel);
+					map.animateCamera(zoom);
+				}
+				
+				setMetaInfo("latitude", String.valueOf(mLastLocation.getLatitude()));
+				setMetaInfo("longitude", String.valueOf(mLastLocation.getLongitude()));
+				
+				User user = new User();
+				user.setUserID("kim2509");
+				user.setLatitude( String.valueOf( mLastLocation.getLatitude() ) );
+				user.setLongitude( String.valueOf( mLastLocation.getLongitude() ) );
+				execTransReturningString("/updateUserLocation.do", mapper.writeValueAsString(user), 3);
+			}			
+		}
+		catch( Exception ex )
+		{
+			Log.e("error", ex.getMessage());
+		}
+	}
+
+	@Override
+	public void onConnectionSuspended(int arg0) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		// TODO Auto-generated method stub
 	}
 }

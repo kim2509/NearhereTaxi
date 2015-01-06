@@ -176,9 +176,12 @@ public class PostDetailActivity extends BaseActivity implements OnMapReadyCallba
 			{
 				post = mapper.readValue(result.toString(), new TypeReference<Post>(){});
 
+				ImageView imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
+				ImageLoader.getInstance().displayImage(
+						Constants.imageServerURL + post.getUser().getProfileImageURL(), imgProfile);
+				
 				TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
 				txtUserName.setOnClickListener( new OnClickListener() {
-
 					@Override
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
@@ -189,6 +192,9 @@ public class PostDetailActivity extends BaseActivity implements OnMapReadyCallba
 
 				txtUserName.setText( post.getUser().getUserName() );
 				txtUserName.setTag( post.getUser() );
+				
+				TextView txtReward = (TextView) header.findViewById(R.id.txtReward);
+				txtReward.setText( "보상 " + post.getReward() + "원");
 
 				TextView txtPostDetailMsg = (TextView) header.findViewById(R.id.txtPostDetailMsg);
 				txtPostDetailMsg.setText( post.getContent() );
