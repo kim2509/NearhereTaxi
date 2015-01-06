@@ -163,6 +163,20 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener, Connec
 			{
 				MainInfo mainInfo = mapper.readValue(result.toString(), new TypeReference<MainInfo>(){});
 
+				User user = mainInfo.getUser();
+				
+				Log.i("doPostTransaction", mapper.writeValueAsString( user ) );
+				
+				if ( user != null )
+				{
+					setMetaInfo("userID", user.getUserID());
+					setMetaInfo("userName", user.getUserName());
+					setMetaInfo("profileImageURL", user.getProfileImageURL());
+					
+					TextView txtWelcome = (TextView) header.findViewById(R.id.txtWelcome);
+					txtWelcome.setText( "안녕하세요. " + user.getUserName() + "님.");
+				}
+				
 				TextView txtNotice1 = (TextView) findViewById(R.id.txtNotice1);
 				txtNotice1.setText("근처에 " + mainInfo.getPostCount() + " 개의 HELP들이 있습니다.");
 
@@ -239,7 +253,7 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener, Connec
 			ObjectMapper mapper = new ObjectMapper();
 
 			User user = new User();
-			user.setUserID("kim2509");
+			user.setUserID( getMetaInfoString("userID") );
 			user.setLatitude(getMetaInfoString("latitude"));
 			user.setLongitude(getMetaInfoString("longitude"));
 

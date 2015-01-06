@@ -8,6 +8,7 @@ import java.util.UUID;
 import com.tessoft.common.ActivityDelegate;
 import com.tessoft.common.HttpTransactionReturningString;
 import com.tessoft.common.TransactionDelegate;
+import com.tessoft.domain.User;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -77,10 +78,17 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 	
 	public void showOKDialog( String message, final Object param )
 	{
+		showOKDialog("확인", message, param);
+	}
+	
+	public void showOKDialog( String title, String message, final Object param )
+	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage( message )
+		
+		builder.setTitle( title )
+			   .setMessage( message )
 		       .setCancelable(false)
-		       .setPositiveButton("확占쏙옙", new DialogInterface.OnClickListener() {
+		       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
 		                okClicked( param );
 		           }
@@ -99,12 +107,12 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage( message )
 		       .setCancelable(false)
-		       .setPositiveButton("占쏙옙", new DialogInterface.OnClickListener() {
+		       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
 		        	   yesClicked( param );
 		           }
 		       })
-		       .setNegativeButton("占싣니울옙", new DialogInterface.OnClickListener() {
+		       .setNegativeButton("No", new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
 		        	   noClicked( param );
 		           }
@@ -149,7 +157,7 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 	
 	public void writeLog( String log )
 	{
-		Log.i("publicChat", log );
+		Log.i("NearHereHelp", log );
 	}
 	
 	public void execTransReturningString( String url, Object request, int requestCode )
@@ -162,26 +170,21 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		
 	}
 	
-	public void catchException ( Exception ex )
+	public void catchException ( Object target, Exception ex )
 	{
-		writeLog( ex.getMessage() );
+		if ( ex == null )
+			writeLog( "[" + target.getClass().getName() + "] NullPointerException!!!" );
+		else
+			writeLog( "[" + target.getClass().getName() + "]" + ex.getMessage() );
 	}
 	
-	public Location getCurrentGPSLocation()
+	public User getLoginUser()
 	{
-		String context = Context.LOCATION_SERVICE;
-		locationManager = (LocationManager)getSystemService(context);
-		
-		Criteria criteria = new Criteria();
-		criteria.setAccuracy(Criteria.ACCURACY_COARSE);// 占쏙옙확占쏙옙
-		criteria.setPowerRequirement(Criteria.POWER_LOW); // 占쏙옙占� 占쌀븝옙
-		criteria.setAltitudeRequired(false); // 占�? 占쏙옙肉⑼옙占�
-		criteria.setBearingRequired(false); //
-		criteria.setSpeedRequired(false); // 占쌈듸옙
-		criteria.setCostAllowed(true); // 占쏙옙占쏙옙占쏙옙占쏙옙
-		
-		String provider = locationManager.getBestProvider(criteria, true);
-		return locationManager.getLastKnownLocation(provider);
+		User user = new User();
+		user.setUserID( getMetaInfoString("userID") );
+		user.setUserName( getMetaInfoString("userName") );
+		user.setProfileImageURL( getMetaInfoString("profileImageURL"));
+		return user;
 	}
 	
 	public String getCurrentAddress()

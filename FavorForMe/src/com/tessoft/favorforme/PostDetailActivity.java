@@ -18,6 +18,7 @@ import com.tessoft.common.Constants;
 import com.tessoft.common.MainArrayAdapter;
 import com.tessoft.domain.ListItemModel;
 import com.tessoft.domain.Post;
+import com.tessoft.domain.PostReply;
 import com.tessoft.domain.User;
 
 import android.content.Intent;
@@ -66,8 +67,6 @@ public class PostDetailActivity extends BaseActivity implements OnMapReadyCallba
 			TextView txtSubTitle = (TextView) header.findViewById(R.id.txtSubtitle);
 			txtSubTitle.setText( post.getMessage() );
 			
-			ImageView imageView = (ImageView) header.findViewById(R.id.imgProfile);
-			ImageLoader.getInstance().displayImage( Constants.imageServerURL + "c.png", imageView);
 			MapFragment mapFragment = (MapFragment) getFragmentManager()
 					.findFragmentById(R.id.map);
 			mapFragment.getMapAsync(this);
@@ -81,8 +80,10 @@ public class PostDetailActivity extends BaseActivity implements OnMapReadyCallba
 			mapper = new ObjectMapper();
 			execTransReturningString("/getPostDetail.do", mapper.writeValueAsString(post), 1);
 			
+			String profileImageURL = getMetaInfoString("profileImageURL");
+			
 			ImageView imageProfile = (ImageView) footer.findViewById(R.id.imgProfile);
-			ImageLoader.getInstance().displayImage(Constants.imageServerURL + "d.png", imageProfile);
+			ImageLoader.getInstance().displayImage(Constants.imageServerURL + profileImageURL, imageProfile);
 		}
 		catch( Exception ex )
 		{
@@ -244,12 +245,32 @@ public class PostDetailActivity extends BaseActivity implements OnMapReadyCallba
 	
 	public void addPostReply( View view )
 	{
-		if ( view.getId() == R.id.btnSendReply )
+		try
 		{
-			EditText edtReplyMessage = (EditText) findViewById(R.id.edtReplyMessage);
-			String replyText = edtReplyMessage.getText().toString();
-			edtReplyMessage.setText("");
-			
+			if ( view.getId() == R.id.btnSendReply )
+			{
+				EditText edtReplyMessage = (EditText) findViewById(R.id.edtReplyMessage);
+				String replyText = edtReplyMessage.getText().toString();
+				
+				if ( "".equals( replyText ) )
+				{
+					showOKDialog("댓글을 입력해 주십시오.", null);
+					return;
+				}
+				
+				edtReplyMessage.setText("");
+				
+				PostReply postReply = new PostReply();
+				postReply.setUser( getLoginUser() );
+				postReply.setPostID( post.getPostID() ); 
+				postReply.setMessage( replyText );
+				
+				execTransReturningString("/addPostReply.do", mapper.writeValueAsString(postReply), 2);
+			}			
+		}
+		catch( Exception ex )
+		{
+			catchException( this, ex);
 		}
 	}
 }

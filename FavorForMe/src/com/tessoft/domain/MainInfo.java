@@ -8,6 +8,8 @@ public class MainInfo extends ListItemModel{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private User user = null;
 	private List<Post> postList = null;
 	private List<User> userList = null;
 	private int postCount = 0;
@@ -34,6 +36,14 @@ public class MainInfo extends ListItemModel{
 
 	public void setPostCount(int postCount) {
 		this.postCount = postCount;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 	
 }
