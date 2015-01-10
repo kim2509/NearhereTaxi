@@ -1,36 +1,45 @@
-package com.tessoft.favorforme;
+package com.tessoft.nearhere;
+
+import com.tessoft.common.TaxiMainArrayAdapter;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.ListView;
 
-public class UserProfileActivity extends ActionBarActivity {
+public class UserChatActivity extends BaseListActivity {
 
+	TaxiMainArrayAdapter adapter = null;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
 		try
 		{
 			super.onCreate(savedInstanceState);
 			
-			getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-			getActionBar().hide();
+			header = getLayoutInflater().inflate(R.layout.list_header_user_chat, null);
 			
-			setContentView(R.layout.activity_user_profile);			
+			listMain = (ListView) findViewById(R.id.listMain);
+			listMain.addHeaderView(header);
+			
+			adapter = new TaxiMainArrayAdapter( getApplicationContext(), 0 );
+			listMain.setAdapter(adapter);
+			adapter.setDelegate(this);
 		}
-		catch( Exception ex )
+		catch(Exception ex )
 		{
-			Log.e("error", ex.getMessage());
+			catchException(this, ex);
 		}
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.user_profile, menu);
+		getMenuInflater().inflate(R.menu.user_chat, menu);
 		return true;
 	}
 

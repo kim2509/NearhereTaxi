@@ -1,14 +1,14 @@
-package com.tessoft.favorforme;
+package com.tessoft.nearhere;
 
-import android.content.Intent;
+import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
-import android.widget.EditText;
+import com.tessoft.nearhere.R;
 
-public class IntroActivity extends BaseActivity {
+public class UserProfileActivity extends ActionBarActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -20,18 +20,18 @@ public class IntroActivity extends BaseActivity {
 			getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 			getActionBar().hide();
 			
-			setContentView(R.layout.activity_intro);			
+			setContentView(R.layout.activity_user_profile);			
 		}
 		catch( Exception ex )
 		{
-			
+			Log.e("error", ex.getMessage());
 		}
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.intro, menu);
+		getMenuInflater().inflate(R.menu.user_profile, menu);
 		return true;
 	}
 
@@ -47,22 +47,10 @@ public class IntroActivity extends BaseActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-	public void goMainActivity( View v )
-	{
-		try
-		{
-			EditText edtUserID = (EditText) findViewById(R.id.edtUserID);
-			setMetaInfo("userID", edtUserID.getText().toString());
-			EditText edtUserName = (EditText) findViewById(R.id.edtUserName);
-			setMetaInfo("userName", edtUserName.getText().toString());
-			
-			Intent intent = new Intent( this, MainActivity.class);
-			startActivity(intent);
-			overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-		}
-		catch( Exception ex )
-		{
-			
-		}
+	@Override
+	public void finish() {
+		// TODO Auto-generated method stub
+		super.finish();
+		this.overridePendingTransition(R.anim.stay, R.anim.slide_out_to_bottom);
 	}
 }

@@ -24,6 +24,8 @@ public class Post extends ListItemModel {
 	
 	private String reward;
 	
+	private String type="taxi";
+	
 	private List<PostLike> postLikes;
 	private List<PostReply> postReplies;
 	
@@ -113,5 +115,13 @@ public class Post extends ListItemModel {
 
 	public void setReward(String reward) {
 		this.reward = reward;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 }

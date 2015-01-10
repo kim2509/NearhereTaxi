@@ -1,10 +1,8 @@
-package com.tessoft.favorforme;
+package com.tessoft.nearhere;
 
 import java.util.List;
-
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
-
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,7 +18,7 @@ import com.tessoft.domain.ListItemModel;
 import com.tessoft.domain.Post;
 import com.tessoft.domain.PostReply;
 import com.tessoft.domain.User;
-
+import com.tessoft.nearhere.R;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -187,7 +185,7 @@ public class PostDetailActivity extends BaseActivity implements OnMapReadyCallba
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
 						User user = (User) v.getTag();
-						doAction(1, user);
+						doAction("showUserInfo", user);
 					}
 				});
 
@@ -224,12 +222,12 @@ public class PostDetailActivity extends BaseActivity implements OnMapReadyCallba
 	}
 	
 	@Override
-	public void doAction(int actionCode, Object param) {
+	public void doAction(String actionName, Object param) {
 		
 		try
 		{
 			// TODO Auto-generated method stub
-			super.doAction(actionCode, param);
+			super.doAction(actionName, param);
 			
 			User user = (User) param;
 			Intent intent = new Intent( getApplicationContext(), UserProfileActivity.class);

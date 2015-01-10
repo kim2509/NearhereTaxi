@@ -6,7 +6,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.tessoft.favorforme.IntroActivity" >
+    tools:context="com.tessoft.nearhere.IntroActivity" >
 
     <EditText android:id="@+id/edtUserID" 
         android:layout_width="wrap_content"
@@ -26,5 +26,20 @@
         android:layout_below="@+id/edtUserName"
         android:onClick="goMainActivity"
         android:text="로그인"/>
+    
+    <Button android:id="@+id/btnGoMain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="메인"
+        android:layout_alignParentRight="true"
+        android:onClick="goMainActivity"/>
+    
+    <Button android:id="@+id/btnRegisterUser" 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="회원가입" 
+        android:onClick="goRegisterActivity"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

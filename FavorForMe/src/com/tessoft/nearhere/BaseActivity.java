@@ -1,9 +1,11 @@
-package com.tessoft.favorforme;
+package com.tessoft.nearhere;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+
+import org.codehaus.jackson.map.ObjectMapper;
 
 import com.tessoft.common.ActivityDelegate;
 import com.tessoft.common.HttpTransactionReturningString;
@@ -34,6 +36,7 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 
 	LocationManager locationManager;
 	Location location;
+	ObjectMapper mapper = new ObjectMapper();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -231,7 +234,7 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 	}
 
 	@Override
-	public void doAction(int actionCode, Object param) {
+	public void doAction(String actionName, Object param) {
 		// TODO Auto-generated method stub
 		
 	}

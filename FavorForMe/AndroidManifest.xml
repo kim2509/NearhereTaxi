@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.tessoft.favorforme"
+    package="com.tessoft.nearhere"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -31,7 +31,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name=".HelpMainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
         </activity>
@@ -57,8 +57,45 @@
             android:label="@string/title_activity_intro" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".RegisterUserActivity"
+            android:label="@string/title_activity_register_user" >
+        </activity>
+        <activity
+            android:name=".TaxiMainActivity"
+            android:label="@string/title_activity_taxi_main" >
+        </activity>
+        <activity
+            android:name=".TaxiTutorialActivity"
+            android:label="@string/title_activity_taxi_tutorial" >
+        </activity>
+        <activity
+            android:name=".TermsAgreementActivity"
+            android:label="@string/title_activity_terms_agreement" >
+        </activity>
+        <activity
+            android:name=".SelectHomeLocationActivity"
+            android:label="@string/title_activity_select_home_location" >
+        </activity>
+        <activity
+            android:name=".BaseListActivity"
+            android:label="@string/title_activity_base_list" >
+        </activity>
+        <activity
+            android:name=".TaxiPostDetailActivity"
+            android:label="@string/title_activity_taxi_post_detail" >
+        </activity>
+        <activity
+            android:name=".UserChatActivity"
+            android:label="@string/title_activity_user_chat" >
+        </activity>
+        <activity
+            android:name=".SetDestinationActivity"
+            android:label="@string/title_activity_set_destination" >
         </activity>
     </application>
 

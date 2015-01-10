@@ -1,4 +1,4 @@
-package com.tessoft.favorforme;
+package com.tessoft.nearhere;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -6,10 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -38,7 +36,7 @@ import com.tessoft.domain.ListItemModel;
 import com.tessoft.domain.MainInfo;
 import com.tessoft.domain.Post;
 import com.tessoft.domain.User;
-
+import com.tessoft.nearhere.R;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
@@ -56,14 +54,13 @@ import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class MainActivity extends BaseActivity implements OnMapReadyCallback, OnItemClickListener, 
+public class HelpMainActivity extends BaseActivity implements OnMapReadyCallback, OnItemClickListener, 
 OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener, ConnectionCallbacks, OnConnectionFailedListener{ //, OnScrollListener{
 
 	ListView listMain = null;
 	GoogleMap map = null;
 	LocationManager mLocationManager = null;
 	int ZoomLevel = 16;
-	ObjectMapper mapper = new ObjectMapper();
 	private HashMap<Marker, Post> markersMap = null;
 	MainArrayAdapter adapter = null;
 	View header = null;
@@ -76,7 +73,7 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener, Connec
 		{
 			super.onCreate(savedInstanceState);
 
-			setContentView(R.layout.activity_main);
+			setContentView(R.layout.activity_help_main);
 
 			header = getLayoutInflater().inflate(R.layout.list_main_header, null);
 
@@ -186,7 +183,7 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener, Connec
 				
 				putMarkersOnMap( postList );
 
-				if ( map != null )
+				if ( map != null && !"".equals( getMetaInfoString("latitude") ))
 				{
 					double latitude = Double.parseDouble(getMetaInfoString("latitude"));
 					double longitude = Double.parseDouble(getMetaInfoString("longitude"));
@@ -240,7 +237,6 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener, Connec
 			{
 				double latitude = Double.parseDouble( getMetaInfoString("latitude"));
 				double longitude = Double.parseDouble( getMetaInfoString("longitude"));
-				//moveMap( new LatLng(37.470763 , 126.968209 ) );	
 				moveMap( new LatLng( latitude , longitude ) );
 				CameraUpdate zoom=CameraUpdateFactory.zoomTo(ZoomLevel);
 				map.animateCamera(zoom);
@@ -392,13 +388,13 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener, Connec
 	}
 
 	@Override
-	public void doAction(int actionCode, Object param) {
+	public void doAction(String actionName, Object param) {
 		try
 		{
 			// TODO Auto-generated method stub
-			super.doAction(actionCode, param);
+			super.doAction(actionName, param);
 
-			if ( actionCode == 1 && param != null && param instanceof User )
+			if ( "showUserInfo".equals( actionName ) && param != null && param instanceof User )
 			{
 				User user = (User) param;
 				Intent intent = new Intent( getApplicationContext(), UserProfileActivity.class);
@@ -406,7 +402,7 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener, Connec
 				startActivity(intent);
 				overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
 			}
-			else if ( actionCode == 2 && param != null && param instanceof Post )
+			else if ( "showDetail".equals( actionName ) && param != null && param instanceof Post )
 			{
 				Post post = (Post) param;
 				Intent intent = new Intent( this, PostDetailActivity.class);
