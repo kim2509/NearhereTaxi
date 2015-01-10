@@ -1,6 +1,6 @@
 package com.tessoft.common;
 
-public interface ActivityDelegate {
+public interface AdapterDelegate {
 
 	public void doAction( String actionName, Object param );
 	

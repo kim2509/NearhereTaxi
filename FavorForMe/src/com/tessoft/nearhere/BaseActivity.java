@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.tessoft.common.ActivityDelegate;
+import com.tessoft.common.AdapterDelegate;
 import com.tessoft.common.HttpTransactionReturningString;
 import com.tessoft.common.TransactionDelegate;
 import com.tessoft.domain.User;
@@ -32,7 +32,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 
-public class BaseActivity extends ActionBarActivity implements TransactionDelegate, ActivityDelegate {
+public class BaseActivity extends ActionBarActivity implements TransactionDelegate, AdapterDelegate {
 
 	LocationManager locationManager;
 	Location location;

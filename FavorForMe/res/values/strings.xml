@@ -15,5 +15,9 @@
     <string name="title_activity_taxi_post_detail">TaxiPostDetailActivity</string>
     <string name="title_activity_user_chat">UserChatActivity</string>
     <string name="title_activity_set_destination">SetDestinationActivity</string>
+    <string name="title_activity_message_box">MessageBoxActivity</string>
+    <string name="title_activity_notice_list">NoticeListActivity</string>
+    <string name="title_activity_push_message_list">PushMessageListActivity</string>
+    <string name="title_activity_main">MainActivity</string>
 
 </resources>

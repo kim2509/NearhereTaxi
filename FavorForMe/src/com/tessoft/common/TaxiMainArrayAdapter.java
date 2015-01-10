@@ -27,7 +27,7 @@ public class TaxiMainArrayAdapter extends ArrayAdapter<ListItemModel> {
 
 	private TextView txtUserID;
 	private List<ListItemModel> itemList = new ArrayList<ListItemModel>();
-	private ActivityDelegate delegate = null;
+	private AdapterDelegate delegate = null;
 
 	LayoutInflater inflater = null;
 
@@ -160,11 +160,11 @@ public class TaxiMainArrayAdapter extends ArrayAdapter<ListItemModel> {
 		return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
 	}
 
-	public ActivityDelegate getDelegate() {
+	public AdapterDelegate getDelegate() {
 		return delegate;
 	}
 
-	public void setDelegate(ActivityDelegate delegate) {
+	public void setDelegate(AdapterDelegate delegate) {
 		this.delegate = delegate;
 	}
 

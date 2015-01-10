@@ -59,7 +59,6 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener, Connec
 
 	ListView listMain = null;
 	GoogleMap map = null;
-	LocationManager mLocationManager = null;
 	int ZoomLevel = 16;
 	private HashMap<Marker, Post> markersMap = null;
 	MainArrayAdapter adapter = null;

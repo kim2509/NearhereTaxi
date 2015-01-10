@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">이근처 HELP</string>
+    <string name="app_name">이근처 합승</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     
-    <string name="title_activity_intro">이근처 HELP</string>
+    <string name="title_activity_main">이근처 합승</string>
     <string name="title_activity_register_user">회원가입</string>
     <string name="title_activity_taxi_main">이근처 합승</string>
     <string name="title_activity_taxi_tutorial">합승하기란?</string>
@@ -13,6 +13,7 @@
 	<string name="title_activity_select_home_location">집 위치 선택</string>
 	<string name="title_activity_taxi_post_detail">상세정보</string>
     <string name="title_activity_user_chat">쪽지</string>
+    <string name="title_activity_set_destination">목적지 선택</string>
 	
 	<string name="send">전송</string>
     <string name="next">다음</string>
@@ -21,5 +22,17 @@
     <string name="show_detail">상세보기</string>
     <string name="message">쪽지</string>
     <string name="register">등록하기</string>
+    
+    <string-array name="menu_list">
+        <item>홈</item>
+        <item>내 정보</item>
+        <item>알림메시지</item>
+        <item>쪽지함</item>
+        <item>공지사항</item>
+        <item>설정</item>
+    </string-array>
+    
+    <string name="drawer_open">메뉴 선택</string>
+    <string name="drawer_close">Close navigation drawer</string>
     
 </resources>
