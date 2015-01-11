@@ -11,7 +11,7 @@ public class ListItemModel implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String itemType = "";
+	protected String itemType = "";
 
 	public String getItemType() {
 		return itemType;

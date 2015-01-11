@@ -1,5 +1,12 @@
 package com.tessoft.nearhere;
 
+import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.app.Fragment;
@@ -10,6 +17,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -22,6 +30,7 @@ public class MainActivity extends BaseActivity {
 	String mTitle = "";
 	String[] mMenuList = null;
 	private ActionBarDrawerToggle mDrawerToggle;
+	private Fragment mainFragment = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +38,12 @@ public class MainActivity extends BaseActivity {
 		try
 		{
 			super.onCreate(savedInstanceState);
+			
+			supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+			
 			setContentView(R.layout.activity_main);
+			
+			initImageLoader();
 
 			mMenuList = getResources().getStringArray(R.array.menu_list);
 			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -70,13 +84,14 @@ public class MainActivity extends BaseActivity {
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 			getActionBar().setHomeButtonEnabled(true);
 			
-			Fragment fragment = new TaxiFragment();
+			mainFragment = new TaxiFragment();
 
 			// Insert the fragment by replacing any existing fragment
 			FragmentManager fragmentManager = getFragmentManager();
 			fragmentManager.beginTransaction()
-			.add(R.id.content_frame, fragment)
+			.add(R.id.content_frame, mainFragment)
 			.commit();
+			
 		}
 		catch( Exception ex )
 		{
@@ -89,6 +104,7 @@ public class MainActivity extends BaseActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
+		
 		return true;
 	}
 	
@@ -98,7 +114,7 @@ public class MainActivity extends BaseActivity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
+		if (id == R.id.action_refresh) {
 			return true;
 		}
 
@@ -112,20 +128,19 @@ public class MainActivity extends BaseActivity {
 	/** Swaps fragments in the main content view */
 	private void selectItem(int position) {
 		// Create a new fragment and specify the planet to show based on position
-		Fragment fragment = null;
 		
 		boolean bFragment = true;
 		
 		if ( "홈".equals( mMenuList[position]) )
-			fragment = new TaxiFragment();
+			mainFragment = new TaxiFragment();
 		else if ( "내 정보".equals( mMenuList[position]) )
-			fragment = new MyInfoFragment();
+			mainFragment = new MyInfoFragment();
 		else if ( "알림메시지".equals( mMenuList[position]) )
-			fragment = new PushMessageListFragment();
+			mainFragment = new PushMessageListFragment();
 		else if ( "쪽지함".equals( mMenuList[position]) )
-			fragment = new PushMessageListFragment();
+			mainFragment = new MessageBoxFragment();
 		else if ( "공지사항".equals( mMenuList[position]) )
-			fragment = new NoticeListFragment();
+			mainFragment = new NoticeListFragment();
 		else
 			bFragment = false;
 
@@ -134,7 +149,7 @@ public class MainActivity extends BaseActivity {
 			// Insert the fragment by replacing any existing fragment
 			FragmentManager fragmentManager = getFragmentManager();
 			fragmentManager.beginTransaction()
-			.replace(R.id.content_frame, fragment)
+			.replace(R.id.content_frame, mainFragment)
 			.commit();
 			
 			setTitle( mMenuList[position] );
@@ -171,4 +186,24 @@ public class MainActivity extends BaseActivity {
 		mDrawerToggle.onConfigurationChanged(newConfig);
 	}
 
+	public void initImageLoader()
+	{
+		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
+		.memoryCacheExtraOptions(100, 100) // default = device screen dimensions
+		.diskCacheExtraOptions(100, 100, null)
+		.threadPoolSize(3) // default
+		.threadPriority(Thread.NORM_PRIORITY - 2) // default
+		.tasksProcessingOrder(QueueProcessingType.FIFO) // default
+		.denyCacheImageMultipleSizesInMemory()
+		.memoryCache(new LruMemoryCache(2 * 1024 * 1024))
+		.memoryCacheSize(2 * 1024 * 1024)
+		.memoryCacheSizePercentage(13) // default
+		.diskCacheSize(50 * 1024 * 1024)
+		.diskCacheFileCount(100)
+		.diskCacheFileNameGenerator(new HashCodeFileNameGenerator()) // default
+		.defaultDisplayImageOptions(DisplayImageOptions.createSimple()) // default
+		.writeDebugLogs()
+		.build();
+		ImageLoader.getInstance().init(config);
+	}
 }

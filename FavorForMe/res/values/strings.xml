@@ -19,5 +19,8 @@
     <string name="title_activity_notice_list">NoticeListActivity</string>
     <string name="title_activity_push_message_list">PushMessageListActivity</string>
     <string name="title_activity_main">MainActivity</string>
+	<string name="destination">목적지</string>
+	<string name="input_post_reply">댓글을 입력하세요.</string>
+	<string name="send">전송</string>
 
 </resources>

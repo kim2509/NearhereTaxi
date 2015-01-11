@@ -17,8 +17,8 @@ public class UserProfileActivity extends ActionBarActivity {
 		{
 			super.onCreate(savedInstanceState);
 			
-			getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-			getActionBar().hide();
+//			getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+//			getActionBar().hide();
 			
 			setContentView(R.layout.activity_user_profile);			
 		}

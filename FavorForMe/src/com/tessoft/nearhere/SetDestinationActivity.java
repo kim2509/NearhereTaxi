@@ -16,12 +16,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.tessoft.domain.User;
 
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 
 public class SetDestinationActivity extends BaseActivity implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener{
 
@@ -36,6 +38,9 @@ public class SetDestinationActivity extends BaseActivity implements OnMapReadyCa
 		try
 		{
 			super.onCreate(savedInstanceState);
+			
+			supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+			
 			setContentView(R.layout.activity_set_destination);
 			
 			MapFragment mapFragment = (MapFragment) getFragmentManager()
@@ -95,7 +100,29 @@ public class SetDestinationActivity extends BaseActivity implements OnMapReadyCa
 	
 	public void setDestination( View v )
 	{
-		finish();
+		try
+		{
+			setProgressBarIndeterminateVisibility(true);
+			
+			if ( marker == null )
+			{
+				showOKDialog("지점을 선택해 주십시오.", null);
+				return;
+			}
+			
+			LatLng location = marker.getPosition();
+			
+			setProgressBarIndeterminateVisibility(false);
+			
+			Intent intent = new Intent();
+			intent.putExtra("reload", true);
+			setResult(1, intent );
+			finish();	
+		}
+		catch( Exception ex )
+		{
+			
+		}
 	}
 	
 	@Override

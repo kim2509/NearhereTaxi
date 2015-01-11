@@ -8,26 +8,26 @@ public class Post extends ListItemModel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String postID;
-	private String latitude;
-	private String longitude;
-	private String message;
+	protected String postID;
+	protected String latitude;
+	protected String longitude;
+	protected String message;
 	
-	private String content;
+	protected String content;
 	
-	private Object tag;
+	protected Object tag;
 	
-	private User user;
+	protected User user;
 	
-	private String distance;
-	private String createDate;
+	protected String distance;
+	protected String createDate;
 	
-	private String reward;
+	protected String reward;
 	
-	private String type="taxi";
+	protected String type="taxi";
 	
-	private List<PostLike> postLikes;
-	private List<PostReply> postReplies;
+	protected List<PostLike> postLikes;
+	protected List<PostReply> postReplies;
 	
 	public Post()
 	{

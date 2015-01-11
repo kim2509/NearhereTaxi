@@ -1,6 +1,6 @@
 package com.tessoft.nearhere;
 
-import com.tessoft.common.TaxiMainArrayAdapter;
+import com.tessoft.common.TaxiArrayAdapter;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -13,7 +13,7 @@ import android.widget.ListView;
 
 public class UserChatActivity extends BaseListActivity {
 
-	TaxiMainArrayAdapter adapter = null;
+	TaxiArrayAdapter adapter = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +26,7 @@ public class UserChatActivity extends BaseListActivity {
 			listMain = (ListView) findViewById(R.id.listMain);
 			listMain.addHeaderView(header);
 			
-			adapter = new TaxiMainArrayAdapter( getApplicationContext(), 0 );
+			adapter = new TaxiArrayAdapter( getApplicationContext(), 0 );
 			listMain.setAdapter(adapter);
 			adapter.setDelegate(this);
 		}

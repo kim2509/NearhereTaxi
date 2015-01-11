@@ -14,7 +14,7 @@
         android:layout_height="50dp"/>
 
     <TextView
-        android:id="@+id/txtGuide1"
+        android:id="@+id/txtMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/imgProfile"
@@ -22,27 +22,27 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:textColor="@android:color/black"
-        android:text="@string/destination" />
+        android:text="add" />
     
-    <TextView android:id="@+id/txtDestination"
+    <TextView android:id="@+id/txtUserName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/txtGuide1"
+        android:layout_below="@+id/txtMessage"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_toRightOf="@+id/imgProfile"
-        android:text="강남구 역삼동"
+        android:text="afds"
         android:textColor="#3B5D98"
         />
-    
+
     <TextView
-        android:id="@+id/txtDistance"
+        android:id="@+id/txtCreatedDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/txtUserName"
+        android:layout_alignBottom="@+id/txtUserName"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="10dp"
-        android:text="10m"
+        android:text="500m"
         android:textColor="@android:color/black" />
-    
+
 </RelativeLayout>

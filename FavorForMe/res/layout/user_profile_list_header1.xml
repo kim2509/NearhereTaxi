@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
+    
+    <ImageView android:id="@+id/imgProfile"
+        android:layout_width="80dp"
+        android:layout_height="80dp"/>
+    
+    <TextView android:id="@+id/txtUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/imgProfile"
+        android:layout_marginLeft="10dp"
+        android:text="김대용"/>
+    
+    <TextView android:id="@+id/txtFBGuide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imgProfile"
+        android:layout_alignParentLeft="true"
+        android:text="@string/facebook_authorized"/>
+    
+    <Button android:id="@+id/btnGoFB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignBaseline="@+id/txtFBGuide"
+        android:text="@string/go_facebook"/>
+    
+</RelativeLayout>

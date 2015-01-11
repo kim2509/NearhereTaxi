@@ -86,8 +86,6 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener, Connec
 
 			markersMap = new HashMap<Marker, Post>();
 			
-			initImageLoader();
-
 			MapFragment mapFragment = (MapFragment) getFragmentManager()
 					.findFragmentById(R.id.map);
 			mapFragment.getMapAsync(this);
@@ -287,27 +285,6 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener, Connec
 
 			showInfoWindowWithPost( post );
 		}
-	}
-
-	public void initImageLoader()
-	{
-		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
-		.memoryCacheExtraOptions(100, 100) // default = device screen dimensions
-		.diskCacheExtraOptions(100, 100, null)
-		.threadPoolSize(3) // default
-		.threadPriority(Thread.NORM_PRIORITY - 2) // default
-		.tasksProcessingOrder(QueueProcessingType.FIFO) // default
-		.denyCacheImageMultipleSizesInMemory()
-		.memoryCache(new LruMemoryCache(2 * 1024 * 1024))
-		.memoryCacheSize(2 * 1024 * 1024)
-		.memoryCacheSizePercentage(13) // default
-		.diskCacheSize(50 * 1024 * 1024)
-		.diskCacheFileCount(100)
-		.diskCacheFileNameGenerator(new HashCodeFileNameGenerator()) // default
-		.defaultDisplayImageOptions(DisplayImageOptions.createSimple()) // default
-		.writeDebugLogs()
-		.build();
-		ImageLoader.getInstance().init(config);
 	}
 
 	boolean bSkipPostListLoading = true;

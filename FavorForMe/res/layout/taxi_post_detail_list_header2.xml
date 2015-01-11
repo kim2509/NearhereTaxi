@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <ImageView android:id="@+id/imgProfile"
+        android:layout_width="80dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_height="80dp" />
+    
+    <TextView android:id="@+id/txtUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/imgProfile"
+        />
+    
+    <Button android:id="@+id/btnUserProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/txtUserName"
+        android:layout_toRightOf="@+id/imgProfile"
+        android:text="@string/show_detail"/>
+    
+    <Button android:id="@+id/btnSendMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/btnUserProfile"
+        android:layout_alignBaseline="@+id/btnUserProfile"
+        android:text="@string/message"/>
+    
+    <RelativeLayout
+        android:id="@+id/map_layout"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_margin="10dp"
+        android:layout_below="@+id/imgProfile" >
+
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.MapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+			android:layout_marginBottom="-100dp"
+            android:layout_marginTop="-100dp" />
+
+        <ImageView
+            android:id="@+id/transparent_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@color/transparent" />
+    </RelativeLayout>
+    
+</RelativeLayout>

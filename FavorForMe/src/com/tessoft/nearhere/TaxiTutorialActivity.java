@@ -36,7 +36,7 @@ public class TaxiTutorialActivity extends ActionBarActivity {
 	
 	public void goMainActivity()
 	{
-		Intent intent = new Intent( this, TaxiMainActivity.class);
+		Intent intent = new Intent( this, MainActivity.class);
 		startActivity(intent);
 		overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
 	}
