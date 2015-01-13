@@ -150,6 +150,7 @@ public class SetDestinationActivity extends BaseActivity implements OnMapReadyCa
 				public void onMapLongClick(LatLng location) {
 					// TODO Auto-generated method stub
 					addMarker( location );
+					showToastMessage("선택되었습니다.");
 				}
 			});
 		}

@@ -19,8 +19,13 @@
     <string name="title_activity_notice_list">NoticeListActivity</string>
     <string name="title_activity_push_message_list">PushMessageListActivity</string>
     <string name="title_activity_main">MainActivity</string>
-	<string name="destination">목적지</string>
+	<string name="departure">출발지</string>
+    <string name="destination">목적지</string>
 	<string name="input_post_reply">댓글을 입력하세요.</string>
 	<string name="send">전송</string>
+	<string name="id">ID</string>
+	<string name="user_name">사용자 이름</string>
+	<string name="input_user_id">아이디를 입력해 주십시오.</string>
+	<string name="input_user_name">이름을 입력해 주십시오.</string>
 
 </resources>

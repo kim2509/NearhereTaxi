@@ -12,28 +12,6 @@
         android:id="@+id/imgProfile" 
         android:layout_width="50dp"
         android:layout_height="50dp"/>
-
-    <TextView
-        android:id="@+id/txtGuide1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/imgProfile"
-        android:layout_toRightOf="@+id/imgProfile"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:textColor="@android:color/black"
-        android:text="@string/destination" />
-    
-    <TextView android:id="@+id/txtDestination"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/txtGuide1"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@+id/imgProfile"
-        android:text="강남구 역삼동"
-        android:textColor="#3B5D98"
-        />
     
     <TextView
         android:id="@+id/txtDistance"
@@ -44,5 +22,43 @@
         android:layout_marginRight="10dp"
         android:text="10m"
         android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/txtGuide1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/imgProfile"
+        android:layout_toRightOf="@+id/imgProfile"
+        android:layout_marginLeft="10dp"
+        android:text="@string/departure"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/txtDestination"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imgProfile"
+        android:layout_alignLeft="@+id/txtDeparture"
+        android:text="강남구 역삼동"
+        android:textColor="#3B5D98" />
+
+    <TextView
+        android:id="@+id/txtGuide2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imgProfile"
+        android:layout_alignLeft="@+id/txtGuide1"
+        android:text="@string/destination"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/txtDeparture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/txtGuide1"
+        android:layout_alignBottom="@+id/txtGuide1"
+        android:layout_centerHorizontal="true"
+        android:text="강남구 역삼동"
+        android:textColor="#3B5D98" />
     
 </RelativeLayout>

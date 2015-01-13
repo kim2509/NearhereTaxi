@@ -8,6 +8,7 @@
         android:id="@+id/layoutHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="10dp"
         android:orientation="vertical" >
 
         <TextView
@@ -39,6 +40,7 @@
             android:singleLine="false"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
+            android:padding="10dp"
             android:text="@string/set_destination_guide2" />
 
         <Button
@@ -48,6 +50,7 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:onClick="setDestination"
+            android:padding="10dp"
             android:text="@string/select" />
         
     </RelativeLayout>
