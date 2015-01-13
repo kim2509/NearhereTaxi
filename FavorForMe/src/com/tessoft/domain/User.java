@@ -14,6 +14,8 @@ public class User extends ListItemModel{
 	private String longitude;
 	private String distance;
 	
+	private String password;
+	
 	private String regID;
 	
 	private String profileImageURL;
@@ -72,6 +74,14 @@ public class User extends ListItemModel{
 
 	public void setProfileImageURL(String profileImageURL) {
 		this.profileImageURL = profileImageURL;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	
 }

@@ -1,18 +1,34 @@
 package com.tessoft.nearhere;
 
-import android.support.v7.app.ActionBarActivity;
+import java.util.HashMap;
+
+import org.codehaus.jackson.type.TypeReference;
+
+import com.tessoft.domain.APIResponse;
+import com.tessoft.domain.User;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 
-public class RegisterUserActivity extends ActionBarActivity {
+public class RegisterUserActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_register_user);
+		
+		try
+		{
+			super.onCreate(savedInstanceState);
+			setContentView(R.layout.activity_register_user);	
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
 	}
 
 	@Override
@@ -32,6 +48,95 @@ public class RegisterUserActivity extends ActionBarActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	public void registerUser( View v )
+	{
+		try
+		{
+			EditText edtUserID = (EditText) findViewById(R.id.edtUserID);
+			String userID = edtUserID.getText().toString();
+			
+			if ( TextUtils.isEmpty( userID ) )
+			{
+				edtUserID.setError("아이디를 입력해 주십시오.");
+				return;
+			}
+			 
+			EditText edtUserName = (EditText) findViewById(R.id.edtUserName);
+			String userName = edtUserName.getText().toString();
+			
+			if ( TextUtils.isEmpty( userName ) )
+			{
+				edtUserName.setError("이름을 입력해 주십시오.");
+				return;
+			}
+			
+			EditText edtPassword = (EditText) findViewById(R.id.edtPassword);
+			String password = edtPassword.getText().toString();
+			EditText edtRePassword = (EditText) findViewById(R.id.edtRePassword);
+			String rePassword = edtRePassword.getText().toString();
+			
+			if ( TextUtils.isEmpty( password ) )
+			{
+				edtPassword.setError("비밀번호를 입력해 주십시오.");
+				return;
+			}
+			
+			if ( TextUtils.isEmpty( rePassword ) )
+			{
+				edtRePassword.setError("비밀번호를 입력해 주십시오.");
+				return;
+			}
+			
+			if ( !password.equals( rePassword ) )
+			{
+				edtRePassword.setError("비밀번호 재입력이 일치하지 않습니다.");
+				return;
+			}
+			
+			User user = new User();
+			user.setUserID(userID);
+			user.setUserName(userName);
+			user.setPassword(password);
+			
+			execTransReturningString("/taxi/registerUser.do", mapper.writeValueAsString(user), 1);
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
+	
+	@Override
+	public void doPostTransaction(int requestCode, Object result) {
+		// TODO Auto-generated method stub
+		try
+		{
+			super.doPostTransaction(requestCode, result);
+			
+			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
+			
+			if ( "0000".equals( response.getResCode() ) )
+			{
+				String temp = mapper.writeValueAsString( response.getData() );
+				User user = mapper.readValue( temp, new TypeReference<User>(){});
+				
+				setMetaInfo("userID", user.getUserID());
+				setMetaInfo("userName", user.getUserName());
+				
+				goTermsAgreementActivity(null);
+			}
+			else
+			{
+				showOKDialog( "경고", response.getResMsg(), null);
+			}
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+		
 	}
 	
 	public void goTermsAgreementActivity( View v )

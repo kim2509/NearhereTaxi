@@ -7,12 +7,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-public class TermsAgreementActivity extends ActionBarActivity {
+public class TermsAgreementActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_terms_agreement);
+		
+		try
+		{
+			super.onCreate(savedInstanceState);
+			setContentView(R.layout.activity_terms_agreement);	
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
 	}
 
 	@Override
