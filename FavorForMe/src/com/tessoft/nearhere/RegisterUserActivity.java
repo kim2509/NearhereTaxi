@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
 
 public class RegisterUserActivity extends BaseActivity {
@@ -23,6 +24,9 @@ public class RegisterUserActivity extends BaseActivity {
 		try
 		{
 			super.onCreate(savedInstanceState);
+			
+			supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+			
 			setContentView(R.layout.activity_register_user);	
 		}
 		catch( Exception ex )
@@ -100,6 +104,7 @@ public class RegisterUserActivity extends BaseActivity {
 			user.setUserName(userName);
 			user.setPassword(password);
 			
+			setProgressBarIndeterminateVisibility(true);
 			execTransReturningString("/taxi/registerUser.do", mapper.writeValueAsString(user), 1);
 		}
 		catch( Exception ex )
@@ -113,6 +118,8 @@ public class RegisterUserActivity extends BaseActivity {
 		// TODO Auto-generated method stub
 		try
 		{
+			setProgressBarIndeterminateVisibility(false);
+			
 			super.doPostTransaction(requestCode, result);
 			
 			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});

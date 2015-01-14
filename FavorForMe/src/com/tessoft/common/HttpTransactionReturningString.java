@@ -38,7 +38,7 @@ public class HttpTransactionReturningString extends AsyncTask<Object, Integer, S
 			HttpConnectionParams.setConnectionTimeout(client.getParams(), 10000); //Timeout Limit
 			HttpResponse response;
 			
-			Object json = data[0];
+			Object json = ( data == null || data.length == 0 || data[0] == null ) ? "" : data[0];
 			
 			String serverURL = Constants.serverURL + url;
 			

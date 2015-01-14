@@ -1,5 +1,7 @@
 package com.tessoft.nearhere;
 
+import org.codehaus.jackson.type.TypeReference;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -14,11 +16,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.User;
+import com.tessoft.domain.UserLocation;
 
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,6 +36,7 @@ public class SetDestinationActivity extends BaseActivity implements OnMapReadyCa
 	GoogleApiClient mGoogleApiClient = null;
 	int ZoomLevel = 16;
 	Marker marker = null;
+	String from = "";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +54,14 @@ public class SetDestinationActivity extends BaseActivity implements OnMapReadyCa
 			mapFragment.getMapAsync(this);
 			
 			buildGoogleApiClient();
+			
+			if ( getIntent().getExtras() != null && getIntent().getExtras().get("from") != null )
+			{
+				from = getIntent().getExtras().get("from").toString();
+				
+				if ( "약관동의".equals( from ) ) 
+					setTitle("집 위치 선택");
+			}
 		}
 		catch( Exception ex )
 		{
@@ -102,26 +116,40 @@ public class SetDestinationActivity extends BaseActivity implements OnMapReadyCa
 	{
 		try
 		{
-			setProgressBarIndeterminateVisibility(true);
-			
 			if ( marker == null )
 			{
 				showOKDialog("지점을 선택해 주십시오.", null);
 				return;
 			}
 			
-			LatLng location = marker.getPosition();
-			
-			setProgressBarIndeterminateVisibility(false);
-			
-			Intent intent = new Intent();
-			intent.putExtra("reload", true);
-			setResult(1, intent );
-			finish();	
+			if ( "약관동의".equals( from ) ) 
+			{
+				setProgressBarIndeterminateVisibility(true);
+				UserLocation userLocation = new UserLocation();
+				userLocation.setUser( getLoginUser() );
+				userLocation.setLocationName("집");
+				userLocation.setLatitude( String.valueOf( marker.getPosition().latitude ) );
+				userLocation.setLongitude( String.valueOf( marker.getPosition().longitude ) );
+				
+				execTransReturningString("/taxi/updateUserLocation.do", mapper.writeValueAsString(userLocation), 1);
+				
+				return;
+			}
+			else
+			{
+				LatLng location = marker.getPosition();
+				
+				setProgressBarIndeterminateVisibility(false);
+				
+				Intent intent = new Intent();
+				intent.putExtra("reload", true);
+				setResult(1, intent );
+				finish();	
+			}	
 		}
 		catch( Exception ex )
 		{
-			
+			catchException(this, ex);
 		}
 	}
 	
@@ -212,5 +240,40 @@ public class SetDestinationActivity extends BaseActivity implements OnMapReadyCa
 		map.moveCamera(center);
 		CameraUpdate zoom=CameraUpdateFactory.zoomTo(ZoomLevel);
 		map.animateCamera(zoom);
+	}
+	
+	@Override
+	public void doPostTransaction(int requestCode, Object result) {
+		// TODO Auto-generated method stub
+		try
+		{
+			super.doPostTransaction(requestCode, result);
+			
+			setProgressBarIndeterminateVisibility(false);
+			
+			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
+			
+			if ( "0000".equals( response.getResCode() ) )
+			{
+				goTaxiTutorialActivity();
+			}
+			else
+			{
+				showOKDialog("위치 등록도중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
+			}
+			
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
+	
+	public void goTaxiTutorialActivity()
+	{
+		Intent intent = new Intent( this, TaxiTutorialActivity.class);
+		startActivity(intent);
+		overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+		finish();
 	}
 }

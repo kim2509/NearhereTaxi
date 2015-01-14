@@ -1,21 +1,40 @@
 package com.tessoft.nearhere;
 
+import java.util.HashMap;
+
+import org.codehaus.jackson.type.TypeReference;
+
+import com.tessoft.domain.APIResponse;
+
 import android.support.v7.app.ActionBarActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.widget.TextView;
 
 public class TermsAgreementActivity extends BaseActivity {
 
+	String commonTermsContent = "";
+	String locationTermsContent = "";
+	String commonTermsVersion = "";
+	String locationTermsVersion = "";
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
 		try
 		{
 			super.onCreate(savedInstanceState);
+			
+			supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+			
 			setContentView(R.layout.activity_terms_agreement);	
+			
+			setProgressBarIndeterminateVisibility(true);
+			execTransReturningString("/taxi/getTermsContent.do", null, 1);
 		}
 		catch( Exception ex )
 		{
@@ -42,9 +61,76 @@ public class TermsAgreementActivity extends BaseActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-	public void goSelectHomeLocationActivity( View v )
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void updateTermsAgreement( View v )
 	{
-		Intent intent = new Intent( this, SelectHomeLocationActivity.class);
+		try
+		{
+			setProgressBarIndeterminateVisibility(true);
+			
+			HashMap hash = new HashMap();
+			hash.put("userID", getMetaInfoString("userID"));
+			hash.put("common_ver", commonTermsVersion);
+			hash.put("common", "Y");
+			hash.put("location_ver", locationTermsVersion);
+			hash.put("location", "Y");
+			execTransReturningString("/taxi/insertTermsAgreement.do", mapper.writeValueAsString(hash), 2);	
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
+	
+	@Override
+	public void doPostTransaction(int requestCode, Object result) {
+		// TODO Auto-generated method stub
+		try
+		{
+			setProgressBarIndeterminateVisibility(false);
+			
+			if ( requestCode == 1 )
+			{
+				super.doPostTransaction(requestCode, result);
+				
+				APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
+				
+				HashMap hash = (HashMap) response.getData();
+				
+				commonTermsVersion = (hash.get("commonTermsVersion") == null ) ? "" : hash.get("commonTermsVersion").toString();
+				commonTermsContent = (hash.get("COMMON") == null ) ? "" : hash.get("COMMON").toString();
+				locationTermsVersion = (hash.get("locationTermsVersion") == null ) ? "" : hash.get("locationTermsVersion").toString();
+				locationTermsContent = (hash.get("LOCATION") == null ) ? "" : hash.get("LOCATION").toString();
+				
+				TextView txtCommonTerms = (TextView) findViewById(R.id.txtCommonTerms);
+				txtCommonTerms.setText( commonTermsContent );
+				TextView txtLocationTerms = (TextView) findViewById(R.id.txtLocationTerms);
+				txtLocationTerms.setText( locationTermsContent );
+			}
+			else
+			{
+				APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
+				
+				if ( !"0000".equals( response.getResCode() ) )
+				{
+					showOKDialog("경고", response.getResMsg(), null );
+					return;
+				}
+				
+				goSelectHomeLocationActivity();
+			}
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
+	
+	public void goSelectHomeLocationActivity()
+	{
+		Intent intent = new Intent( this, SetDestinationActivity.class);
+		intent.putExtra("from", "약관동의");
+		
 		startActivity(intent);
 		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 		finish();
