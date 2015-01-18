@@ -7,9 +7,87 @@
     android:paddingTop="10dp"
     android:paddingBottom="10dp">
     
-    <TextView android:id="@+id/txtNumOfUsers"
+    <ImageView android:id="@+id/imgProfile"
+        android:layout_width="70dp"
+        android:layout_height="70dp" />
+    
+    <TextView android:id="@+id/txtUserName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/taxi_post_detail_guide1" />
+        android:text="name"
+        android:textSize="14sp"
+        android:textColor="#3B5D98"
+        android:layout_below="@+id/imgProfile"
+        android:layout_marginLeft="3dp"
+        android:layout_marginTop="2dp"
+        />
+    
+    <TextView android:id="@+id/txtTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/imgProfile"
+        android:layout_marginLeft="10dp"
+        android:textSize="17sp"
+        android:text="titile"
+        />
+    
+    <TextView
+        android:id="@+id/txtGuide1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/txtTitle"
+        android:layout_below="@+id/txtTitle"
+        android:layout_marginTop="20dp"
+        android:text="@string/departure"
+        android:textColor="@android:color/black" />
+    
+    <TextView
+        android:id="@+id/txtDeparture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/txtGuide1"
+        android:layout_toRightOf="@+id/txtGuide1"
+        android:layout_marginLeft="10dp"
+        android:text="강남구 역삼동"
+        android:textColor="@android:color/black" />
+    
+    <TextView
+        android:id="@+id/txtDestination"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/txtDeparture"
+        android:layout_toRightOf="@+id/txtGuide2"
+        android:layout_alignBaseline="@+id/txtGuide2"
+        android:text="강남구 역삼동"
+        android:textColor="@android:color/black" />
+    
+    <TextView
+        android:id="@+id/txtGuide2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/txtGuide1"
+        android:layout_below="@+id/txtGuide1"
+        android:text="@string/destination"
+        android:textColor="@android:color/black" />
+    
+    <TextView
+        android:id="@+id/txtCreatedDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:text="1시간 전"
+        android:textColor="#3B5D98" />
+    
+    <TextView
+        android:id="@+id/txtDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/txtCreatedDate"
+        android:layout_marginTop="10dp"
+        android:text="10m"
+        android:textColor="@android:color/black" />
+    
+    
     
 </RelativeLayout>

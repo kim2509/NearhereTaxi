@@ -72,7 +72,13 @@ public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> {
 			ImageView imageView = (ImageView) row.findViewById(R.id.imgProfile);
 			ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
 					item.getUser().getProfileImageURL() , imageView);
-
+			
+			TextView txtUserName = (TextView) row.findViewById(R.id.txtUserName);
+			txtUserName.setText( item.getUser().getUserName() );
+			
+			TextView txtCreatedDate = (TextView) row.findViewById(R.id.txtCreatedDate);
+			txtCreatedDate.setText( Util.getFormattedDateString( item.getCreatedDate(), "HH:mm"));
+			
 			row.setTag( item );
 		}
 		catch( Exception ex )

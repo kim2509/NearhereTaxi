@@ -21,7 +21,10 @@ public class IntroActivity extends BaseActivity {
 			getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 			getActionBar().hide();
 			
-			setContentView(R.layout.activity_intro);			
+			setContentView(R.layout.activity_intro);	
+			
+			EditText edtUserID = (EditText) findViewById(R.id.edtUserID);
+			edtUserID.setText( getMetaInfoString("userID"));
 		}
 		catch( Exception ex )
 		{
@@ -52,12 +55,11 @@ public class IntroActivity extends BaseActivity {
 	{
 		try
 		{
-			/*
 			EditText edtUserID = (EditText) findViewById(R.id.edtUserID);
 			setMetaInfo("userID", edtUserID.getText().toString());
 			EditText edtUserName = (EditText) findViewById(R.id.edtUserName);
 			setMetaInfo("userName", edtUserName.getText().toString());
-			*/
+			
 			Intent intent = new Intent( this, MainActivity.class);
 			startActivity(intent);
 			overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);

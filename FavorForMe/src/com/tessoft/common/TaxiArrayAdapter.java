@@ -10,6 +10,7 @@ import com.tessoft.nearhere.R;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,14 +62,22 @@ public class TaxiArrayAdapter extends ArrayAdapter<TaxiPost> {
 			if (row == null) {
 				row = inflater.inflate(R.layout.list_taxi_post_item, parent, false);
 			}
+			
+			TextView txtTitle = (TextView) row.findViewById(R.id.txtTitle);
+			txtTitle.setText( item.getMessage() );
 
+			TextView txtDeparture = (TextView) row.findViewById(R.id.txtDeparture);
+			txtDeparture.setText( item.getFromLatitude() );
+			
 			TextView txtDestination = (TextView) row.findViewById(R.id.txtDestination);
-			txtDestination.setText( item.getDestination() );
+			txtDestination.setText( item.getLatitude() );
 			
 			TextView txtDistance = (TextView) row.findViewById(R.id.txtDistance);
 			txtDistance.setText( Util.getDistance( item.getDistance()) );
 			
 			ImageView imageView = (ImageView) row.findViewById(R.id.imgProfile);
+			imageView.setImageDrawable(null);
+			
 			ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
 					item.getUser().getProfileImageURL() , imageView);
 

@@ -34,7 +34,7 @@ public class TermsAgreementActivity extends BaseActivity {
 			setContentView(R.layout.activity_terms_agreement);	
 			
 			setProgressBarIndeterminateVisibility(true);
-			execTransReturningString("/taxi/getTermsContent.do", null, 1);
+			sendHttp("/taxi/getTermsContent.do", null, 1);
 		}
 		catch( Exception ex )
 		{
@@ -74,7 +74,7 @@ public class TermsAgreementActivity extends BaseActivity {
 			hash.put("common", "Y");
 			hash.put("location_ver", locationTermsVersion);
 			hash.put("location", "Y");
-			execTransReturningString("/taxi/insertTermsAgreement.do", mapper.writeValueAsString(hash), 2);	
+			sendHttp("/taxi/insertTermsAgreement.do", mapper.writeValueAsString(hash), 2);	
 		}
 		catch( Exception ex )
 		{
@@ -129,7 +129,7 @@ public class TermsAgreementActivity extends BaseActivity {
 	public void goSelectHomeLocationActivity()
 	{
 		Intent intent = new Intent( this, SetDestinationActivity.class);
-		intent.putExtra("from", "약관동의");
+		intent.putExtra("command", "약관동의");
 		
 		startActivity(intent);
 		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);

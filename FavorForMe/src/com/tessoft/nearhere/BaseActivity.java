@@ -34,8 +34,6 @@ import android.widget.Toast;
 
 public class BaseActivity extends ActionBarActivity implements TransactionDelegate, AdapterDelegate {
 
-	LocationManager locationManager;
-	Location location;
 	ObjectMapper mapper = new ObjectMapper();
 	
 	@Override
@@ -160,10 +158,10 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 	
 	public void writeLog( String log )
 	{
-		Log.i("NearHereHelp", log );
+		Log.e("NearHereHelp", log );
 	}
 	
-	public void execTransReturningString( String url, Object request, int requestCode )
+	public void sendHttp( String url, Object request, int requestCode )
 	{
 		new HttpTransactionReturningString( this, url, requestCode ).execute( request );
 	}
@@ -190,49 +188,6 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		return user;
 	}
 	
-	public String getCurrentAddress()
-	{
-		if ( location == null ) return "";
-		
-		double latitude = location.getLatitude(); // 占쏙옙占쏙옙
-		double longitude = location.getLongitude(); // 占썸도
-		
-		Geocoder gcK = new Geocoder(getApplicationContext(),Locale.KOREA);
-		
-		try {
-            List<Address>  addresses = gcK.getFromLocation(latitude, longitude, 1);
-            StringBuilder sb = new StringBuilder();
-
-            if (addresses.size() > 0) {
-                for (Address addr : addresses) {
-                    sb.append(addr.getMaxAddressLineIndex()).append("********\n");
-                    for (int i=0;i < addr.getMaxAddressLineIndex();i++)
-                        sb.append(addr.getAddressLine(i)).append("<< \n\n");
-                }
-                sb.append("===========\n");
-               
-                Address address = addresses.get(0);
-                sb.append(address.getCountryName()).append("\n");
-                sb.append(address.getPostalCode()).append("\n");
-                sb.append(address.getLocality()).append("\n");
-                sb.append(address.getThoroughfare()).append("\n");
-                sb.append(address.getFeatureName()).append("\n\n");
-                sb.append(address.getAddressLine(0)).append("\n\n");
-               
-                sb.append("").append("\n");
-                sb.append("").append("\n");
-               
-                return sb.toString();
-            }
-
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-		
-		return "";
-	}
-
 	@Override
 	public void doAction(String actionName, Object param) {
 		// TODO Auto-generated method stub

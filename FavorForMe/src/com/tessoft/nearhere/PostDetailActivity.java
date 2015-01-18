@@ -76,7 +76,7 @@ public class PostDetailActivity extends BaseActivity implements OnMapReadyCallba
 			listPostReplies.setAdapter(adapter);
 			
 			mapper = new ObjectMapper();
-			execTransReturningString("/getPostDetail.do", mapper.writeValueAsString(post), 1);
+			sendHttp("/getPostDetail.do", mapper.writeValueAsString(post), 1);
 			
 			String profileImageURL = getMetaInfoString("profileImageURL");
 			
@@ -263,7 +263,7 @@ public class PostDetailActivity extends BaseActivity implements OnMapReadyCallba
 				postReply.setPostID( post.getPostID() ); 
 				postReply.setMessage( replyText );
 				
-				execTransReturningString("/addPostReply.do", mapper.writeValueAsString(postReply), 2);
+				sendHttp("/addPostReply.do", mapper.writeValueAsString(postReply), 2);
 			}			
 		}
 		catch( Exception ex )

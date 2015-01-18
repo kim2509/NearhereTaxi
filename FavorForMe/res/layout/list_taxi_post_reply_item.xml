@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal" 
@@ -20,9 +19,27 @@
         android:layout_toRightOf="@+id/imgProfile"
         android:layout_marginLeft="10dp"
         android:textColor="@android:color/black"
-        android:layout_centerVertical="true"
-        android:singleLine="false"
-        android:text="hi" />
+        android:text="message"
+        android:singleLine="false" />
+ 
+    <TextView android:id="@+id/txtUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/txtMessage"
+        android:layout_below="@+id/txtMessage"
+        android:layout_marginTop="3dp"
+        android:text="name"
+        android:textColor="#3B5D98"
+        />
+    
+    <TextView android:id="@+id/txtCreatedDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/txtUserName"
+        android:layout_alignBaseline="@+id/txtUserName"
+        android:layout_marginLeft="10dp"
+        android:text="time" 
+        android:textSize="11sp"/>
     
     <TextView
         android:id="@+id/txtDistance"
@@ -33,5 +50,8 @@
         android:layout_centerVertical="true"
         android:text="10m"
         android:textColor="@android:color/black" />
+    
+    
+
     
 </RelativeLayout>

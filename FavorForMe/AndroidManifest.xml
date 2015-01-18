@@ -55,7 +55,8 @@
         </activity>
         <activity
             android:name=".IntroActivity"
-            android:label="@string/title_activity_intro" >
+            android:label="@string/title_activity_intro"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -92,7 +93,8 @@
         </activity>
         <activity
             android:name=".SetDestinationActivity"
-            android:label="@string/title_activity_set_destination" >
+            android:label="@string/title_activity_set_destination" 
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".MessageBoxFragment"
@@ -112,7 +114,8 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_main" >
+            android:label="@string/title_activity_main"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

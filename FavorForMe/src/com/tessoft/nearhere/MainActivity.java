@@ -1,5 +1,13 @@
 package com.tessoft.nearhere;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -13,6 +21,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,7 +32,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity 
+	implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener{
 
 	DrawerLayout mDrawerLayout = null;
 	ListView mDrawerList = null;
@@ -31,6 +41,7 @@ public class MainActivity extends BaseActivity {
 	String[] mMenuList = null;
 	private ActionBarDrawerToggle mDrawerToggle;
 	private Fragment mainFragment = null;
+	GoogleApiClient mGoogleApiClient = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -91,13 +102,34 @@ public class MainActivity extends BaseActivity {
 			fragmentManager.beginTransaction()
 			.add(R.id.content_frame, mainFragment)
 			.commit();
-			
+		
+			buildGoogleApiClient();
+			createLocationRequest();
 		}
 		catch( Exception ex )
 		{
 			catchException(this, ex);
 		}
 
+	}
+	
+	@Override
+	protected void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+		
+		mGoogleApiClient.connect();
+		
+	}
+	
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
+		
+		stopLocationUpdates();
+		
+		mGoogleApiClient.disconnect();
 	}
 
 	@Override
@@ -205,5 +237,76 @@ public class MainActivity extends BaseActivity {
 		.writeDebugLogs()
 		.build();
 		ImageLoader.getInstance().init(config);
+	}
+	
+	protected synchronized void buildGoogleApiClient() {
+		mGoogleApiClient = new GoogleApiClient.Builder(this)
+		.addConnectionCallbacks(this)
+		.addOnConnectionFailedListener(this)
+		.addApi(LocationServices.API)
+		.build();
+	}
+
+	@Override
+	public void onLocationChanged(Location location) {
+		// TODO Auto-generated method stub
+		try
+		{
+			setMetaInfo("latitude", String.valueOf( location.getLatitude()));
+			setMetaInfo("longitude", String.valueOf( location.getLongitude()));
+			
+			if ( mainFragment instanceof TaxiFragment )
+			{
+				TaxiFragment f = (TaxiFragment) mainFragment;
+				f.updateAddress( new LatLng( location.getLatitude(), location.getLongitude() ) );
+			}
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		// TODO Auto-generated method stub
+		try
+		{
+			startLocationUpdates();
+		}
+		catch( Exception ex )
+		{
+			
+		}
+	}
+
+	LocationRequest mLocationRequest = null;
+	protected void createLocationRequest() {
+		mLocationRequest = new LocationRequest();
+	    mLocationRequest.setInterval(10000);
+	    mLocationRequest.setFastestInterval(5000);
+	    mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+	}
+	
+	protected void startLocationUpdates() {
+		LocationServices.FusedLocationApi.requestLocationUpdates(
+	            mGoogleApiClient, mLocationRequest, this);
+	}
+	
+	protected void stopLocationUpdates() {
+	    LocationServices.FusedLocationApi.removeLocationUpdates(
+	            mGoogleApiClient, this);
+	}
+	
+	@Override
+	public void onConnectionSuspended(int arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }

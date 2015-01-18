@@ -10,9 +10,13 @@ public class PostReply extends ListItemModel {
 	private String postID;
 	private String message;
 	private User user;
+	
+	private String latitude;
+	private String longitude;
 	private String distance;
 	
-	private String createDate;
+	private String createdDate;
+	
 	public String getPostID() {
 		return postID;
 	}
@@ -31,17 +35,29 @@ public class PostReply extends ListItemModel {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	public String getCreateDate() {
-		return createDate;
+	public String getCreatedDate() {
+		return createdDate;
 	}
-	public void setCreateDate(String createDate) {
-		this.createDate = createDate;
+	public void setCreatedDate(String createdDate) {
+		this.createdDate = createdDate;
 	}
 	public User getUser() {
 		return user;
 	}
 	public void setUser(User user) {
 		this.user = user;
+	}
+	public String getLatitude() {
+		return latitude;
+	}
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+	public String getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
 	}
 	public String getDistance() {
 		return distance;

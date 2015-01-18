@@ -250,7 +250,7 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener, Connec
 			user.setLatitude(getMetaInfoString("latitude"));
 			user.setLongitude(getMetaInfoString("longitude"));
 
-			execTransReturningString("/getMainInfo.do", mapper.writeValueAsString(user), 1);
+			sendHttp("/getMainInfo.do", mapper.writeValueAsString(user), 1);
 		}
 		catch( Exception ex )
 		{
@@ -312,7 +312,7 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener, Connec
 					user.setUserID("kim2509");
 					user.setLatitude( String.valueOf( latitude ) );
 					user.setLongitude( String.valueOf( longitude ) );
-					execTransReturningString("/getPosts.do", mapper.writeValueAsString(user), 2);
+					sendHttp("/getPosts.do", mapper.writeValueAsString(user), 2);
 				}
 
 				bSkipPostListLoading = false;
@@ -462,7 +462,7 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener, Connec
 				user.setUserID("kim2509");
 				user.setLatitude( String.valueOf( mLastLocation.getLatitude() ) );
 				user.setLongitude( String.valueOf( mLastLocation.getLongitude() ) );
-				execTransReturningString("/updateUserLocation.do", mapper.writeValueAsString(user), 3);
+				sendHttp("/updateUserLocation.do", mapper.writeValueAsString(user), 3);
 			}			
 		}
 		catch( Exception ex )

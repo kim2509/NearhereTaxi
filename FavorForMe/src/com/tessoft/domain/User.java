@@ -19,6 +19,8 @@ public class User extends ListItemModel{
 	private String regID;
 	
 	private String profileImageURL;
+	
+	private String age;
 
 	public String getUserID() {
 		return userID;
@@ -82,6 +84,14 @@ public class User extends ListItemModel{
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getAge() {
+		return age;
+	}
+
+	public void setAge(String age) {
+		this.age = age;
 	}
 	
 }

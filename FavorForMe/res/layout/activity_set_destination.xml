@@ -40,6 +40,7 @@
             android:singleLine="false"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/btnSetDestination"
             android:padding="10dp"
             android:text="@string/set_destination_guide2" />
 
@@ -55,4 +56,26 @@
         
     </RelativeLayout>
 
+    <RelativeLayout android:id="@+id/layoutInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_margin="10dp">
+        
+        <EditText android:id="@+id/edtMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/btnSubmit"
+            android:hint="내용을 입력해 주십시오."/>
+        
+        <Button android:id="@+id/btnSubmit"
+            android:layout_width="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="등록"
+            android:onClick="addPost"/>
+    </RelativeLayout>
 </RelativeLayout>

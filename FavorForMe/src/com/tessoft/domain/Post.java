@@ -13,6 +13,10 @@ public class Post extends ListItemModel {
 	protected String longitude;
 	protected String message;
 	
+	protected String fromLatitude;
+	protected String fromLongitude;
+	protected String fromAddress;
+	
 	protected String content;
 	
 	protected Object tag;
@@ -20,7 +24,7 @@ public class Post extends ListItemModel {
 	protected User user;
 	
 	protected String distance;
-	protected String createDate;
+	protected String createdDate;
 	
 	protected String reward;
 	
@@ -64,11 +68,11 @@ public class Post extends ListItemModel {
 	public void setPostID(String postID) {
 		this.postID = postID;
 	}
-	public String getCreateDate() {
-		return createDate;
+	public String getCreatedDate() {
+		return createdDate;
 	}
-	public void setCreateDate(String createDate) {
-		this.createDate = createDate;
+	public void setCreatedDate(String createDate) {
+		this.createdDate = createDate;
 	}
 
 	public List<PostLike> getPostLikes() {
@@ -123,5 +127,29 @@ public class Post extends ListItemModel {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getFromLatitude() {
+		return fromLatitude;
+	}
+
+	public void setFromLatitude(String fromLatitude) {
+		this.fromLatitude = fromLatitude;
+	}
+
+	public String getFromLongitude() {
+		return fromLongitude;
+	}
+
+	public void setFromLongitude(String fromLongitude) {
+		this.fromLongitude = fromLongitude;
+	}
+
+	public String getFromAddress() {
+		return fromAddress;
+	}
+
+	public void setFromAddress(String fromAddress) {
+		this.fromAddress = fromAddress;
 	}
 }

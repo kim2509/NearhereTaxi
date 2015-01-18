@@ -105,7 +105,7 @@ public class RegisterUserActivity extends BaseActivity {
 			user.setPassword(password);
 			
 			setProgressBarIndeterminateVisibility(true);
-			execTransReturningString("/taxi/registerUser.do", mapper.writeValueAsString(user), 1);
+			sendHttp("/taxi/registerUser.do", mapper.writeValueAsString(user), 1);
 		}
 		catch( Exception ex )
 		{
