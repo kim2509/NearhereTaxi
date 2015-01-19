@@ -27,6 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/imgProfile"
         android:layout_marginLeft="10dp"
+        android:layout_toLeftOf="@+id/txtCreatedDate"
         android:textSize="17sp"
         android:text="titile"
         />

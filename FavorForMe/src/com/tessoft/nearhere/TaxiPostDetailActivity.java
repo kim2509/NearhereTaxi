@@ -29,8 +29,8 @@ import com.tessoft.common.TaxiArrayAdapter;
 import com.tessoft.common.TaxiPostReplyListAdapter;
 import com.tessoft.common.Util;
 import com.tessoft.domain.APIResponse;
+import com.tessoft.domain.Post;
 import com.tessoft.domain.PostReply;
-import com.tessoft.domain.TaxiPost;
 import com.tessoft.domain.User;
 
 import android.app.Fragment;
@@ -54,7 +54,7 @@ import android.widget.TextView;
 public class TaxiPostDetailActivity extends BaseListActivity implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener{
 
 	TaxiPostReplyListAdapter adapter = null;
-	TaxiPost post = null;
+	Post post = null;
 	View header2 = null;
 	GoogleMap map = null;
 	int ZoomLevel = 13;
@@ -102,7 +102,7 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 	{
 		if ( getIntent().getExtras().get("post") != null )
 		{
-			post = (TaxiPost) getIntent().getExtras().get("post");
+			post = (Post) getIntent().getExtras().get("post");
 
 			ImageView imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
 			ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
@@ -118,6 +118,12 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 			
 			TextView txtTitle = (TextView) header.findViewById(R.id.txtTitle);
 			txtTitle.setText( post.getMessage() );
+			
+			TextView txtDeparture = (TextView) header.findViewById(R.id.txtDeparture);
+			txtDeparture.setText( post.getFromAddress() );
+			
+			TextView txtDestination = (TextView) header.findViewById(R.id.txtDestination);
+			txtDestination.setText( post.getToAddress() );
 			
 			TextView txtDistance = (TextView) header.findViewById(R.id.txtDistance);
 			txtDistance.setText( Util.getDistance(post.getDistance()) );
@@ -340,7 +346,7 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 			{
 				APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
 				String postData = mapper.writeValueAsString( response.getData() );
-				post = mapper.readValue( postData, new TypeReference<TaxiPost>(){});
+				post = mapper.readValue( postData, new TypeReference<Post>(){});
 				
 				adapter.setItemList( post.getPostReplies() );
 				adapter.notifyDataSetChanged();

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.tessoft.domain.TaxiPost;
+import com.tessoft.domain.Post;
 import com.tessoft.nearhere.R;
 
 import android.content.Context;
@@ -19,15 +19,15 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class TaxiArrayAdapter extends ArrayAdapter<TaxiPost> {
+public class TaxiArrayAdapter extends ArrayAdapter<Post> {
 
-	private List<TaxiPost> itemList = new ArrayList<TaxiPost>();
+	private List<Post> itemList = new ArrayList<Post>();
 	private AdapterDelegate delegate = null;
 
 	LayoutInflater inflater = null;
 
 	@Override
-	public void add(TaxiPost object) {
+	public void add(Post object) {
 		itemList.add(object);
 		super.add(object);
 	}
@@ -41,11 +41,11 @@ public class TaxiArrayAdapter extends ArrayAdapter<TaxiPost> {
 		return this.itemList.size();
 	}
 
-	public TaxiPost getItem(int index) {
+	public Post getItem(int index) {
 		return this.itemList.get(index);
 	}
 
-	public void setItemList( List<TaxiPost> itemList )
+	public void setItemList( List<Post> itemList )
 	{
 		this.itemList = itemList;
 		notifyDataSetChanged();
@@ -57,7 +57,7 @@ public class TaxiArrayAdapter extends ArrayAdapter<TaxiPost> {
 
 		try
 		{
-			TaxiPost item = getItem(position);
+			Post item = getItem(position);
 
 			if (row == null) {
 				row = inflater.inflate(R.layout.list_taxi_post_item, parent, false);
@@ -67,19 +67,25 @@ public class TaxiArrayAdapter extends ArrayAdapter<TaxiPost> {
 			txtTitle.setText( item.getMessage() );
 
 			TextView txtDeparture = (TextView) row.findViewById(R.id.txtDeparture);
-			txtDeparture.setText( item.getFromLatitude() );
+			txtDeparture.setText( item.getFromAddress() );
 			
 			TextView txtDestination = (TextView) row.findViewById(R.id.txtDestination);
-			txtDestination.setText( item.getLatitude() );
+			txtDestination.setText( item.getToAddress() );
 			
 			TextView txtDistance = (TextView) row.findViewById(R.id.txtDistance);
 			txtDistance.setText( Util.getDistance( item.getDistance()) );
 			
+			TextView txtCreatedDate = (TextView) row.findViewById(R.id.txtCreatedDate);
+			txtCreatedDate.setText( Util.getFormattedDateString( item.getCreatedDate(), "MM-dd HH:mm") );
+			
 			ImageView imageView = (ImageView) row.findViewById(R.id.imgProfile);
 			imageView.setImageDrawable(null);
 			
-			ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
-					item.getUser().getProfileImageURL() , imageView);
+			if ( item.getUser() != null && item.getUser().getProfileImageURL() != null )
+			{
+				ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
+						item.getUser().getProfileImageURL() , imageView);	
+			}
 
 			row.setTag( item );
 		}

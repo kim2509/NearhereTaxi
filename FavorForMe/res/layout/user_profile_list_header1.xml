@@ -2,34 +2,258 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingBottom="10dp"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp">
-    
-    <ImageView android:id="@+id/imgProfile"
+    android:paddingTop="10dp" >
+
+    <ImageView
+        android:id="@+id/imgProfile"
         android:layout_width="80dp"
-        android:layout_height="80dp"/>
-    
-    <TextView android:id="@+id/txtUserName"
+        android:layout_height="80dp"
+        android:src="@drawable/dy" />
+
+    <ImageView
+        android:id="@+id/imgSex"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="40dp"
+        android:layout_toRightOf="@+id/imgProfile"
+        android:src="@drawable/abc_ic_clear" />
+
+    <TextView
+        android:id="@+id/txtUserName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/imgProfile"
         android:layout_marginLeft="10dp"
-        android:text="김대용"/>
-    
-    <TextView android:id="@+id/txtFBGuide"
+        android:layout_toRightOf="@+id/imgSex"
+        android:text="김대용"
+        android:textColor="#3B5D98"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/txtCreditGuide1"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/imgSex"
+        android:layout_below="@+id/imgSex"
+        android:layout_marginTop="30dp"
+        android:text="신뢰도" />
+
+    <TextView
+        android:id="@+id/txtCreditValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/txtCreditGuide1"
+        android:layout_alignRight="@+id/txtUserName"
+        android:text="23%"
+        android:textColor="#dd0000" />
+
+    <LinearLayout
+        android:id="@+id/layoutProfile"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/imgProfile"
-        android:layout_alignParentLeft="true"
-        android:text="@string/facebook_authorized"/>
-    
-    <Button android:id="@+id/btnGoFB"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignBaseline="@+id/txtFBGuide"
-        android:text="@string/go_facebook"/>
-    
+        android:layout_marginTop="10dp"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="70"
+                android:gravity="left"
+                android:text="성별" />
+
+            <Spinner
+                android:id="@+id/spSex"
+                android:layout_width="match_parent"
+                android:layout_weight="30"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="70"
+                android:gravity="left"
+                android:text="생년월일" />
+
+            <TextView
+                android:id="@+id/txtBirthday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="30"
+                android:gravity="left"
+                android:text="미입력" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="70"
+                android:gravity="left"
+                android:text="집 위치" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="30"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/txtHomeLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:text="미입력" />
+
+                <TextView
+                    android:id="@+id/txtPickHomeLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="설정"
+                    android:textColor="#3B5D98"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="70"
+                android:gravity="left"
+                android:text="직장위치" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="30"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/txtOfficeLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:text="미입력" />
+
+                <TextView
+                    android:id="@+id/txtPickOfficeLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="설정"
+                    android:textColor="#3B5D98"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="70"
+                android:gravity="left"
+                android:text="직업" />
+
+            <RelativeLayout
+                android:id="@+id/layoutUpdateJobTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="30"
+                android:orientation="horizontal" >
+
+                <EditText
+                    android:id="@+id/edtJobTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_toLeftOf="@+id/btnJobTitle"
+                    android:gravity="left"
+                    android:hint="입력" />
+
+                <TextView
+                    android:id="@+id/txtUpdateJobTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/edtJobTitle"
+                    android:layout_alignParentRight="true"
+                    android:textColor="#3B5D98"
+                    android:textStyle="bold"
+                    android:text="업데이트" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="70"
+                android:gravity="left"
+                android:text="페이스북" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="30"
+                android:gravity="left"
+                android:text="연동하기" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="본인의 프로필을 완성할수록 신뢰도가 높아집니다. 신뢰도를 높여 다른 회원들에게 믿음을 주세요." />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:text="내 합승내역"
+                android:textColor="#3B5D98" />
+        </LinearLayout>
+    </LinearLayout>
+
 </RelativeLayout>

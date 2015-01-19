@@ -34,9 +34,26 @@ public class Util {
 		return tempDate;
 	}
 	
+	public static String getFormattedDateString( String origin, String fromFormat, String format ) throws Exception
+	{
+		Date d = getDateFromString(origin, fromFormat);
+		return getDateStringFromDate(d, format);
+	}
+	
 	public static String getFormattedDateString( String origin, String format ) throws Exception
 	{
 		Date d = getDateFromString(origin, "yyyy-MM-dd hh:mm:ss");
 		return getDateStringFromDate(d, format);
+	}
+	
+	public static String getDongAddressString( Object fullAddress )
+	{
+		if ( fullAddress == null || "".equals( fullAddress )) return "";
+		
+		String[] tokens = fullAddress.toString().split("\\|");
+		
+		if ( tokens.length < 4 ) return "";
+		
+		return tokens[1] + " " + tokens[2] + " " + tokens[3];
 	}
 }

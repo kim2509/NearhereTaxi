@@ -5,10 +5,9 @@ public class UserLocation {
 	private User user;
 	
 	private String locationName;
-	
 	private String latitude;
-	
 	private String longitude;
+	private String address;
 	
 	private String priority;
 
@@ -50,6 +49,14 @@ public class UserLocation {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 	
 }

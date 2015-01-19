@@ -8,19 +8,16 @@ public class User extends ListItemModel{
 	private static final long serialVersionUID = 1L;
 	private String userID;
 	private String userName;
-	
 	private String latitude;
-	
 	private String longitude;
 	private String distance;
-	
 	private String password;
-	
 	private String regID;
-	
 	private String profileImageURL;
-	
 	private String age;
+	private String birthday;
+	private String jobTitle;
+	private String sex;
 
 	public String getUserID() {
 		return userID;
@@ -93,5 +90,28 @@ public class User extends ListItemModel{
 	public void setAge(String age) {
 		this.age = age;
 	}
-	
+
+	public String getBirthday() {
+		return birthday;
+	}
+
+	public void setBirthday(String birthday) {
+		this.birthday = birthday;
+	}
+
+	public String getJobTitle() {
+		return jobTitle;
+	}
+
+	public void setJobTitle(String jobTitle) {
+		this.jobTitle = jobTitle;
+	}
+
+	public String getSex() {
+		return sex;
+	}
+
+	public void setSex(String sex) {
+		this.sex = sex;
+	}
 }

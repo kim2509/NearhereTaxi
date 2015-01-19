@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tessoft.domain.PostReply;
-import com.tessoft.domain.TaxiPost;
 import com.tessoft.nearhere.R;
 
 import android.content.Context;

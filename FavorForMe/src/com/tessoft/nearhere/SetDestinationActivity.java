@@ -19,8 +19,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.tessoft.common.AddressTaskDelegate;
+import com.tessoft.common.GetAddressTask;
+import com.tessoft.common.Util;
 import com.tessoft.domain.APIResponse;
-import com.tessoft.domain.TaxiPost;
+import com.tessoft.domain.Post;
 import com.tessoft.domain.User;
 import com.tessoft.domain.UserLocation;
 
@@ -40,7 +43,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class SetDestinationActivity extends BaseActivity 
-implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener {
+implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, AddressTaskDelegate {
 
 	GoogleMap map = null;
 	GoogleApiClient mGoogleApiClient = null;
@@ -85,6 +88,13 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener {
 						initLocation = new LatLng( Double.parseDouble( getMetaInfoString("latitude") ),
 								Double.parseDouble( getMetaInfoString("longitude") ));
 					}
+				}
+				else if ( "address".equals( command ) )
+				{
+					setTitle("위치 선택");
+					
+					initLocation = new LatLng( Double.parseDouble( getMetaInfoString("latitude") ),
+							Double.parseDouble( getMetaInfoString("longitude") ));
 				}
 			}
 		}
@@ -177,6 +187,18 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener {
 				public void onMapLongClick(LatLng location) {
 					// TODO Auto-generated method stub
 					addMarker( location );
+					
+					if ( "new".equals( command ) )
+					{
+						getAddress(location, 1);
+					}
+					else if ( "selectDestination".equals( command ) )
+						getAddress(location, 2);
+					else if ( "address".equals( command ) )
+					{
+						getAddress(location, 3);
+					}
+					
 					showToastMessage("선택되었습니다.");
 				}
 			});
@@ -187,6 +209,16 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener {
 		}
 	}
 
+	public void getAddress(LatLng location, int requestCode ) {
+		Location loc = new Location("");
+		loc.setLatitude(location.latitude);
+		loc.setLongitude(location.longitude);
+		
+		Location[] locs = new Location[1];
+		locs[0] = loc;
+		new GetAddressTask( getApplicationContext(), this, requestCode ).execute(locs);
+	}
+	
 	public void addMarker( LatLng location )
 	{
 		map.clear();
@@ -290,8 +322,6 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener {
 				map.clear();
 				setTitle("목적지 선택");	
 				showToastMessage("이제 목적지를 선택해 주세요.");
-				TextView txtTitle = (TextView) findViewById(R.id.txtTitle);
-				txtTitle.setText("목적지를 선택해 주십시오.");
 				command = "selectDestination";
 			}	
 			else if ( "selectDestination".equals( command ) )
@@ -302,6 +332,15 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener {
 				findViewById(R.id.layoutFooter).setVisibility(ViewGroup.GONE);
 				findViewById(R.id.layoutInput).setVisibility(ViewGroup.VISIBLE);
 				command = "addPost";
+			}
+			else if ( "address".equals( command ) )
+			{
+				LatLng location = marker.getPosition();
+				Intent intent = new Intent();
+				intent.putExtra("location", location);
+				intent.putExtra("selectedAddress", selectedAddress);
+				setResult(3, intent );
+				finish();
 			}
 		}
 		catch( Exception ex )
@@ -314,7 +353,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener {
 	{
 		try
 		{
-			TaxiPost post = new TaxiPost();
+			Post post = new Post();
 
 			EditText edtMessage = (EditText) findViewById(R.id.edtMessage);
 
@@ -327,8 +366,10 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener {
 			post.setMessage( edtMessage.getText().toString() );
 			post.setFromLatitude( String.valueOf( departure.latitude) );
 			post.setFromLongitude( String.valueOf( departure.longitude) );
+			post.setFromAddress(departureAddress);
 			post.setLatitude( String.valueOf( destination.latitude) );
 			post.setLongitude( String.valueOf( destination.longitude) );
+			post.setToAddress( destinationAddress );
 			post.setUser( getLoginUser() );
 
 			setProgressBarIndeterminateVisibility(true);
@@ -374,5 +415,39 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener {
 		{
 			catchException(this, ex);
 		}
+	}
+
+	String departureAddress = "";
+	String destinationAddress = "";
+	String selectedAddress = "";
+	
+	@Override
+	public void onAddressTaskPostExecute(int requestCode, Object result) {
+		// TODO Auto-generated method stub
+		
+		TextView txtTitle = (TextView) findViewById(R.id.txtTitle);
+		String title = "";
+		
+		if ( requestCode == 1 || requestCode == 2 )
+		{
+			if ( requestCode == 1 )
+				departureAddress = Util.getDongAddressString( result );
+			else if ( requestCode == 2 )
+				destinationAddress = Util.getDongAddressString( result );
+			
+			
+			title = "출발지 : " + departureAddress;
+			if ( destinationAddress == null || "".equals( destinationAddress ) )
+				title += "\r\n목적지를 선택해 주십시오.";
+			else
+				title += "\r\n목적지 : " + destinationAddress;	
+		}
+		else if ( requestCode == 3 )
+		{
+			selectedAddress = Util.getDongAddressString( result );
+			title = "위치 : " + Util.getDongAddressString( result );
+		}
+		
+		txtTitle.setText( title );
 	}
 }

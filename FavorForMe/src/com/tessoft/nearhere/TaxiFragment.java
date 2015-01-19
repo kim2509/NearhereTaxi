@@ -9,14 +9,17 @@ import org.codehaus.jackson.type.TypeReference;
 import com.google.android.gms.drive.internal.GetMetadataRequest;
 import com.google.android.gms.maps.model.LatLng;
 import com.tessoft.common.AdapterDelegate;
+import com.tessoft.common.AddressTaskDelegate;
+import com.tessoft.common.GetAddressTask;
 import com.tessoft.common.TaxiArrayAdapter;
+import com.tessoft.common.Util;
 import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.ListItemModel;
 import com.tessoft.domain.Post;
-import com.tessoft.domain.TaxiPost;
 import com.tessoft.domain.User;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +34,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-public class TaxiFragment extends BaseListFragment {
+public class TaxiFragment extends BaseListFragment implements AddressTaskDelegate{
 
 	TaxiArrayAdapter adapter = null;
 	View header2 = null;
@@ -70,7 +73,7 @@ public class TaxiFragment extends BaseListFragment {
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 						int arg2, long arg3) {
 					// TODO Auto-generated method stub
-					TaxiPost post = (TaxiPost) arg1.getTag();
+					Post post = (Post) arg1.getTag();
 				
 					Intent intent = new Intent( getActivity(), TaxiPostDetailActivity.class);
 					intent.putExtra("post", post);
@@ -204,9 +207,12 @@ public class TaxiFragment extends BaseListFragment {
 			{
 				APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
 				String postData = mapper.writeValueAsString( response.getData() );
-				List<TaxiPost> postList = mapper.readValue( postData, new TypeReference<List<TaxiPost>>(){});
+				List<Post> postList = mapper.readValue( postData, new TypeReference<List<Post>>(){});
 				adapter.setItemList(postList);
 				adapter.notifyDataSetChanged();
+				
+				TextView txtNumOfUsers = (TextView) header2.findViewById(R.id.txtNumOfUsers);
+				txtNumOfUsers.setText("합승내역 : " + postList.size() );
 			}
 		}
 		catch( Exception ex )
@@ -233,7 +239,7 @@ public class TaxiFragment extends BaseListFragment {
 		hash.put("distance", distance);
 		
 		getActivity().setProgressBarIndeterminateVisibility(true);
-		execTransReturningString("/taxi/getPostsNearHere.do", mapper.writeValueAsString(hash), 1);
+		sendHttp("/taxi/getPostsNearHere.do", mapper.writeValueAsString(hash), 1);
 	}
 	
 	boolean bUpdatedOnce = false;
@@ -246,6 +252,17 @@ public class TaxiFragment extends BaseListFragment {
 			{
 				inquiryPosts();
 				bUpdatedOnce = true;
+			}
+			
+			if ( departure == null )
+			{
+				Location loc = new Location("taxiFragment");
+				loc.setLatitude(location.latitude);
+				loc.setLongitude(location.longitude);
+				
+				Location[] locs = new Location[1];
+				locs[0] = loc;
+				new GetAddressTask( getActivity(), this, 1 ).execute(locs);	
 			}
 			
 			header3.findViewById(R.id.txtGuide1).setVisibility(ViewGroup.GONE);
@@ -261,5 +278,14 @@ public class TaxiFragment extends BaseListFragment {
 	{
 		TextView txtDeparture = (TextView) header3.findViewById(R.id.txtDeparture);
 		txtDeparture.setText(address);
+	}
+
+	@Override
+	public void onAddressTaskPostExecute(int requestCode, Object result) {
+		// TODO Auto-generated method stub
+				
+		String address = Util.getDongAddressString( result );
+		
+		setAddressText( address );
 	}
 }

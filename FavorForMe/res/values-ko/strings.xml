@@ -46,6 +46,12 @@
         <item>3km</item>
         <item>5km</item>
     </string-array>
+    
+    <string-array name="sex_list">
+        <item>미지정</item>
+        <item>남</item>
+        <item>여</item>
+    </string-array>
 
     <string name="drawer_open">메뉴 선택</string>
     <string name="drawer_close">Close navigation drawer</string>

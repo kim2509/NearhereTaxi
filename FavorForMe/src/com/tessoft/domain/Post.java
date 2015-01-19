@@ -11,6 +11,7 @@ public class Post extends ListItemModel {
 	protected String postID;
 	protected String latitude;
 	protected String longitude;
+	protected String toAddress;
 	protected String message;
 	
 	protected String fromLatitude;
@@ -151,5 +152,13 @@ public class Post extends ListItemModel {
 
 	public void setFromAddress(String fromAddress) {
 		this.fromAddress = fromAddress;
+	}
+
+	public String getToAddress() {
+		return toAddress;
+	}
+
+	public void setToAddress(String toAddress) {
+		this.toAddress = toAddress;
 	}
 }

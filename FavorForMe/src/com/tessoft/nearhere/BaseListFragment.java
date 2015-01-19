@@ -5,6 +5,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import com.tessoft.common.AdapterDelegate;
 import com.tessoft.common.HttpTransactionReturningString;
 import com.tessoft.common.TransactionDelegate;
+import com.tessoft.domain.User;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -41,11 +42,6 @@ public class BaseListFragment extends BaseFragment implements AdapterDelegate, T
 	public void doAction(String actionName, Object param) {
 		// TODO Auto-generated method stub
 		
-	}
-	
-	public void execTransReturningString( String url, Object request, int requestCode )
-	{
-		new HttpTransactionReturningString( this, url, requestCode ).execute( request );
 	}
 	
 	public void catchException ( Object target, Exception ex )
@@ -110,5 +106,19 @@ public class BaseListFragment extends BaseFragment implements AdapterDelegate, T
 	public void okClicked( Object param )
 	{
 		
+	}
+	
+	public void sendHttp( String url, Object request, int requestCode )
+	{
+		new HttpTransactionReturningString( this, url, requestCode ).execute( request );
+	}
+	
+	public User getLoginUser()
+	{
+		User user = new User();
+		user.setUserID( getMetaInfoString("userID") );
+		user.setUserName( getMetaInfoString("userName") );
+		user.setProfileImageURL( getMetaInfoString("profileImageURL"));
+		return user;
 	}
 }
