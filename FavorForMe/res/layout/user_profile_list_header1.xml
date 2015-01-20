@@ -72,8 +72,8 @@
             <Spinner
                 android:id="@+id/spSex"
                 android:layout_width="match_parent"
-                android:layout_weight="30"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_weight="30" />
         </LinearLayout>
 
         <LinearLayout
@@ -88,14 +88,58 @@
                 android:gravity="left"
                 android:text="생년월일" />
 
-            <TextView
-                android:id="@+id/txtBirthday"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="30"
-                android:gravity="left"
-                android:text="미입력" />
+                android:layout_gravity="center_vertical"
+                android:layout_weight="30" >
+
+                <TextView
+                    android:id="@+id/txtBirthday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:gravity="left"
+                    android:text="미입력" />
+
+                <TextView
+                    android:id="@+id/txtChangeBirthday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="변경하기"
+                    android:textColor="#3B5D98"
+                    android:textStyle="bold" />
+            </RelativeLayout>
         </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutBirthday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" 
+            android:visibility="gone">
+
+            <DatePicker
+                android:id="@+id/datepicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:calendarViewShown="false"
+                android:spinnersShown="true" />
+
+            <TextView
+                android:id="@+id/txtSetDatePicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:text="업데이트"
+                android:textColor="#3B5D98"
+                android:textStyle="bold" />
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -113,8 +157,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_weight="30"
-                android:orientation="horizontal" >
+                android:layout_weight="30" >
 
                 <TextView
                     android:id="@+id/txtHomeLocation"
@@ -205,9 +248,9 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/edtJobTitle"
                     android:layout_alignParentRight="true"
+                    android:text="업데이트"
                     android:textColor="#3B5D98"
-                    android:textStyle="bold"
-                    android:text="업데이트" />
+                    android:textStyle="bold" />
             </RelativeLayout>
         </LinearLayout>
 

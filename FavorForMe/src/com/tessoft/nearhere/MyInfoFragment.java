@@ -1,5 +1,6 @@
 package com.tessoft.nearhere;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,8 +23,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.WebView.FindListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -52,108 +55,7 @@ public class MyInfoFragment extends BaseListFragment {
 			listMain.setAdapter(adapter);
 			adapter.setDelegate(this);
 			
-			TextView txtPickHomeLocation = (TextView) rootView.findViewById(R.id.txtPickHomeLocation);
-			txtPickHomeLocation.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					try
-					{
-						Intent intent = new Intent( getActivity(), SetDestinationActivity.class);
-						intent.putExtra("command", "address");
-						startActivityForResult(intent, 1);
-						getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
-					}
-					catch( Exception ex )
-					{
-						catchException(MyInfoFragment.this, ex);
-					}
-				}
-			});
-			
-			TextView txtPickOfficeLocation = (TextView) rootView.findViewById(R.id.txtPickOfficeLocation);
-			txtPickOfficeLocation.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					try
-					{
-						Intent intent = new Intent( getActivity(), SetDestinationActivity.class);
-						intent.putExtra("command", "address");
-						startActivityForResult(intent, 2);
-						getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
-					}
-					catch( Exception ex )
-					{
-						catchException(MyInfoFragment.this, ex);
-					}
-				}
-			});
-			
-			spSex = (Spinner) header.findViewById(R.id.spSex);
-			ArrayAdapter<CharSequence> sexAdapter = ArrayAdapter.createFromResource( getActivity(),
-			        R.array.sex_list, android.R.layout.simple_spinner_item);
-			sexAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-			spSex.setAdapter(sexAdapter);
-			spSex.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-				@Override
-				public void onItemSelected(AdapterView<?> arg0, View arg1,
-						int arg2, long arg3) {
-					
-					try
-					{
-						if ( bDataFirstLoaded )
-						{
-							// TODO Auto-generated method stub
-							TextView txtView = (TextView) arg1;
-							User user = getLoginUser();
-							if ( "남".equals( txtView.getText() ))
-								user.setSex("M");
-							else if ( "여".equals( txtView.getText() ))
-								user.setSex("F");
-							else
-								return;
-							
-							getActivity().setProgressBarIndeterminateVisibility(true);
-							sendHttp("/taxi/updateUserSex.do", mapper.writeValueAsString(user), 1);							
-						}
-					}
-					catch( Exception ex )
-					{
-						catchException(MyInfoFragment.this, ex);
-					}
-				}
-
-				@Override
-				public void onNothingSelected(AdapterView<?> arg0) {
-					// TODO Auto-generated method stub
-					
-				}
-			});
-			
-			TextView txtUpdateJobTitle = (TextView) rootView.findViewById(R.id.txtUpdateJobTitle);
-			txtUpdateJobTitle.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					try
-					{
-						EditText edtJobTitle = (EditText) header.findViewById(R.id.edtJobTitle);
-						User user = getLoginUser();
-						user.setJobTitle( edtJobTitle.getText().toString() );
-						getActivity().setProgressBarIndeterminateVisibility(true);
-						sendHttp("/taxi/updateUserJobTitle.do", mapper.writeValueAsString(user), 1);		
-					}
-					catch( Exception ex )
-					{
-						catchException(MyInfoFragment.this, ex);
-					}
-				}
-			});
+			initializeComponent();
 			
 			User user = getLoginUser();
 			getActivity().setProgressBarIndeterminateVisibility(true);
@@ -165,6 +67,187 @@ public class MyInfoFragment extends BaseListFragment {
 		}
 		
 		return rootView;
+	}
+
+	private void initializeComponent() {
+		
+		TextView txtPickHomeLocation = (TextView) rootView.findViewById(R.id.txtPickHomeLocation);
+		txtPickHomeLocation.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				try
+				{
+					Intent intent = new Intent( getActivity(), SetDestinationActivity.class);
+					intent.putExtra("command", "address");
+					startActivityForResult(intent, 1);
+					getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
+				}
+				catch( Exception ex )
+				{
+					catchException(MyInfoFragment.this, ex);
+				}
+			}
+		});
+		
+		TextView txtPickOfficeLocation = (TextView) rootView.findViewById(R.id.txtPickOfficeLocation);
+		txtPickOfficeLocation.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				try
+				{
+					Intent intent = new Intent( getActivity(), SetDestinationActivity.class);
+					intent.putExtra("command", "address");
+					startActivityForResult(intent, 2);
+					getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
+				}
+				catch( Exception ex )
+				{
+					catchException(MyInfoFragment.this, ex);
+				}
+			}
+		});
+		
+		spSex = (Spinner) header.findViewById(R.id.spSex);
+		ArrayAdapter<CharSequence> sexAdapter = ArrayAdapter.createFromResource( getActivity(),
+		        R.array.sex_list, android.R.layout.simple_spinner_item);
+		sexAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spSex.setAdapter(sexAdapter);
+		spSex.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				
+				try
+				{
+					if ( bDataFirstLoaded )
+					{
+						// TODO Auto-generated method stub
+						TextView txtView = (TextView) arg1;
+						User user = getLoginUser();
+						if ( "남".equals( txtView.getText() ))
+							user.setSex("M");
+						else if ( "여".equals( txtView.getText() ))
+							user.setSex("F");
+						else
+							return;
+						
+						getActivity().setProgressBarIndeterminateVisibility(true);
+						sendHttp("/taxi/updateUserSex.do", mapper.writeValueAsString(user), 1);							
+					}
+				}
+				catch( Exception ex )
+				{
+					catchException(MyInfoFragment.this, ex);
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		TextView txtUpdateJobTitle = (TextView) rootView.findViewById(R.id.txtUpdateJobTitle);
+		txtUpdateJobTitle.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				try
+				{
+					EditText edtJobTitle = (EditText) header.findViewById(R.id.edtJobTitle);
+					User user = getLoginUser();
+					user.setJobTitle( edtJobTitle.getText().toString() );
+					getActivity().setProgressBarIndeterminateVisibility(true);
+					sendHttp("/taxi/updateUserJobTitle.do", mapper.writeValueAsString(user), 1);		
+				}
+				catch( Exception ex )
+				{
+					catchException(MyInfoFragment.this, ex);
+				}
+			}
+		});
+		
+		TextView txtChangeBirthday = (TextView) header.findViewById(R.id.txtChangeBirthday);
+		txtChangeBirthday.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				try
+				{
+					TextView txtView = (TextView) v;
+					RelativeLayout layoutBirthday = (RelativeLayout) header.findViewById(R.id.layoutBirthday);
+					
+					if ("변경하기".equals(txtView.getText()))
+					{
+						txtView.setText("취소");
+						layoutBirthday.setVisibility(ViewGroup.VISIBLE);
+					}
+					else
+					{
+						txtView.setText("변경하기");
+						layoutBirthday.setVisibility(ViewGroup.GONE);
+					}
+				}
+				catch( Exception ex )
+				{
+					catchException(MyInfoFragment.this, ex);
+				}
+			}
+		});
+		
+		TextView txtSetDatePicker = (TextView) header.findViewById(R.id.txtSetDatePicker);
+		txtSetDatePicker.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				try
+				{
+					TextView txtChangeBirthday = (TextView) header.findViewById(R.id.txtChangeBirthday);
+					RelativeLayout layoutBirthday = (RelativeLayout) header.findViewById(R.id.layoutBirthday);
+					TextView txtBirthday = (TextView) header.findViewById(R.id.txtBirthday);
+					layoutBirthday.setVisibility(ViewGroup.GONE);
+					txtChangeBirthday.setText("변경하기");
+					
+					DatePicker dp = (DatePicker) header.findViewById(R.id.datepicker);
+					Date date = new Date( dp.getYear()-1900, dp.getMonth(), dp.getDayOfMonth());
+
+					User user = getLoginUser();
+					user.setBirthday(Util.getDateStringFromDate(date, "yyyy-MM-dd"));
+					txtBirthday.setText( user.getBirthday() );
+					
+					getActivity().setProgressBarIndeterminateVisibility(true);
+					sendHttp("/taxi/updateUserBirthday.do", mapper.writeValueAsString( user ), 3 );
+				}
+				catch( Exception ex )
+				{
+					catchException(MyInfoFragment.this, ex);
+				}
+			}
+		});
+		
+		listMain.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				// TODO Auto-generated method stub
+				Post post = (Post) arg1.getTag();
+			
+				Intent intent = new Intent( getActivity(), TaxiPostDetailActivity.class);
+				intent.putExtra("post", post);
+				startActivity(intent);
+				getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+			}
+		});
 	}
 	
 	public boolean bDataFirstLoaded = false;
