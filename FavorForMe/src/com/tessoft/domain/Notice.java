@@ -2,6 +2,8 @@ package com.tessoft.domain;
 
 public class Notice {
 
+	private String noticeID = "";
+	
 	private String title = "";
 	private String content = "";
 	private String createdDate = "";
@@ -22,5 +24,11 @@ public class Notice {
 	}
 	public void setCreatedDate(String createdDate) {
 		this.createdDate = createdDate;
+	}
+	public String getNoticeID() {
+		return noticeID;
+	}
+	public void setNoticeID(String noticeID) {
+		this.noticeID = noticeID;
 	}
 }

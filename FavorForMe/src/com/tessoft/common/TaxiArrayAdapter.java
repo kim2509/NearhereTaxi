@@ -76,7 +76,7 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> {
 			txtDistance.setText( Util.getDistance( item.getDistance()) );
 			
 			TextView txtCreatedDate = (TextView) row.findViewById(R.id.txtCreatedDate);
-			txtCreatedDate.setText( Util.getFormattedDateString( item.getCreatedDate(), "MM-dd HH:mm") );
+			txtCreatedDate.setText( Util.getFormattedDateString( item.getCreatedDate(), "yyyy-MM-dd HH:mm") );
 			
 			ImageView imageView = (ImageView) row.findViewById(R.id.imgProfile);
 			imageView.setImageDrawable(null);

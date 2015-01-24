@@ -1,14 +1,24 @@
 package com.tessoft.nearhere;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.codehaus.jackson.type.TypeReference;
 
 import com.tessoft.common.PushMessageListAdapter;
-import com.tessoft.domain.PushMessage;
+import com.tessoft.domain.APIResponse;
+import com.tessoft.domain.User;
+import com.tessoft.domain.UserMessage;
+import com.tessoft.domain.UserPushMessage;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 public class PushMessageListFragment extends BaseListFragment {
@@ -26,26 +36,44 @@ public class PushMessageListFragment extends BaseListFragment {
 			listMain = (ListView) rootView.findViewById(R.id.listMain);
 			adapter = new PushMessageListAdapter(getActivity(), 0);
 			
-			ArrayList<PushMessage> itemList = new ArrayList<PushMessage>();
-			
-			PushMessage push = new PushMessage();
-			push.setTitle("쪽지가 왔습니다.");
-			push.setCreatedDate("1시간 전");
-			push.setType("message");
-			itemList.add(push);
-			push = new PushMessage();
-			push.setTitle("댓글이 달렸습니다.");
-			push.setCreatedDate("2시간 전");
-			push.setType("post_reply");
-			itemList.add(push);
-			push = new PushMessage();
-			push.setTitle("3키로 근처에서 낙성대로 등록되었습니다.");
-			push.setCreatedDate("2시간 전");
-			push.setType("home_recommend");
-			itemList.add(push);
-			
-			adapter.setItemList(itemList);
 			listMain.setAdapter(adapter);
+			
+			getActivity().setProgressBarIndeterminateVisibility(true);
+			
+			User user = getLoginUser();
+			sendHttp("/taxi/getUserPushMessage.do", mapper.writeValueAsString(user), 1);
+			
+			listMain.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					// TODO Auto-generated method stub
+					try
+					{
+						if ( arg1.getTag() != null )
+						{
+							UserPushMessage message = (UserPushMessage) arg1.getTag();
+							if ( "message".equals( message.getType() ) )
+							{
+								String fromUserID = message.getParam1();
+								goUserChatActivity( fromUserID );								
+							}
+							else if ( "postReply".equals( message.getType() ) )
+							{
+								Intent intent = new Intent( getActivity(), TaxiPostDetailActivity.class);
+								intent.putExtra("postID", message.getParam1() );
+								startActivity(intent);
+								getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+							}
+						}
+					}
+					catch( Exception ex )
+					{
+						catchException(this, ex);
+					}
+				}
+			});
 		}
 		catch( Exception ex )
 		{
@@ -55,4 +83,46 @@ public class PushMessageListFragment extends BaseListFragment {
 		return rootView;
 	}
 
+	@Override
+	public void doPostTransaction(int requestCode, Object result) {
+		// TODO Auto-generated method stub
+		try
+		{
+			getActivity().setProgressBarIndeterminateVisibility(false);
+			
+			super.doPostTransaction(requestCode, result);
+			
+			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
+			
+			if ( "0000".equals( response.getResCode() ) )
+			{
+				String userPushMessageString = mapper.writeValueAsString( response.getData() );
+				List<UserPushMessage> messageList = mapper.readValue( userPushMessageString , new TypeReference<List<UserPushMessage>>(){});
+				adapter.setItemList(messageList);
+				adapter.notifyDataSetChanged();
+			}
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
+	
+	public void goUserChatActivity( String fromUserID )
+	{
+		try
+		{
+			HashMap hash = new HashMap();
+			hash.put("fromUserID",  fromUserID );
+			hash.put("userID",  getLoginUser().getUserID() );
+			Intent intent = new Intent( getActivity(), UserMessageActivity.class);
+			intent.putExtra("messageInfo", hash );
+			startActivity(intent);
+			getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);	
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
 }

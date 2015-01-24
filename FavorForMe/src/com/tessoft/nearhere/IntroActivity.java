@@ -2,11 +2,15 @@ package com.tessoft.nearhere;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.tessoft.nearhere.R;
 
 public class IntroActivity extends BaseActivity {
@@ -18,13 +22,12 @@ public class IntroActivity extends BaseActivity {
 		{
 			super.onCreate(savedInstanceState);
 			
-			getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-			getActionBar().hide();
-			
-			setContentView(R.layout.activity_intro);	
+			setContentView(R.layout.activity_intro);
 			
 			EditText edtUserID = (EditText) findViewById(R.id.edtUserID);
 			edtUserID.setText( getMetaInfoString("userID"));
+			
+			checkPlayServices();
 		}
 		catch( Exception ex )
 		{
@@ -55,6 +58,8 @@ public class IntroActivity extends BaseActivity {
 	{
 		try
 		{
+			setMetaInfo("registrationID", "");
+			
 			EditText edtUserID = (EditText) findViewById(R.id.edtUserID);
 			setMetaInfo("userID", edtUserID.getText().toString());
 			EditText edtUserName = (EditText) findViewById(R.id.edtUserName);
@@ -76,5 +81,21 @@ public class IntroActivity extends BaseActivity {
 		startActivity(intent);
 		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 		finish();
+	}
+	
+	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+	private boolean checkPlayServices() {
+	    int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+	    if (resultCode != ConnectionResult.SUCCESS) {
+	        if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+	            GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+	                    PLAY_SERVICES_RESOLUTION_REQUEST).show();
+	        } else {
+	            Log.i("intro", "This device is not supported.");
+	            finish();
+	        }
+	        return false;
+	    }
+	    return true;
 	}
 }

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.tessoft.domain.PushMessage;
 import com.tessoft.domain.UserMessage;
 import com.tessoft.nearhere.R;
 
@@ -62,17 +61,21 @@ public class MessageBoxListAdapter extends ArrayAdapter<UserMessage> {
 			}
 
 			ImageView imgProfile = (ImageView) row.findViewById(R.id.imgProfile);
-			if ( item.getFromUser() != null && item.getFromUser().getProfileImageURL() != null && 
-					!"".equals( item.getFromUser().getProfileImageURL() ) )
+			imgProfile.setImageDrawable(null);
+			if ( item.getUser() != null && item.getUser().getProfileImageURL() != null && 
+					!"".equals( item.getUser().getProfileImageURL() ) )
 			{
 				ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
-						item.getFromUser().getProfileImageURL() , imgProfile);
+						item.getUser().getProfileImageURL() , imgProfile);
+				
+				TextView txtUserName = (TextView) row.findViewById(R.id.txtUserName);
+				txtUserName.setText( item.getUser().getUserName() );
 			}
 			
 			TextView txtMessage = (TextView) row.findViewById(R.id.txtMessage);
 			txtMessage.setText( item.getMessage() );
 			TextView txtCreatedDate = (TextView) row.findViewById(R.id.txtCreatedDate);
-			txtCreatedDate.setText( item.getCreatedDate() );
+			txtCreatedDate.setText( Util.getFormattedDateString( item.getCreatedDate(), "yyyy-MM-dd HH:mm") );
 			
 			row.setTag( item );
 		}

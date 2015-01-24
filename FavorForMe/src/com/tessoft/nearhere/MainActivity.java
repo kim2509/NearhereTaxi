@@ -1,9 +1,12 @@
 package com.tessoft.nearhere;
 
+import java.io.IOException;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -14,15 +17,23 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+import com.tessoft.common.Util;
+import com.tessoft.domain.User;
 
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,6 +46,7 @@ import android.widget.ListView;
 public class MainActivity extends BaseActivity 
 	implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener{
 
+	public static boolean active = false;
 	DrawerLayout mDrawerLayout = null;
 	ListView mDrawerList = null;
 	String mTitle = "";
@@ -43,6 +55,13 @@ public class MainActivity extends BaseActivity
 	private Fragment mainFragment = null;
 	GoogleApiClient mGoogleApiClient = null;
 
+	public static final String EXTRA_MESSAGE = "message";
+    public static final String PROPERTY_REG_ID = "registration_id";
+    private static final String PROPERTY_APP_VERSION = "appVersion";
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    String SENDER_ID = "30113798803";
+    GoogleCloudMessaging gcm;
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
@@ -105,6 +124,13 @@ public class MainActivity extends BaseActivity
 		
 			buildGoogleApiClient();
 			createLocationRequest();
+			
+			gcm = GoogleCloudMessaging.getInstance(this);
+			regid = getMetaInfoString("registrationID");
+			if ( regid.isEmpty() )
+			{
+				registerInBackground();
+			}
 		}
 		catch( Exception ex )
 		{
@@ -118,6 +144,8 @@ public class MainActivity extends BaseActivity
 		// TODO Auto-generated method stub
 		super.onStart();
 		
+		active = true;
+		
 		mGoogleApiClient.connect();
 		
 	}
@@ -126,6 +154,8 @@ public class MainActivity extends BaseActivity
 	protected void onStop() {
 		// TODO Auto-generated method stub
 		super.onStop();
+		
+		active = false;
 		
 		stopLocationUpdates();
 		
@@ -174,7 +204,7 @@ public class MainActivity extends BaseActivity
 		else if ( "공지사항".equals( mMenuList[position]) )
 			mainFragment = new NoticeListFragment();
 		else
-			bFragment = false;
+			mainFragment = new SettingsFragment();
 
 		if ( bFragment )
 		{
@@ -308,5 +338,95 @@ public class MainActivity extends BaseActivity
 	public void onConnectionSuspended(int arg0) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	static final String TAG = "Nearhere";
+	
+	/**
+	 * @return Application's {@code SharedPreferences}.
+	 */
+	private SharedPreferences getGCMPreferences(Context context) {
+	    // This sample app persists the registration ID in shared preferences, but
+	    // how you store the regID in your app is up to you.
+	    return getSharedPreferences(MainActivity.class.getSimpleName(),
+	            Context.MODE_PRIVATE);
+	}
+	
+	private static int getAppVersion(Context context) {
+	    try {
+	        PackageInfo packageInfo = context.getPackageManager()
+	                .getPackageInfo(context.getPackageName(), 0);
+	        return packageInfo.versionCode;
+	    } catch (NameNotFoundException e) {
+	        // should never happen
+	        throw new RuntimeException("Could not get package name: " + e);
+	    }
+	}
+	
+	String regid;
+	/**
+	 * Registers the application with GCM servers asynchronously.
+	 * <p>
+	 * Stores the registration ID and the app versionCode in the application's
+	 * shared preferences.
+	 */
+	private void registerInBackground() {
+		new AsyncTask<Void, Void, String>() {
+			@Override
+			protected String doInBackground(Void... params) {
+				String msg = "";
+				try {
+					if (gcm == null) {
+						gcm = GoogleCloudMessaging.getInstance( getApplicationContext() );
+					}
+					regid = gcm.register(SENDER_ID);
+					msg = "Device registered, registration ID=" + regid;
+
+					// You should send the registration ID to your server over HTTP, so it
+					// can use GCM/HTTP or CCS to send messages to your app.
+					sendRegistrationIdToBackend( regid );
+
+					setMetaInfo("registrationID",  regid );
+				} catch (IOException ex) {
+					msg = "Error :" + ex.getMessage();
+					// If there is an error, don't just keep trying to register.
+					// Require the user to click a button again, or perform
+					// exponential back-off.
+				}
+				return msg;
+			}
+
+			@Override
+			protected void onPostExecute(String msg) {
+				Log.i(TAG, msg);
+			}
+		}.execute(null, null, null);
+	}
+
+	public void sendRegistrationIdToBackend( String regid )
+	{
+		try
+		{
+			User user = getLoginUser();
+			user.setRegID(regid);
+			sendHttp("/taxi/updateUserRegID.do", mapper.writeValueAsString( user ), 1);
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
+	
+	@Override
+	public void doPostTransaction(int requestCode, Object result) {
+		// TODO Auto-generated method stub
+		try
+		{
+			super.doPostTransaction(requestCode, result);
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
 	}
 }

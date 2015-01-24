@@ -1,6 +1,7 @@
 package com.tessoft.nearhere;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -34,6 +35,7 @@ import com.tessoft.domain.PostReply;
 import com.tessoft.domain.User;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
@@ -64,7 +66,7 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 		try
 		{
 			super.onCreate(savedInstanceState);
-			
+
 			header = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_header1, null);
 			header2 = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_header2, null);
 			footer = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_footer, null);
@@ -88,9 +90,15 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 					goUserProfileActivity();
 				}
 			});
-			
+
 			setProgressBarIndeterminateVisibility(true);
-			sendHttp("/taxi/getPostDetail.do", mapper.writeValueAsString(post), 1);
+
+			HashMap hash = new HashMap();
+			hash.put("postID", getIntent().getExtras().getString("postID") );
+			hash.put("latitude", getMetaInfoString("latitude"));
+			hash.put("longitude", getMetaInfoString("longitude"));
+
+			sendHttp("/taxi/getPostDetail.do", mapper.writeValueAsString(hash), 1);
 		}
 		catch(Exception ex )
 		{
@@ -100,43 +108,16 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 
 	public void initializeComponent() throws Exception
 	{
-		if ( getIntent().getExtras().get("post") != null )
-		{
-			post = (Post) getIntent().getExtras().get("post");
+		MapFragment mapFragment = (MapFragment) getFragmentManager()
+				.findFragmentById(R.id.map);
+		mapFragment.getMapAsync(this);
+		makeMapScrollable();
+	}
 
-			ImageView imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
-			ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
-					post.getUser().getProfileImageURL() , imgProfile);
-
-			String age = "";
-			
-			if ( post.getUser().getAge() != null && !"".equals( post.getUser().getAge() ) )
-				age = " (" + post.getUser().getAge() + ")";
-			
-			TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
-			txtUserName.setText( post.getUser().getUserName() + age );
-			
-			TextView txtTitle = (TextView) header.findViewById(R.id.txtTitle);
-			txtTitle.setText( post.getMessage() );
-			
-			TextView txtDeparture = (TextView) header.findViewById(R.id.txtDeparture);
-			txtDeparture.setText( post.getFromAddress() );
-			
-			TextView txtDestination = (TextView) header.findViewById(R.id.txtDestination);
-			txtDestination.setText( post.getToAddress() );
-			
-			TextView txtDistance = (TextView) header.findViewById(R.id.txtDistance);
-			txtDistance.setText( Util.getDistance(post.getDistance()) );
-			
-			TextView txtCreatedDate = (TextView) header.findViewById(R.id.txtCreatedDate);
-			txtCreatedDate.setText( Util.getFormattedDateString(post.getCreatedDate(), "M-dd HH:mm") );
-
-			MapFragment mapFragment = (MapFragment) getFragmentManager()
-					.findFragmentById(R.id.map);
-			mapFragment.getMapAsync(this);
-			
-			makeMapScrollable();
-		}
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
 	}
 
 	@Override
@@ -144,7 +125,7 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 		// TODO Auto-generated method stub
 		super.onDestroy();
 	}
-	
+
 	private void makeMapScrollable() {
 
 		ImageView transparentImageView = (ImageView) header2.findViewById(R.id.transparent_image);
@@ -209,66 +190,64 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 	public void goUserProfileActivity()
 	{
 		Intent intent = new Intent( this, UserProfileActivity.class);
+		intent.putExtra("userID", post.getUser().getUserID());
 		startActivity(intent);
 		overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
 	}
 
 	public void goUserChatActivity()
 	{
-		Intent intent = new Intent( this, UserChatActivity.class);
+		Intent intent = new Intent( this, UserMessageActivity.class);
 		startActivity(intent);
 		overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
 	}
 
 	Marker departureMarker = null;
 	Marker destinationMarker = null;
-	
+
 	@Override
 	public void onMapReady(GoogleMap m ) {
 		// TODO Auto-generated method stub
 		try
 		{
 			this.map = m;
-
-			if ( post != null )
-			{
-				double fromLatitude = Double.parseDouble(post.getFromLatitude());
-				double fromLongitude = Double.parseDouble(post.getFromLongitude());
-
-				LatLng Fromlocation = new LatLng( fromLatitude, fromLongitude );
-				
-				double latitude = Double.parseDouble(post.getLatitude());
-				double longitude = Double.parseDouble(post.getLongitude());
-
-				LatLng location = new LatLng( latitude, longitude );
-				
-				departureMarker = map.addMarker(new MarkerOptions()
-				.position( Fromlocation )
-				.title("출발지"));
-				
-				destinationMarker = map.addMarker(new MarkerOptions()
-				.position( location )
-				.title("목적지"));
-				
-				PolylineOptions rectOptions = new PolylineOptions()
-				        .add( Fromlocation ) 
-				        .add( location );
-
-				Polyline polyline = map.addPolyline(rectOptions);
-				
-				moveMap( location );
-				
-				destinationMarker.showInfoWindow();
-			}
-			else
-				showToastMessage("onmapReady but null");
 		}
 		catch( Exception ex )
 		{
 			catchException(this, ex);
 		}
 	}
-	
+
+	private void drawPostOnMap() {
+		double fromLatitude = Double.parseDouble(post.getFromLatitude());
+		double fromLongitude = Double.parseDouble(post.getFromLongitude());
+
+		LatLng Fromlocation = new LatLng( fromLatitude, fromLongitude );
+
+		double latitude = Double.parseDouble(post.getLatitude());
+		double longitude = Double.parseDouble(post.getLongitude());
+
+		LatLng location = new LatLng( latitude, longitude );
+
+		departureMarker = map.addMarker(new MarkerOptions()
+		.position( Fromlocation )
+		.title("출발지"));
+
+		destinationMarker = map.addMarker(new MarkerOptions()
+		.position( location )
+		.title("목적지"));
+
+		PolylineOptions rectOptions = new PolylineOptions()
+		.add( Fromlocation ) 
+		.add( location );
+
+		Polyline polyline = map.addPolyline(rectOptions);
+
+		moveMap( location );
+
+		destinationMarker.showInfoWindow();
+	}
+
 	@Override
 	public void finish() {
 		// TODO Auto-generated method stub
@@ -308,15 +287,15 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 		try
 		{
 			EditText edtPostReply = (EditText) footer.findViewById(R.id.edtPostReply);
-			
+
 			if ( TextUtils.isEmpty(edtPostReply.getText()) )
 			{
 				edtPostReply.setError("댓글을 입력해 주시기 바랍니다.");
 				return;
 			}
-			
+
 			setProgressBarIndeterminateVisibility(true);
-			
+
 			PostReply postReply = new PostReply();
 			postReply.setPostID( post.getPostID() );
 			postReply.setUser( getLoginUser() );
@@ -332,22 +311,51 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 			catchException(this, ex);
 		}
 	}
-	
+
 	@Override
 	public void doPostTransaction(int requestCode, Object result) {
 		// TODO Auto-generated method stub
 		try
 		{
 			setProgressBarIndeterminateVisibility(false);
-			
+
 			super.doPostTransaction(requestCode, result);
-			
+
 			if ( requestCode == 1 )
 			{
 				APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
 				String postData = mapper.writeValueAsString( response.getData() );
 				post = mapper.readValue( postData, new TypeReference<Post>(){});
-				
+
+				drawPostOnMap();
+
+				ImageView imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
+				ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
+						post.getUser().getProfileImageURL() , imgProfile);
+
+				String age = "";
+
+				if ( post.getUser().getAge() != null && !"".equals( post.getUser().getAge() ) )
+					age = " (" + post.getUser().getAge() + ")";
+
+				TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
+				txtUserName.setText( post.getUser().getUserName() + age );
+
+				TextView txtTitle = (TextView) header.findViewById(R.id.txtTitle);
+				txtTitle.setText( post.getMessage() );
+
+				TextView txtDeparture = (TextView) header.findViewById(R.id.txtDeparture);
+				txtDeparture.setText( post.getFromAddress() );
+
+				TextView txtDestination = (TextView) header.findViewById(R.id.txtDestination);
+				txtDestination.setText( post.getToAddress() );
+
+				TextView txtDistance = (TextView) header.findViewById(R.id.txtDistance);
+				txtDistance.setText( Util.getDistance(post.getDistance()) );
+
+				TextView txtCreatedDate = (TextView) header.findViewById(R.id.txtCreatedDate);
+				txtCreatedDate.setText( Util.getFormattedDateString(post.getCreatedDate(), "yyyy-MM-dd HH:mm") );
+
 				adapter.setItemList( post.getPostReplies() );
 				adapter.notifyDataSetChanged();
 			}

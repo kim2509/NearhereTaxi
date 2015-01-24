@@ -76,7 +76,7 @@ public class TaxiFragment extends BaseListFragment implements AddressTaskDelegat
 					Post post = (Post) arg1.getTag();
 				
 					Intent intent = new Intent( getActivity(), TaxiPostDetailActivity.class);
-					intent.putExtra("post", post);
+					intent.putExtra("postID", post.getPostID() );
 					startActivity(intent);
 					getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 				}
@@ -277,7 +277,7 @@ public class TaxiFragment extends BaseListFragment implements AddressTaskDelegat
 	private void setAddressText( String address )
 	{
 		TextView txtDeparture = (TextView) header3.findViewById(R.id.txtDeparture);
-		txtDeparture.setText(address);
+		txtDeparture.setText("출발지:" + address);
 	}
 
 	@Override

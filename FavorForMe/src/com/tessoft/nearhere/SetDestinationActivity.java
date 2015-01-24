@@ -47,7 +47,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 
 	GoogleMap map = null;
 	GoogleApiClient mGoogleApiClient = null;
-	int ZoomLevel = 16;
+	int ZoomLevel = 13;
 	Marker marker = null;
 	String command = "";
 	LatLng initLocation = null;

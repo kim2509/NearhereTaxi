@@ -3,7 +3,7 @@ package com.tessoft.common;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tessoft.domain.PushMessage;
+import com.tessoft.domain.UserPushMessage;
 import com.tessoft.nearhere.R;
 
 import android.content.Context;
@@ -14,15 +14,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class PushMessageListAdapter extends ArrayAdapter<PushMessage> {
+public class PushMessageListAdapter extends ArrayAdapter<UserPushMessage> {
 
-	private List<PushMessage> itemList = new ArrayList<PushMessage>();
+	private List<UserPushMessage> itemList = new ArrayList<UserPushMessage>();
 	private AdapterDelegate delegate = null;
 
 	LayoutInflater inflater = null;
 
 	@Override
-	public void add(PushMessage object) {
+	public void add(UserPushMessage object) {
 		itemList.add(object);
 		super.add(object);
 	}
@@ -36,11 +36,11 @@ public class PushMessageListAdapter extends ArrayAdapter<PushMessage> {
 		return this.itemList.size();
 	}
 
-	public PushMessage getItem(int index) {
+	public UserPushMessage getItem(int index) {
 		return this.itemList.get(index);
 	}
 
-	public void setItemList( List<PushMessage> itemList )
+	public void setItemList( List<UserPushMessage> itemList )
 	{
 		this.itemList = itemList;
 		notifyDataSetChanged();
@@ -52,16 +52,16 @@ public class PushMessageListAdapter extends ArrayAdapter<PushMessage> {
 
 		try
 		{
-			PushMessage item = getItem(position);
+			UserPushMessage item = getItem(position);
 
 			if (row == null) {
 				row = inflater.inflate(R.layout.list_push_message_item, parent, false);
 			}
 
 			TextView txtTitle = (TextView) row.findViewById(R.id.txtTitle);
-			txtTitle.setText( item.getTitle() );
+			txtTitle.setText( item.getMessage() );
 			TextView txtCreatedDate = (TextView) row.findViewById(R.id.txtCreatedDate);
-			txtCreatedDate.setText( item.getCreatedDate() );
+			txtCreatedDate.setText( Util.getFormattedDateString( item.getCreatedDate(), "yyyy-MM-dd" ) );
 			
 			row.setTag( item );
 		}

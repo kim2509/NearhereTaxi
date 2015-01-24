@@ -27,8 +27,6 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/imgProfile"
         android:layout_marginLeft="10dp"
-        android:layout_toLeftOf="@+id/txtCreatedDate"
-        android:textSize="17sp"
         android:text="titile"
         />
     
@@ -38,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/txtTitle"
         android:layout_below="@+id/txtTitle"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:text="@string/departure"
         android:textColor="@android:color/black" />
     
@@ -75,16 +73,18 @@
         android:id="@+id/txtCreatedDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_below="@+id/txtGuide2"
+        android:layout_alignLeft="@+id/txtGuide2"
+        android:layout_marginTop="5dp"
         android:text="1시간 전"
-        android:textColor="#3B5D98" />
+		android:textSize="12sp"/>
     
     <TextView
         android:id="@+id/txtDistance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/txtCreatedDate"
+        android:layout_alignBaseline="@+id/txtCreatedDate"
         android:layout_marginTop="10dp"
         android:text="10m"
         android:textColor="@android:color/black" />

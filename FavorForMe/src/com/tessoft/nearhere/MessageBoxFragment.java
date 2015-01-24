@@ -1,14 +1,24 @@
 package com.tessoft.nearhere;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.codehaus.jackson.type.TypeReference;
 
 import com.tessoft.common.MessageBoxListAdapter;
+import com.tessoft.domain.APIResponse;
+import com.tessoft.domain.Notice;
+import com.tessoft.domain.User;
 import com.tessoft.domain.UserMessage;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 public class MessageBoxFragment extends BaseListFragment {
@@ -25,20 +35,23 @@ public class MessageBoxFragment extends BaseListFragment {
 			
 			listMain = (ListView) rootView.findViewById(R.id.listMain);
 			adapter = new MessageBoxListAdapter(getActivity(), 0);
-			
-			ArrayList<UserMessage> itemList = new ArrayList<UserMessage>();
-			
-			UserMessage message = new UserMessage();
-			message.setMessage("안녕하세요~~");
-			message.setCreatedDate("1시간 전");
-			itemList.add(message);
-			message = new UserMessage();
-			message.setMessage("신규 론치하였습니다. 많은 이용 바랍니다.");
-			message.setCreatedDate("2시간 전");
-			itemList.add(message);
-			
-			adapter.setItemList(itemList);
 			listMain.setAdapter(adapter);
+			
+			User user = getLoginUser();
+			
+			getActivity().setProgressBarIndeterminateVisibility(true);
+			sendHttp("/taxi/getUserMessageList.do", mapper.writeValueAsString(user), 1);
+			
+			listMain.setOnItemClickListener( new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					// TODO Auto-generated method stub
+					UserMessage um = (UserMessage) arg1.getTag();
+					goUserChatActivity( um );
+				}
+			});
 		}
 		catch( Exception ex )
 		{
@@ -46,5 +59,48 @@ public class MessageBoxFragment extends BaseListFragment {
 		}
 		
 		return rootView;
+	}
+	
+	@Override
+	public void doPostTransaction(int requestCode, Object result) {
+		// TODO Auto-generated method stub
+		try
+		{
+			getActivity().setProgressBarIndeterminateVisibility(false);
+			
+			super.doPostTransaction(requestCode, result);
+			
+			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
+			
+			if ( "0000".equals( response.getResCode() ) )
+			{
+				String noticeListString = mapper.writeValueAsString( response.getData() );
+				List<UserMessage> messageList = mapper.readValue( noticeListString , new TypeReference<List<UserMessage>>(){});
+				adapter.setItemList(messageList);
+				adapter.notifyDataSetChanged();
+			}
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
+	
+	public void goUserChatActivity( UserMessage message )
+	{
+		try
+		{
+			HashMap hash = new HashMap();
+			hash.put("fromUserID",  message.getUser().getUserID() );
+			hash.put("userID",  getLoginUser().getUserID() );
+			Intent intent = new Intent( getActivity(), UserMessageActivity.class);
+			intent.putExtra("messageInfo", hash );
+			startActivity(intent);
+			getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);	
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
 	}
 }

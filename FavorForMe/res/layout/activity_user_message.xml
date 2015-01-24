@@ -1,0 +1,44 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    tools:context="com.tessoft.nearhere.BaseListActivity" >
+
+    <ListView
+        android:id="@+id/listMain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/layoutFooter" >
+    </ListView>
+
+    <RelativeLayout
+        android:id="@+id/layoutFooter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" >
+
+        <Button
+            android:id="@+id/btnSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="전송" />
+
+        <EditText
+            android:id="@+id/edtMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/btnSend"
+            android:layout_alignBottom="@+id/btnSend"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/btnSend"
+            android:ems="10"
+            android:hint="내용을 입력하세요." >
+
+            <requestFocus />
+        </EditText>
+    </RelativeLayout>
+
+</RelativeLayout>

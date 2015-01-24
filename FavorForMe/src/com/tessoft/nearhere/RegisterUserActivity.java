@@ -131,6 +131,7 @@ public class RegisterUserActivity extends BaseActivity {
 				
 				setMetaInfo("userID", user.getUserID());
 				setMetaInfo("userName", user.getUserName());
+				setMetaInfo("profileImageURL", user.getProfileImageURL());
 				
 				goTermsAgreementActivity(null);
 			}

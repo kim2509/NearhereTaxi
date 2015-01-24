@@ -7,6 +7,8 @@ import java.util.List;
 import org.codehaus.jackson.type.TypeReference;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.tessoft.common.Constants;
 import com.tessoft.common.TaxiArrayAdapter;
 import com.tessoft.common.TaxiPostReplyListAdapter;
 import com.tessoft.common.Util;
@@ -28,6 +30,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -243,7 +246,7 @@ public class MyInfoFragment extends BaseListFragment {
 				Post post = (Post) arg1.getTag();
 			
 				Intent intent = new Intent( getActivity(), TaxiPostDetailActivity.class);
-				intent.putExtra("post", post);
+				intent.putExtra("postID", post.getPostID());
 				startActivity(intent);
 				getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 			}
@@ -280,6 +283,16 @@ public class MyInfoFragment extends BaseListFragment {
 					List<Post> postList = mapper.readValue(userPostString, new TypeReference<List<Post>>(){});
 					List<Post> userPostsReplied = mapper.readValue(postsUserRepliedString, new TypeReference<List<Post>>(){});
 					postList.addAll( userPostsReplied );
+					
+					if ( user != null && user.getProfileImageURL() != null && user.getProfileImageURL().isEmpty() == false )
+					{
+						ImageView imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
+						ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
+								user.getProfileImageURL() , imgProfile);
+					}
+					
+					TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
+					txtUserName.setText( user.getUserName() );
 					
 					if ( user.getBirthday() != null && !"".equals( user.getBirthday() ) )
 					{

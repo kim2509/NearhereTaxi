@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tessoft.domain.Notice;
-import com.tessoft.domain.PushMessage;
 import com.tessoft.nearhere.R;
 
 import android.content.Context;
@@ -62,7 +61,7 @@ public class NoticeListAdapter extends ArrayAdapter<Notice> {
 			TextView txtTitle = (TextView) row.findViewById(R.id.txtTitle);
 			txtTitle.setText( item.getTitle() );
 			TextView txtCreatedDate = (TextView) row.findViewById(R.id.txtCreatedDate);
-			txtCreatedDate.setText( item.getCreatedDate() );
+			txtCreatedDate.setText( Util.getFormattedDateString(item.getCreatedDate(),"yyyy-MM-dd") );
 			TextView txtContent = (TextView) row.findViewById(R.id.txtContent);
 			txtContent.setText( item.getContent() );
 			
