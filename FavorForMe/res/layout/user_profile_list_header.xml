@@ -3,14 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="10dp"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
     android:paddingTop="10dp" >
 
     <ImageView
         android:id="@+id/imgProfile"
         android:layout_width="80dp"
-        android:layout_height="80dp" />
+        android:layout_height="80dp"
+        android:paddingLeft="10dp" />
 
     <TextView
         android:id="@+id/txtUserName"
@@ -27,8 +26,8 @@
         android:id="@+id/txtCreditGuide1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/txtUserName"
         android:layout_alignLeft="@+id/txtUserName"
+        android:layout_below="@+id/txtUserName"
         android:layout_marginTop="10dp"
         android:text="신뢰도" />
 
@@ -37,8 +36,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/txtCreditGuide1"
-        android:layout_toRightOf="@+id/txtCreditGuide1"
         android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/txtCreditGuide1"
         android:text="23%"
         android:textColor="#dd0000" />
 
@@ -48,7 +47,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/imgProfile"
         android:layout_marginTop="10dp"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -142,7 +143,7 @@
                 android:gravity="left"
                 android:text="직업" />
 
-             <TextView
+            <TextView
                 android:id="@+id/txtJobTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -168,17 +169,6 @@
                 android:layout_weight="30"
                 android:gravity="left"
                 android:text="미입력" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp" >
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="본인의 프로필을 완성할수록 신뢰도가 높아집니다. 신뢰도를 높여 다른 회원들에게 믿음을 주세요." />
         </LinearLayout>
 
         <LinearLayout

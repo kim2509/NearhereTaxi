@@ -47,7 +47,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 
 	GoogleMap map = null;
 	GoogleApiClient mGoogleApiClient = null;
-	int ZoomLevel = 13;
+	int ZoomLevel = 14;
 	Marker marker = null;
 	String command = "";
 	LatLng initLocation = null;
@@ -131,7 +131,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.set_destination, menu);
-		return true;
+		return false;
 	}
 
 	@Override

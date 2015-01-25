@@ -59,7 +59,7 @@ public class PushMessageListFragment extends BaseListFragment {
 								String fromUserID = message.getParam1();
 								goUserChatActivity( fromUserID );								
 							}
-							else if ( "postReply".equals( message.getType() ) )
+							else
 							{
 								Intent intent = new Intent( getActivity(), TaxiPostDetailActivity.class);
 								intent.putExtra("postID", message.getParam1() );

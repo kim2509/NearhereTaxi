@@ -112,24 +112,39 @@ public class GcmIntentService extends IntentService {
         .setAutoCancel(true);
         
         Intent intent = null;
-        intent = new Intent(this, MainActivity.class);
-        if ( "message".equals( type ) )
-        {
-        	intent.putExtra("fromUserID", extras.getString("fromUserID") );
-        	mBuilder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
-            mBuilder.setVibrate(new long[] { 1000, 1000 });
-        }
-        else if ( "postReply".equals( type ) )
-        {
-        	intent.putExtra("postID", extras.getString("postID") );
-        	mBuilder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
-            mBuilder.setVibrate(new long[] { 1000, 1000 });
-        }
         
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-               intent , PendingIntent.FLAG_UPDATE_CURRENT);
-
-        mBuilder.setContentIntent(contentIntent);
-        mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+        if ( MainActivity.active )
+        {
+        	intent = new Intent("nearhereMain");
+        	intent.putExtra("type", type );
+        	if ( "message".equals( type ) )
+            	intent.putExtra("fromUserID", extras.getString("fromUserID") );
+            else if ( "postReply".equals( type ) )
+            	intent.putExtra("postID", extras.getString("postID") );
+        	
+            getApplicationContext().sendBroadcast(intent);
+        }
+        else
+        {
+        	intent = new Intent(this, MainActivity.class);
+            if ( "message".equals( type ) )
+            {
+            	intent.putExtra("fromUserID", extras.getString("fromUserID") );
+            	mBuilder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
+                mBuilder.setVibrate(new long[] { 1000, 1000 });
+            }
+            else if ( "postReply".equals( type ) )
+            {
+            	intent.putExtra("postID", extras.getString("postID") );
+            	mBuilder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
+                mBuilder.setVibrate(new long[] { 1000, 1000 });
+            }
+            
+            PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+                   intent , PendingIntent.FLAG_UPDATE_CURRENT);
+            
+            mBuilder.setContentIntent(contentIntent);
+            mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+        }
     }
 }

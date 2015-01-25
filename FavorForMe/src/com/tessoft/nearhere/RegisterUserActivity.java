@@ -39,7 +39,7 @@ public class RegisterUserActivity extends BaseActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.register_user, menu);
-		return true;
+		return false;
 	}
 
 	@Override
@@ -153,5 +153,13 @@ public class RegisterUserActivity extends BaseActivity {
 		startActivity(intent);
 		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 		finish();
+	}
+	
+	@Override
+	public void finish() {
+		// TODO Auto-generated method stub
+		super.finish();
+		
+		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
 }

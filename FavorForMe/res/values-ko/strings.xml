@@ -38,6 +38,7 @@
         <item>쪽지함</item>
         <item>공지사항</item>
         <item>설정</item>
+        <item>로그아웃</item>
     </string-array>
     
     <string-array name="distance_list">

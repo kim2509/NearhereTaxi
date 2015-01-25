@@ -1,7 +1,5 @@
 package com.tessoft.nearhere;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -15,15 +13,9 @@ import com.tessoft.domain.User;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.location.Address;
-import android.location.Criteria;
-import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -39,8 +31,6 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		//location = getCurrentGPSLocation();
 	}
 
 	public String getOSVersion()
@@ -103,10 +93,11 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		
 	}
 	
-	public void showYesNoDialog( String message, final Object param )
+	public void showYesNoDialog( String title, String message, final Object param )
 	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage( message )
+		builder.setTitle(title)
+			   .setMessage( message )
 		       .setCancelable(false)
 		       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {

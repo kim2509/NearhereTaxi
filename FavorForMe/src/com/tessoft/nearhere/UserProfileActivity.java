@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -41,9 +42,10 @@ public class UserProfileActivity extends BaseListActivity {
 			super.onCreate(savedInstanceState);
 			
 			header = getLayoutInflater().inflate(R.layout.user_profile_list_header, null);
+			footer = getLayoutInflater().inflate(R.layout.user_profile_list_footer, null);
 			
 			listMain = (ListView) findViewById(R.id.listMain);
-			listMain.addHeaderView(header);
+			listMain.addHeaderView(header, null, false );
 			
 			adapter = new TaxiArrayAdapter( this , 0);
 			listMain.setAdapter(adapter);
@@ -54,14 +56,19 @@ public class UserProfileActivity extends BaseListActivity {
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 						int arg2, long arg3) {
 					// TODO Auto-generated method stub
-					Post post = (Post) arg1.getTag();
-				
-					Intent intent = new Intent( getApplicationContext(), TaxiPostDetailActivity.class);
-					intent.putExtra("postID", post.getPostID());
-					startActivity(intent);
-					overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+					if ( arg1.getTag() != null && arg1.getTag() instanceof Post )
+					{
+						Post post = (Post) arg1.getTag();
+						
+						Intent intent = new Intent( getApplicationContext(), TaxiPostDetailActivity.class);
+						intent.putExtra("postID", post.getPostID());
+						startActivity(intent);
+						overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);						
+					}
 				}
 			});
+			
+			footer.findViewById(R.id.txtNone).setVisibility(ViewGroup.GONE);
 			
 			User user = new User();
 			user.setUserID(getIntent().getExtras().getString("userID"));
@@ -78,7 +85,7 @@ public class UserProfileActivity extends BaseListActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.user_profile, menu);
-		return true;
+		return false;
 	}
 
 	@Override
@@ -126,6 +133,7 @@ public class UserProfileActivity extends BaseListActivity {
 					List<UserLocation> locationList = mapper.readValue(locationListString, new TypeReference<List<UserLocation>>(){});
 					List<Post> postList = mapper.readValue(userPostString, new TypeReference<List<Post>>(){});
 					List<Post> userPostsReplied = mapper.readValue(postsUserRepliedString, new TypeReference<List<Post>>(){});
+					postList.addAll( userPostsReplied );
 					
 					if ( user != null && user.getProfileImageURL() != null && user.getProfileImageURL().isEmpty() == false )
 					{
@@ -173,6 +181,9 @@ public class UserProfileActivity extends BaseListActivity {
 					
 					adapter.setItemList(postList);
 					adapter.notifyDataSetChanged();
+					
+					if ( postList.size() == 0 )
+						footer.findViewById(R.id.txtNone).setVisibility(ViewGroup.VISIBLE);
 				}
 			}
 		}

@@ -24,8 +24,10 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -33,6 +35,7 @@ import android.content.res.Configuration;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,6 +45,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class MainActivity extends BaseActivity 
 	implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener{
@@ -68,6 +72,9 @@ public class MainActivity extends BaseActivity
 		try
 		{
 			super.onCreate(savedInstanceState);
+			
+			active = true;
+			getApplicationContext().registerReceiver(mMessageReceiver, new IntentFilter("nearhereMain"));
 			
 			supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 			
@@ -143,24 +150,29 @@ public class MainActivity extends BaseActivity
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
-		
-		active = true;
-		
 		mGoogleApiClient.connect();
-		
 	}
 	
 	@Override
 	protected void onStop() {
 		// TODO Auto-generated method stub
 		super.onStop();
-		
-		active = false;
-		
 		stopLocationUpdates();
-		
 		mGoogleApiClient.disconnect();
 	}
+	
+	//This is the handler that will manager to process the broadcast intent
+	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+	    @Override
+	    public void onReceive(Context context, Intent intent) {
+
+	        // Extract data included in the Intent
+	        String message = intent.getStringExtra("message");
+
+	        showToastMessage("received.");
+	        //do other stuff here
+	    }
+	};
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -203,8 +215,15 @@ public class MainActivity extends BaseActivity
 			mainFragment = new MessageBoxFragment();
 		else if ( "공지사항".equals( mMenuList[position]) )
 			mainFragment = new NoticeListFragment();
-		else
+		else if ( "설정".equals( mMenuList[position]) )
 			mainFragment = new SettingsFragment();
+		else if ( "로그아웃".equals( mMenuList[position]) )
+		{
+			showYesNoDialog("확인", "정말 로그아웃 하시겠습니까?", "logout" );
+			mDrawerList.setItemChecked(position, false);
+			mDrawerLayout.closeDrawer(mDrawerList);
+			return;
+		}
 
 		if ( bFragment )
 		{
@@ -228,6 +247,25 @@ public class MainActivity extends BaseActivity
 		mDrawerLayout.closeDrawer(mDrawerList);
 	}
 
+	@Override
+	public void yesClicked(Object param) {
+		// TODO Auto-generated method stub
+		try
+		{
+			super.yesClicked(param);
+			
+			if ( "logout".equals( param ) )
+			{
+				setProgressBarIndeterminateVisibility(true);
+				sendHttp("/taxi/logout.do", mapper.writeValueAsString( getLoginUser() ), 2 );
+			}			
+		}
+		catch( Exception ex )
+		{
+			
+		}
+	}
+	
 	@Override
 	public void setTitle(CharSequence title) {
 		mTitle = title.toString();
@@ -422,11 +460,57 @@ public class MainActivity extends BaseActivity
 		// TODO Auto-generated method stub
 		try
 		{
+			setProgressBarIndeterminateVisibility(false);
 			super.doPostTransaction(requestCode, result);
+			
+			if ( requestCode == 2 )
+			{
+				setMetaInfo("userID", "");
+				setMetaInfo("userName", "");
+				setMetaInfo("registrationID", "");
+				
+				Intent intent = null;
+				intent = new Intent( getApplicationContext(), IntroActivity.class);
+				intent.putExtra("intro", false);
+				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intent);
+				finish();
+				
+				overridePendingTransition(android.R.anim.fade_in, 
+						android.R.anim.fade_out);
+			}
 		}
 		catch( Exception ex )
 		{
 			catchException(this, ex);
 		}
 	}
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		active = false;
+		getApplicationContext().unregisterReceiver(mMessageReceiver);
+	}
+	
+	boolean doubleBackToExitPressedOnce = false;
+	@Override
+	public void onBackPressed() {
+	    if (doubleBackToExitPressedOnce) {
+	        super.onBackPressed();
+	        return;
+	    }
+
+	    this.doubleBackToExitPressedOnce = true;
+	    Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+	    new Handler().postDelayed(new Runnable() {
+
+	        @Override
+	        public void run() {
+	            doubleBackToExitPressedOnce=false;                       
+	        }
+	    }, 2000);
+	} 
 }
