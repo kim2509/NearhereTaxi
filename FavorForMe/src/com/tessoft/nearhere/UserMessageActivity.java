@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.codehaus.jackson.type.TypeReference;
 
+import com.tessoft.common.Constants;
 import com.tessoft.common.UserMessageArrayAdapter;
 import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.User;
@@ -167,6 +168,13 @@ public class UserMessageActivity extends BaseActivity {
 
 		try
 		{
+			if ( Constants.FAIL.equals(result) )
+			{
+				setProgressBarIndeterminateVisibility(false);
+				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
+				return;
+			}
+			
 			setProgressBarIndeterminateVisibility(false);
 			
 			// TODO Auto-generated method stub

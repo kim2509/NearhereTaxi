@@ -10,6 +10,7 @@ import com.google.android.gms.drive.internal.GetMetadataRequest;
 import com.google.android.gms.maps.model.LatLng;
 import com.tessoft.common.AdapterDelegate;
 import com.tessoft.common.AddressTaskDelegate;
+import com.tessoft.common.Constants;
 import com.tessoft.common.GetAddressTask;
 import com.tessoft.common.TaxiArrayAdapter;
 import com.tessoft.common.Util;
@@ -57,8 +58,8 @@ public class TaxiFragment extends BaseListFragment implements AddressTaskDelegat
 			
 			listMain = (ListView) rootView.findViewById(R.id.listMain);
 			//listMain.addHeaderView(header);
-			listMain.addHeaderView(header3);
-			listMain.addHeaderView(header2);
+			listMain.addHeaderView(header3, null, false );
+			listMain.addHeaderView(header2, null, false );
 			listMain.addFooterView(footer);
 			
 			adapter = new TaxiArrayAdapter( getActivity().getApplicationContext(), 0 );
@@ -200,7 +201,15 @@ public class TaxiFragment extends BaseListFragment implements AddressTaskDelegat
 		// TODO Auto-generated method stub
 		try
 		{
+			if ( Constants.FAIL.equals(result) )
+			{
+				getActivity().setProgressBarIndeterminateVisibility(false);
+				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
+				return;
+			}
+			
 			getActivity().setProgressBarIndeterminateVisibility(false);
+			
 			super.doPostTransaction(requestCode, result);
 			
 			if ( requestCode == 1 )

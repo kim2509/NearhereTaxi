@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.codehaus.jackson.type.TypeReference;
 
+import com.tessoft.common.Constants;
 import com.tessoft.common.MessageBoxListAdapter;
 import com.tessoft.common.NoticeListAdapter;
 import com.tessoft.common.SettingsAdapter;
@@ -55,6 +56,13 @@ public class SettingsFragment extends BaseListFragment {
 		// TODO Auto-generated method stub
 		try
 		{
+			if ( Constants.FAIL.equals(result) )
+			{
+				getActivity().setProgressBarIndeterminateVisibility(false);
+				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
+				return;
+			}
+			
 			getActivity().setProgressBarIndeterminateVisibility(false);
 			
 			super.doPostTransaction(requestCode, result);

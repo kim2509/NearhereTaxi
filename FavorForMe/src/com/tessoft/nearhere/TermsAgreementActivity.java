@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.codehaus.jackson.type.TypeReference;
 
+import com.tessoft.common.Constants;
 import com.tessoft.domain.APIResponse;
 
 import android.support.v7.app.ActionBarActivity;
@@ -87,6 +88,13 @@ public class TermsAgreementActivity extends BaseActivity {
 		// TODO Auto-generated method stub
 		try
 		{
+			if ( Constants.FAIL.equals(result) )
+			{
+				setProgressBarIndeterminateVisibility(false);
+				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
+				return;
+			}
+			
 			setProgressBarIndeterminateVisibility(false);
 			
 			if ( requestCode == 1 )

@@ -58,7 +58,7 @@ public class PostDetailActivity extends BaseActivity implements OnMapReadyCallba
 
 			header = getLayoutInflater().inflate(R.layout.post_detail_header, null);
 			listPostReplies = (ListView) findViewById(R.id.listPostReplies);
-			listPostReplies.addHeaderView(header);
+			listPostReplies.addHeaderView(header, null, false );
 			footer = getLayoutInflater().inflate(R.layout.post_detail_footer, null);
 			listPostReplies.addFooterView(footer);
 			
@@ -166,6 +166,13 @@ public class PostDetailActivity extends BaseActivity implements OnMapReadyCallba
 
 		try
 		{
+			if ( Constants.FAIL.equals(result) )
+			{
+				setProgressBarIndeterminateVisibility(false);
+				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
+				return;
+			}
+			
 			// TODO Auto-generated method stub
 			super.doPostTransaction(requestCode, result);
 

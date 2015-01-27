@@ -72,8 +72,8 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 			footer = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_footer, null);
 
 			listMain = (ListView) findViewById(R.id.listMain);
-			listMain.addHeaderView(header);
-			listMain.addHeaderView(header2);
+			listMain.addHeaderView(header, null, false );
+			listMain.addHeaderView(header2 );
 			listMain.addFooterView(footer);
 
 			adapter = new TaxiPostReplyListAdapter( getApplicationContext(), 0 );
@@ -317,6 +317,13 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 		// TODO Auto-generated method stub
 		try
 		{
+			if ( Constants.FAIL.equals(result) )
+			{
+				setProgressBarIndeterminateVisibility(false);
+				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
+				return;
+			}
+			
 			setProgressBarIndeterminateVisibility(false);
 
 			super.doPostTransaction(requestCode, result);

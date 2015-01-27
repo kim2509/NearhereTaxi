@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.tessoft.common.Constants;
 import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.Post;
 import com.tessoft.domain.User;
@@ -94,7 +95,7 @@ public class IntroActivity extends BaseActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.intro, menu);
-		return true;
+		return false;
 	}
 
 	@Override
@@ -149,6 +150,12 @@ public class IntroActivity extends BaseActivity {
 		// TODO Auto-generated method stub
 		try
 		{
+			if ( Constants.FAIL.equals(result) )
+			{
+				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
+				return;
+			}
+			
 			super.doPostTransaction(requestCode, result);
 			
 			if ( requestCode == 1 )

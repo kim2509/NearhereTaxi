@@ -1,5 +1,6 @@
 package com.tessoft.nearhere;
 
+import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tessoft.common.Constants;
 import com.tessoft.common.TaxiArrayAdapter;
 import com.tessoft.common.TaxiPostReplyListAdapter;
+import com.tessoft.common.UploadTask;
 import com.tessoft.common.Util;
 import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.Post;
@@ -18,7 +20,12 @@ import com.tessoft.domain.User;
 import com.tessoft.domain.UserLocation;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager.OnActivityResultListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -102,10 +109,7 @@ public class MyInfoFragment extends BaseListFragment {
 				// TODO Auto-generated method stub
 				try
 				{
-					Intent intent = new Intent( getActivity(), SetDestinationActivity.class);
-					intent.putExtra("command", "address");
-					startActivityForResult(intent, 2);
-					getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
+					openGalery();
 				}
 				catch( Exception ex )
 				{
@@ -251,14 +255,53 @@ public class MyInfoFragment extends BaseListFragment {
 				getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 			}
 		});
+		
+		ImageView imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
+		imgProfile.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				try
+				{
+					Intent intent = new Intent();
+					intent.setType("image/*");
+					intent.setAction(Intent.ACTION_GET_CONTENT);
+					startActivityForResult(Intent.createChooser(intent, "Select Picture"), 3);
+				}
+				catch( Exception ex )
+				{
+					catchException(this, ex);
+				}
+			}
+		});
 	}
 	
+	public void openGalery()
+	{
+		Intent intent = new Intent( getActivity(), SetDestinationActivity.class);
+		intent.putExtra("command", "address");
+		startActivityForResult(intent, 1);
+		getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
+	}
+	
+	
+	
+	private static final int PICK_IMAGE = 1;
+
 	public boolean bDataFirstLoaded = false;
 	@Override
 	public void doPostTransaction(int requestCode, Object result) {
 		// TODO Auto-generated method stub
 		try
 		{
+			if ( Constants.FAIL.equals(result) )
+			{
+				getActivity().setProgressBarIndeterminateVisibility(false);
+				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
+				return;
+			}
+			
 			getActivity().setProgressBarIndeterminateVisibility(false);
 			
 			super.doPostTransaction(requestCode, result);
@@ -347,44 +390,70 @@ public class MyInfoFragment extends BaseListFragment {
 		{
 			super.onActivityResult(requestCode, resultCode, data);
 			
-			String selectedAddress = data.getExtras().get("selectedAddress").toString();
-			LatLng location = (LatLng) data.getExtras().get("location");
-			
-			if ( requestCode == 1 )
+			if ( requestCode == 1 || requestCode ==2 )
 			{
-				TextView txtHomeLocation = (TextView) header.findViewById(R.id.txtHomeLocation);
-				txtHomeLocation.setText( selectedAddress );
+				String selectedAddress = data.getExtras().get("selectedAddress").toString();
+				LatLng location = (LatLng) data.getExtras().get("location");
 				
-				User user = getLoginUser();
-				UserLocation userLocation = new UserLocation();
-				userLocation.setUser( user );
-				userLocation.setLocationName("집");
-				userLocation.setLatitude( String.valueOf( location.latitude ));
-				userLocation.setLongitude( String.valueOf( location.longitude ));
-				userLocation.setAddress(selectedAddress);
-				getActivity().setProgressBarIndeterminateVisibility(true);
-				sendHttp("/taxi/updateUserLocation.do", mapper.writeValueAsString( userLocation ), 2);
-			}
-			else if ( requestCode == 2 )
-			{
-				TextView txtOfficeLocation = (TextView) header.findViewById(R.id.txtOfficeLocation);
-				txtOfficeLocation.setText( selectedAddress );
+				if ( requestCode == 1 )
+				{
+					TextView txtHomeLocation = (TextView) header.findViewById(R.id.txtHomeLocation);
+					txtHomeLocation.setText( selectedAddress );
+					
+					User user = getLoginUser();
+					UserLocation userLocation = new UserLocation();
+					userLocation.setUser( user );
+					userLocation.setLocationName("집");
+					userLocation.setLatitude( String.valueOf( location.latitude ));
+					userLocation.setLongitude( String.valueOf( location.longitude ));
+					userLocation.setAddress(selectedAddress);
+					getActivity().setProgressBarIndeterminateVisibility(true);
+					sendHttp("/taxi/updateUserLocation.do", mapper.writeValueAsString( userLocation ), 2);
+				}
+				else if ( requestCode == 2 )
+				{
+					TextView txtOfficeLocation = (TextView) header.findViewById(R.id.txtOfficeLocation);
+					txtOfficeLocation.setText( selectedAddress );
 
-				User user = getLoginUser();
-				UserLocation userLocation = new UserLocation();
-				userLocation.setUser( user );
-				userLocation.setLocationName("직장");
-				userLocation.setLatitude( String.valueOf( location.latitude ));
-				userLocation.setLongitude( String.valueOf( location.longitude ));
-				userLocation.setAddress(selectedAddress);
-				getActivity().setProgressBarIndeterminateVisibility(true);
-				sendHttp("/taxi/updateUserLocation.do", mapper.writeValueAsString( userLocation ), 2);
+					User user = getLoginUser();
+					UserLocation userLocation = new UserLocation();
+					userLocation.setUser( user );
+					userLocation.setLocationName("직장");
+					userLocation.setLatitude( String.valueOf( location.latitude ));
+					userLocation.setLongitude( String.valueOf( location.longitude ));
+					userLocation.setAddress(selectedAddress);
+					getActivity().setProgressBarIndeterminateVisibility(true);
+					sendHttp("/taxi/updateUserLocation.do", mapper.writeValueAsString( userLocation ), 2);
+				}	
 			}
-				
+			else if ( requestCode == 3 )
+			{
+			    if( data != null && data.getData() != null) {
+			        Uri _uri = data.getData();
+
+			        //User had pick an image.
+			        Cursor cursor = getActivity().getContentResolver().query(_uri, 
+			        		new String[] { android.provider.MediaStore.Images.ImageColumns.DATA }, 
+			        		null, null, null);
+			        cursor.moveToFirst();
+
+			        //Link to the image
+			        final String imageFilePath = cursor.getString(0);
+			        cursor.close();
+			        
+			        Bitmap myBitmap = BitmapFactory.decodeFile( imageFilePath );
+			        sendPhoto( myBitmap );
+			    }
+
+			}
 		}
 		catch( Exception ex )
 		{
 			catchException(this, ex);
 		}
+	}
+	
+	private void sendPhoto(Bitmap f) throws Exception {
+		new UploadTask( getActivity() ).execute(f);
 	}
 }

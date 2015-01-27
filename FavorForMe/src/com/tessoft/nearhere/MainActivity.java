@@ -17,6 +17,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+import com.tessoft.common.Constants;
 import com.tessoft.common.Util;
 import com.tessoft.domain.User;
 
@@ -32,7 +33,9 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.location.Location;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -460,6 +463,13 @@ public class MainActivity extends BaseActivity
 		// TODO Auto-generated method stub
 		try
 		{
+			if ( Constants.FAIL.equals(result) )
+			{
+				setProgressBarIndeterminateVisibility(false);
+				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
+				return;
+			}
+			
 			setProgressBarIndeterminateVisibility(false);
 			super.doPostTransaction(requestCode, result);
 			
@@ -512,5 +522,5 @@ public class MainActivity extends BaseActivity
 	            doubleBackToExitPressedOnce=false;                       
 	        }
 	    }, 2000);
-	} 
+	}
 }
