@@ -56,10 +56,11 @@ public class IntroActivity extends BaseActivity {
 			public void run() {
 				Intent intent = null;
 				
-				if ( "".equals( getMetaInfoString("userID") ) )
+				if ( "".equals( getMetaInfoString("userID") ) || !"true".equals( getMetaInfoString("registerUserFinished")) )
 				{
-					intent = new Intent( getApplicationContext(), IntroActivity.class);
-					intent.putExtra("intro", false);
+//					intent = new Intent( getApplicationContext(), IntroActivity.class);
+//					intent.putExtra("intro", false);
+					intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
 				}
 				else
 				{
@@ -208,7 +209,7 @@ public class IntroActivity extends BaseActivity {
 	{
 		Intent intent = new Intent( this, RegisterUserActivity.class);
 		startActivity(intent);
-		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+		overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 	}
 
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;

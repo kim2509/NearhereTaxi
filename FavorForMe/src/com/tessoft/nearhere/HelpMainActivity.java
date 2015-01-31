@@ -341,7 +341,7 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener, Connec
 			Intent intent = new Intent( this, PostDetailActivity.class);
 			intent.putExtra("post", post );
 			startActivity(intent);	
-			overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+			overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 		}
 		catch( Exception ex )
 		{
@@ -384,7 +384,7 @@ OnCameraChangeListener, OnMarkerClickListener, OnInfoWindowClickListener, Connec
 				Intent intent = new Intent( this, PostDetailActivity.class);
 				intent.putExtra("post", post );
 				startActivity(intent);	
-				overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+				overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 			}
 		}
 		catch( Exception ex )

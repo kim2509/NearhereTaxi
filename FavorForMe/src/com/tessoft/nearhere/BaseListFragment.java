@@ -74,12 +74,9 @@ public class BaseListFragment extends BaseFragment implements AdapterDelegate, T
 	public String getMetaInfoString( String key )
 	{
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences( getActivity() );
-		
-		String value = settings.getString(key, "");
-		if ("".equals( value ))
-			return "";
-		
-	    return value;
+		if ( settings.contains(key) )
+			return settings.getString(key, "");
+		else return "";
 	}
 	
 	public void showOKDialog( String message, final Object param )

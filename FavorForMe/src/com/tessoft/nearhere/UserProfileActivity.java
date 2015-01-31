@@ -63,7 +63,7 @@ public class UserProfileActivity extends BaseListActivity {
 						Intent intent = new Intent( getApplicationContext(), TaxiPostDetailActivity.class);
 						intent.putExtra("postID", post.getPostID());
 						startActivity(intent);
-						overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);						
+						overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);						
 					}
 				}
 			});

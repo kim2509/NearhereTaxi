@@ -252,7 +252,7 @@ public class MyInfoFragment extends BaseListFragment {
 				Intent intent = new Intent( getActivity(), TaxiPostDetailActivity.class);
 				intent.putExtra("postID", post.getPostID());
 				startActivity(intent);
-				getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+				getActivity().overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 			}
 		});
 		
@@ -454,6 +454,9 @@ public class MyInfoFragment extends BaseListFragment {
 	}
 	
 	private void sendPhoto(Bitmap f) throws Exception {
-		new UploadTask( getActivity() ).execute(f);
+		
+		User user = getLoginUser();
+		
+		new UploadTask( getActivity(), user.getUserID() ).execute(f);
 	}
 }

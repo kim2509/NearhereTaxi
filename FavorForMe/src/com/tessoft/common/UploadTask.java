@@ -19,10 +19,12 @@ import android.widget.Toast;
 public class UploadTask extends AsyncTask<Bitmap, Void, Void> {
 	
 	Context context = null;
+	String fileName = "";
 	
-	public UploadTask( Context context )
+	public UploadTask( Context context, String fileName )
 	{
 		this.context = context;
+		this.fileName = fileName;
 	}
 	
 	protected Void doInBackground(Bitmap... bitmaps) {
@@ -38,10 +40,10 @@ public class UploadTask extends AsyncTask<Bitmap, Void, Void> {
 		DefaultHttpClient httpclient = new DefaultHttpClient();
 		try {
 			HttpPost httppost = new HttpPost(
-					Constants.serverURL + "/uploadUserProfilePhoto.do"); // server
+					Constants.serverURL + "/taxi/uploadUserProfilePhoto.do"); // server
 
 			MultipartEntity reqEntity = new MultipartEntity();
-			reqEntity.addPart("file","dong.png", in);
+			reqEntity.addPart("file", this.fileName + ".png", in);
 			httppost.setEntity(reqEntity);
 
 //			Log.i(TAG, "request " + httppost.getRequestLine());

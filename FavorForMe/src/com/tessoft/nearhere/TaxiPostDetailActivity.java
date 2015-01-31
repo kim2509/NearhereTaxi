@@ -252,7 +252,7 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 	public void finish() {
 		// TODO Auto-generated method stub
 		super.finish();
-		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+		overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
 	}
 
 	@Override
@@ -348,8 +348,19 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 				TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
 				txtUserName.setText( post.getUser().getUserName() + age );
 
+				String titleDummy = "";
+				
+				if ( post.getSexInfo() != null && !"상관없음".equals( post.getSexInfo() ) )
+					titleDummy += post.getSexInfo();
+				
+				if ( post.getNumOfUsers() != null && !"상관없음".equals( post.getNumOfUsers() ) )
+					titleDummy += " " + post.getNumOfUsers();
+				
+				if ( titleDummy.isEmpty() == false )
+					titleDummy = "(" + titleDummy.trim() + ")";
+				
 				TextView txtTitle = (TextView) header.findViewById(R.id.txtTitle);
-				txtTitle.setText( post.getMessage() );
+				txtTitle.setText( post.getMessage() + titleDummy );
 
 				TextView txtDeparture = (TextView) header.findViewById(R.id.txtDeparture);
 				txtDeparture.setText( post.getFromAddress() );
@@ -360,6 +371,12 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 				TextView txtDistance = (TextView) header.findViewById(R.id.txtDistance);
 				txtDistance.setText( Util.getDistance(post.getDistance()) );
 
+				if ( post.getDepartureDateTime() != null )
+				{
+					TextView txtDepartureDateTime = (TextView) header.findViewById(R.id.txtDepartureDateTime);
+					txtDepartureDateTime.setText( post.getDepartureDateTime() );	
+				}
+				
 				TextView txtCreatedDate = (TextView) header.findViewById(R.id.txtCreatedDate);
 				txtCreatedDate.setText( Util.getFormattedDateString(post.getCreatedDate(), "yyyy-MM-dd HH:mm") );
 

@@ -46,6 +46,12 @@ public class Util {
 		return getDateStringFromDate(d, format);
 	}
 	
+	public static String getNow( String format )
+	{
+		Date d = new Date();
+		return getDateStringFromDate(d, format);
+	}
+	
 	public static String getDongAddressString( Object fullAddress )
 	{
 		if ( fullAddress == null || "".equals( fullAddress )) return "";

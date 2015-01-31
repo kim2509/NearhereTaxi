@@ -65,7 +65,7 @@ public class PushMessageListFragment extends BaseListFragment {
 								Intent intent = new Intent( getActivity(), TaxiPostDetailActivity.class);
 								intent.putExtra("postID", message.getParam1() );
 								startActivity(intent);
-								getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+								getActivity().overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 							}
 						}
 					}
@@ -126,7 +126,7 @@ public class PushMessageListFragment extends BaseListFragment {
 			Intent intent = new Intent( getActivity(), UserMessageActivity.class);
 			intent.putExtra("messageInfo", hash );
 			startActivity(intent);
-			getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);	
+			getActivity().overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);	
 		}
 		catch( Exception ex )
 		{

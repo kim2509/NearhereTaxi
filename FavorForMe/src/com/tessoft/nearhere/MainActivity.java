@@ -17,7 +17,9 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+import com.tessoft.common.AddressTaskDelegate;
 import com.tessoft.common.Constants;
+import com.tessoft.common.GetAddressTask;
 import com.tessoft.common.Util;
 import com.tessoft.domain.User;
 
@@ -51,7 +53,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class MainActivity extends BaseActivity 
-	implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener{
+	implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, AddressTaskDelegate{
 
 	public static boolean active = false;
 	DrawerLayout mDrawerLayout = null;
@@ -242,7 +244,7 @@ public class MainActivity extends BaseActivity
 		{
 			Intent intent = new Intent( this, SettingsActivity.class);
 			startActivity(intent);
-			overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+			overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 		}
 
 		// Highlight the selected item, update the title, and close the drawer
@@ -326,6 +328,8 @@ public class MainActivity extends BaseActivity
 			setMetaInfo("latitude", String.valueOf( location.getLatitude()));
 			setMetaInfo("longitude", String.valueOf( location.getLongitude()));
 			
+			new GetAddressTask( this, this, 1 ).execute(location);
+			
 			if ( mainFragment instanceof TaxiFragment )
 			{
 				TaxiFragment f = (TaxiFragment) mainFragment;
@@ -336,6 +340,13 @@ public class MainActivity extends BaseActivity
 		{
 			catchException(this, ex);
 		}
+	}
+	
+	@Override
+	public void onAddressTaskPostExecute(int requestCode, Object result) {
+		// TODO Auto-generated method stub
+		String address = Util.getDongAddressString( result );
+		setMetaInfo("address", address);
 	}
 
 	@Override
@@ -477,11 +488,11 @@ public class MainActivity extends BaseActivity
 			{
 				setMetaInfo("userID", "");
 				setMetaInfo("userName", "");
+				setMetaInfo("profileImageURL", "");
 				setMetaInfo("registrationID", "");
 				
 				Intent intent = null;
-				intent = new Intent( getApplicationContext(), IntroActivity.class);
-				intent.putExtra("intro", false);
+				intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
 				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);
 				finish();
@@ -513,7 +524,7 @@ public class MainActivity extends BaseActivity
 	    }
 
 	    this.doubleBackToExitPressedOnce = true;
-	    Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+	    Toast.makeText(this, "이전 버튼을 한번 더 누르면 종료합니다.", Toast.LENGTH_SHORT).show();
 
 	    new Handler().postDelayed(new Runnable() {
 

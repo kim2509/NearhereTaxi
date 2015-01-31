@@ -10,12 +10,19 @@ import com.tessoft.domain.User;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 public class RegisterUserActivity extends BaseActivity {
 
@@ -28,7 +35,18 @@ public class RegisterUserActivity extends BaseActivity {
 			
 			supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 			
-			setContentView(R.layout.activity_register_user);	
+			setContentView(R.layout.activity_register_user);
+			
+			setProgressBarIndeterminateVisibility(true);
+			User user = getLoginUser();
+			sendHttp("/taxi/getRandomID.do", mapper.writeValueAsString(user), 2);
+			
+			Spinner spSex = (Spinner) findViewById(R.id.spSex);
+			ArrayAdapter<CharSequence> sexAdapter = ArrayAdapter.createFromResource( this,
+			        R.array.sex_list, android.R.layout.simple_spinner_item);
+			sexAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			spSex.setAdapter(sexAdapter);
+			
 		}
 		catch( Exception ex )
 		{
@@ -55,6 +73,7 @@ public class RegisterUserActivity extends BaseActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
+	/*
 	public void registerUser( View v )
 	{
 		try
@@ -113,6 +132,7 @@ public class RegisterUserActivity extends BaseActivity {
 			catchException(this, ex);
 		}
 	}
+	*/
 	
 	@Override
 	public void doPostTransaction(int requestCode, Object result) {
@@ -137,11 +157,21 @@ public class RegisterUserActivity extends BaseActivity {
 				String temp = mapper.writeValueAsString( response.getData() );
 				User user = mapper.readValue( temp, new TypeReference<User>(){});
 				
+				setMetaInfo("userNo", user.getUserNo());
 				setMetaInfo("userID", user.getUserID());
 				setMetaInfo("userName", user.getUserName());
 				setMetaInfo("profileImageURL", user.getProfileImageURL());
 				
-				goTermsAgreementActivity(null);
+				if ( requestCode == 1 )
+				{
+					goTermsAgreementActivity(null);					
+				}
+				else if ( requestCode == 2 )
+				{
+					Button btnRandomID = (Button) findViewById(R.id.btnRandomID);
+					btnRandomID.setText("임시아이디 " + user.getUserID() + "로 시작하기");
+					btnRandomID.setEnabled(true);
+				}
 			}
 			else
 			{
@@ -159,15 +189,41 @@ public class RegisterUserActivity extends BaseActivity {
 	{
 		Intent intent = new Intent( this, TermsAgreementActivity.class);
 		startActivity(intent);
-		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-		finish();
+		overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 	}
 	
+	public void goMainActivity()
+	{
+		try
+		{
+			Intent intent = new Intent( this, MainActivity.class);
+			startActivity(intent);
+			overridePendingTransition(android.R.anim.fade_in, 
+					android.R.anim.fade_out);
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
+	
+	boolean doubleBackToExitPressedOnce = false;
 	@Override
-	public void finish() {
-		// TODO Auto-generated method stub
-		super.finish();
-		
-		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+	public void onBackPressed() {
+	    if (doubleBackToExitPressedOnce) {
+	        super.onBackPressed();
+	        return;
+	    }
+
+	    this.doubleBackToExitPressedOnce = true;
+	    Toast.makeText(this, "이전 버튼을 한번 더 누르면 종료합니다.", Toast.LENGTH_SHORT).show();
+
+	    new Handler().postDelayed(new Runnable() {
+
+	        @Override
+	        public void run() {
+	            doubleBackToExitPressedOnce=false;                       
+	        }
+	    }, 2000);
 	}
 }

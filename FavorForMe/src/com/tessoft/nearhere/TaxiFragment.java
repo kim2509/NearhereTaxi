@@ -79,7 +79,7 @@ public class TaxiFragment extends BaseListFragment implements AddressTaskDelegat
 					Intent intent = new Intent( getActivity(), TaxiPostDetailActivity.class);
 					intent.putExtra("postID", post.getPostID() );
 					startActivity(intent);
-					getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+					getActivity().overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 				}
 			});
 			
@@ -149,6 +149,8 @@ public class TaxiFragment extends BaseListFragment implements AddressTaskDelegat
 				intent.putExtra("command", "departure");
 				if ( departure != null )
 					intent.putExtra("departure", departure);
+				intent.putExtra("anim1", R.anim.stay );
+				intent.putExtra("anim2", R.anim.slide_out_to_bottom );
 				startActivityForResult(intent, 1);
 				getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
 			}
@@ -160,11 +162,15 @@ public class TaxiFragment extends BaseListFragment implements AddressTaskDelegat
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent( getActivity(), SetDestinationActivity.class);
-				intent.putExtra("command", "new");
+				Intent intent = new Intent( getActivity(), NewTaxiPostActivity.class);
 				if ( departure != null )
+				{
+					TextView txtDeparture = (TextView) header3.findViewById(R.id.txtDeparture);
+					intent.putExtra("address", txtDeparture.getText().toString().replaceAll("출발지:", "") );
 					intent.putExtra("departure", departure);
-				startActivityForResult(intent, 1);
+				}
+				
+				startActivityForResult(intent, 2);
 				getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
 			}
 		});
@@ -177,17 +183,20 @@ public class TaxiFragment extends BaseListFragment implements AddressTaskDelegat
 		{
 			super.onActivityResult(requestCode, resultCode, data);
 			
-			if ( requestCode == 1 )
+			if ( resultCode == getActivity().RESULT_OK )
 			{
-				departure = (LatLng) data.getExtras().get("location");
-				setAddressText( String.valueOf(departure.latitude) );
-				
-				inquiryPosts();
-			}
-			else if ( requestCode == 2 )
-			{
-				if ( data.getExtras().getBoolean("reload") )
+				if ( requestCode == 1 )
+				{
+					departure = (LatLng) data.getExtras().get("location");
+					setAddressText( data.getExtras().getString("address") );
+					
 					inquiryPosts();
+				}
+				else if ( requestCode == 2 )
+				{
+					if ( data.getExtras().getBoolean("reload") )
+						inquiryPosts();
+				}	
 			}
 		}
 		catch( Exception ex )
@@ -256,7 +265,6 @@ public class TaxiFragment extends BaseListFragment implements AddressTaskDelegat
 	{
 		try
 		{
-//			showToastMessage("lat:" + location.latitude + " lat(meta):" + getMetaInfoString("latitude"));
 			if ( bUpdatedOnce == false )
 			{
 				inquiryPosts();

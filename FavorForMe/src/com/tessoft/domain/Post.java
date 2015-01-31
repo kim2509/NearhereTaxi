@@ -29,6 +29,10 @@ public class Post extends ListItemModel {
 	
 	protected String reward;
 	
+	private String sexInfo;
+	private String numOfUsers;
+	private String departureDateTime;
+	
 	protected String type="taxi";
 	
 	protected List<PostLike> postLikes;
@@ -160,5 +164,29 @@ public class Post extends ListItemModel {
 
 	public void setToAddress(String toAddress) {
 		this.toAddress = toAddress;
+	}
+
+	public String getSexInfo() {
+		return sexInfo;
+	}
+
+	public void setSexInfo(String sexInfo) {
+		this.sexInfo = sexInfo;
+	}
+
+	public String getNumOfUsers() {
+		return numOfUsers;
+	}
+
+	public void setNumOfUsers(String numOfUsers) {
+		this.numOfUsers = numOfUsers;
+	}
+
+	public String getDepartureDateTime() {
+		return departureDateTime;
+	}
+
+	public void setDepartureDateTime(String departureDateTime) {
+		this.departureDateTime = departureDateTime;
 	}
 }

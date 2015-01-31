@@ -47,7 +47,7 @@ public class TermsAgreementActivity extends BaseActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.terms_agreement, menu);
-		return true;
+		return false;
 	}
 
 	@Override
@@ -125,7 +125,7 @@ public class TermsAgreementActivity extends BaseActivity {
 					return;
 				}
 				
-				goSelectHomeLocationActivity();
+				goTaxiTutorialActivity();
 			}
 		}
 		catch( Exception ex )
@@ -134,13 +134,19 @@ public class TermsAgreementActivity extends BaseActivity {
 		}
 	}
 	
-	public void goSelectHomeLocationActivity()
+	public void goTaxiTutorialActivity()
 	{
-		Intent intent = new Intent( this, SetDestinationActivity.class);
-		intent.putExtra("command", "약관동의");
-		
+		Intent intent = new Intent( this, TaxiTutorialActivity.class);
 		startActivity(intent);
-		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-		finish();
+		overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
+		super.finish();
+	}
+	
+	@Override
+	public void finish() {
+		// TODO Auto-generated method stub
+		super.finish();
+		
+		overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
 	}
 }

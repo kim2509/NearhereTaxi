@@ -63,8 +63,19 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> {
 				row = inflater.inflate(R.layout.list_taxi_post_item, parent, false);
 			}
 			
+			String titleDummy = "";
+			
+			if ( item.getSexInfo() != null && !"상관없음".equals( item.getSexInfo() ) )
+				titleDummy += item.getSexInfo();
+			
+			if ( item.getNumOfUsers() != null && !"상관없음".equals( item.getNumOfUsers() ) )
+				titleDummy += " " + item.getNumOfUsers();
+			
+			if ( titleDummy.isEmpty() == false )
+				titleDummy = "(" + titleDummy.trim() + ")";
+			
 			TextView txtTitle = (TextView) row.findViewById(R.id.txtTitle);
-			txtTitle.setText( item.getMessage() );
+			txtTitle.setText( item.getMessage() + titleDummy );
 
 			TextView txtDeparture = (TextView) row.findViewById(R.id.txtDeparture);
 			txtDeparture.setText( item.getFromAddress() );
@@ -76,10 +87,17 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> {
 			txtDistance.setText( Util.getDistance( item.getDistance()) );
 			
 			TextView txtCreatedDate = (TextView) row.findViewById(R.id.txtCreatedDate);
-			txtCreatedDate.setText( Util.getFormattedDateString( item.getCreatedDate(), "yyyy-MM-dd HH:mm") );
+			txtCreatedDate.setText( Util.getFormattedDateString(item.getCreatedDate(), "yyyy-MM-dd HH:mm"));	
+			
+			if ( item.getDepartureDateTime() != null )
+			{
+				TextView txtDepartureDateTime = (TextView) row.findViewById(R.id.txtDepartureDateTime);
+				txtDepartureDateTime.setText( item.getDepartureDateTime() );	
+			}
 			
 			ImageView imageView = (ImageView) row.findViewById(R.id.imgProfile);
-			imageView.setImageDrawable(null);
+			imageView.invalidate();
+			imageView.setImageBitmap(null);
 			
 			if ( item.getUser() != null && item.getUser().getProfileImageURL() != null )
 			{

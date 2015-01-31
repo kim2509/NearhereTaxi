@@ -6,6 +6,8 @@ public class User extends ListItemModel{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private String userNo;
 	private String userID;
 	private String userName;
 	private String latitude;
@@ -18,6 +20,14 @@ public class User extends ListItemModel{
 	private String birthday;
 	private String jobTitle;
 	private String sex;
+
+	public String getUserNo() {
+		return userNo;
+	}
+
+	public void setUserNo(String userNo) {
+		this.userNo = userNo;
+	}
 
 	public String getUserID() {
 		return userID;

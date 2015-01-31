@@ -134,12 +134,18 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 	public String getMetaInfoString( String key )
 	{
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences( this );
-		
-		String value = settings.getString(key, "");
-		if ("".equals( value ))
-			return "";
-		
-	    return value;
+		if ( settings.contains(key) )
+			return settings.getString(key, "");
+		else return "";
+	}
+	
+	public double getMetaInfoDouble( String key )
+	{
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences( this );
+		if ( settings.contains(key) )
+			return Double.parseDouble( settings.getString(key, "0") );
+		else
+			return 0;
 	}
 	
 	public void showToastMessage( String message )
@@ -167,12 +173,13 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		if ( ex == null )
 			writeLog( "[" + target.getClass().getName() + "] NullPointerException!!!" );
 		else
-			writeLog( "[" + target.getClass().getName() + "]" + ex.getMessage() );
+			Log.e("이근처", "exception", ex);
 	}
 	
 	public User getLoginUser()
 	{
 		User user = new User();
+		user.setUserNo( getMetaInfoString("userNo") );
 		user.setUserID( getMetaInfoString("userID") );
 		user.setUserName( getMetaInfoString("userName") );
 		user.setProfileImageURL( getMetaInfoString("profileImageURL"));

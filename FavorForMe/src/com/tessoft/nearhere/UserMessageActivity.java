@@ -149,7 +149,7 @@ public class UserMessageActivity extends BaseActivity {
 	public void finish() {
 		// TODO Auto-generated method stub
 		super.finish();
-		this.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+		this.overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
 	}
 	
 	private boolean bStopFetchMessage = false;
