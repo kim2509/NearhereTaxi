@@ -13,12 +13,13 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> {
+public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> implements OnClickListener{
 
 	private List<PostReply> itemList = new ArrayList<PostReply>();
 	private AdapterDelegate delegate = null;
@@ -69,11 +70,19 @@ public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> {
 			txtDistance.setText( Util.getDistance( item.getDistance()) );
 			
 			ImageView imageView = (ImageView) row.findViewById(R.id.imgProfile);
-			ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
-					item.getUser().getProfileImageURL() , imageView);
+			imageView.setImageResource(R.drawable.no_image);
+			
+			if ( !Util.isEmptyString( item.getUser().getProfileImageURL() ) )
+			{
+				ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
+						item.getUser().getProfileImageURL() , imageView);	
+			}
 			
 			TextView txtUserName = (TextView) row.findViewById(R.id.txtUserName);
 			txtUserName.setText( item.getUser().getUserName() );
+			
+			imageView.setOnClickListener( this );
+			txtUserName.setOnClickListener( this );
 			
 			TextView txtCreatedDate = (TextView) row.findViewById(R.id.txtCreatedDate);
 			txtCreatedDate.setText( Util.getFormattedDateString( item.getCreatedDate(), "HH:mm"));
@@ -98,6 +107,14 @@ public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> {
 
 	public void setDelegate(AdapterDelegate delegate) {
 		this.delegate = delegate;
+	}
+
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		View row = (View) v.getParent();
+		PostReply reply = (PostReply) row.getTag();
+		delegate.doAction("userProfile", reply.getUser().getUserID() );
 	}
 
 }

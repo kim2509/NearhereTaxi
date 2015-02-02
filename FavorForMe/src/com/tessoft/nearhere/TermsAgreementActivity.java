@@ -10,11 +10,13 @@ import com.tessoft.domain.APIResponse;
 import android.support.v7.app.ActionBarActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class TermsAgreementActivity extends BaseActivity {
 
@@ -125,6 +127,9 @@ public class TermsAgreementActivity extends BaseActivity {
 					return;
 				}
 				
+				setMetaInfo("logout", "false");
+				setMetaInfo("registerUserFinished", "true");
+				
 				goTaxiTutorialActivity();
 			}
 		}
@@ -148,5 +153,13 @@ public class TermsAgreementActivity extends BaseActivity {
 		super.finish();
 		
 		overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
+	}
+	
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		Intent intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(intent);
 	}
 }

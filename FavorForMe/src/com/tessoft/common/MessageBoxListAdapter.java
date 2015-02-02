@@ -61,7 +61,8 @@ public class MessageBoxListAdapter extends ArrayAdapter<UserMessage> {
 			}
 
 			ImageView imgProfile = (ImageView) row.findViewById(R.id.imgProfile);
-			imgProfile.setImageDrawable(null);
+			imgProfile.setImageResource(R.drawable.no_image);
+			
 			if ( item.getUser() != null && item.getUser().getProfileImageURL() != null && 
 					!"".equals( item.getUser().getProfileImageURL() ) )
 			{
@@ -76,6 +77,12 @@ public class MessageBoxListAdapter extends ArrayAdapter<UserMessage> {
 			txtMessage.setText( item.getMessage() );
 			TextView txtCreatedDate = (TextView) row.findViewById(R.id.txtCreatedDate);
 			txtCreatedDate.setText( Util.getFormattedDateString( item.getCreatedDate(), "yyyy-MM-dd HH:mm") );
+			
+			TextView txtNew = (TextView) row.findViewById(R.id.txtNew);
+			if ( item.isRead() == false )
+				txtNew.setVisibility(ViewGroup.VISIBLE);
+			else
+				txtNew.setVisibility(ViewGroup.GONE);
 			
 			row.setTag( item );
 		}

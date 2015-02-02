@@ -31,7 +31,8 @@ public class Post extends ListItemModel {
 	
 	private String sexInfo;
 	private String numOfUsers;
-	private String departureDateTime;
+	private String departureDate;
+	private String departureTime;
 	
 	protected String type="taxi";
 	
@@ -182,11 +183,19 @@ public class Post extends ListItemModel {
 		this.numOfUsers = numOfUsers;
 	}
 
-	public String getDepartureDateTime() {
-		return departureDateTime;
+	public String getDepartureDate() {
+		return departureDate;
 	}
 
-	public void setDepartureDateTime(String departureDateTime) {
-		this.departureDateTime = departureDateTime;
+	public void setDepartureDate(String departureDate) {
+		this.departureDate = departureDate;
+	}
+
+	public String getDepartureTime() {
+		return departureTime;
+	}
+
+	public void setDepartureTime(String departureTime) {
+		this.departureTime = departureTime;
 	}
 }

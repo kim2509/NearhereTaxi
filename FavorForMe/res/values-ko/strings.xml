@@ -57,7 +57,7 @@
     <string name="drawer_open">메뉴 선택</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="set_destination_guide1">출발지를 선택해 주십시오.</string>
-    <string name="set_destination_guide2">위치가 선택되었으면 우측의 버튼을 누르세요.</string>
+    <string name="set_destination_guide2">원하는 지점을 터치하면 위치가 선택됩니다.</string>
     <string name="taxi_main_guide1">근처에 등록된 합승내역입니다.\r\n목적지가 비슷한 합승을 선택해 보세요.</string>
     <string name="taxi_post_detail_guide1">님의 합승정보입니다. \r\n목적지가 고객님과 비슷하면, 아래 댓글을 통해 연락해보세요.</string>
 

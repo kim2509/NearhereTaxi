@@ -62,4 +62,17 @@ public class Util {
 		
 		return tokens[1] + " " + tokens[2] + " " + tokens[3];
 	}
+	
+	public static boolean isEmptyString( String str )
+	{
+		if ( str == null ) return true;
+		if ( "".equals(str.trim())) return true;
+		return false;
+	}
+	
+	public static String getString( String str )
+	{
+		if ( isEmptyString(str) ) return "";
+		return str;
+	}
 }

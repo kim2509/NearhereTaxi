@@ -47,7 +47,7 @@ public class UserProfileActivity extends BaseListActivity {
 			listMain = (ListView) findViewById(R.id.listMain);
 			listMain.addHeaderView(header, null, false );
 			
-			adapter = new TaxiArrayAdapter( this , 0);
+			adapter = new TaxiArrayAdapter( this , this, 0);
 			listMain.setAdapter(adapter);
 			
 			listMain.setOnItemClickListener(new OnItemClickListener() {
@@ -85,7 +85,7 @@ public class UserProfileActivity extends BaseListActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.user_profile, menu);
-		return false;
+		return true;
 	}
 
 	@Override
@@ -93,10 +93,29 @@ public class UserProfileActivity extends BaseListActivity {
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
+		
+		try
+		{
+			int id = item.getItemId();
+			if (id == R.id.action_chat) {
+				
+				HashMap hash = new HashMap();
+				hash.put("fromUserID", getIntent().getExtras().getString("userID") );
+				hash.put("userID",  getLoginUser().getUserID() );
+				Intent intent = new Intent( this, UserMessageActivity.class);
+				intent.putExtra("messageInfo", hash );
+				startActivity(intent);
+				overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
+				
+				return true;
+			}
+			
 		}
+		catch( Exception ex )
+		{
+			
+		}
+		
 		return super.onOptionsItemSelected(item);
 	}
 	

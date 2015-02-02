@@ -56,6 +56,6 @@
         <item>3명</item>
     </string-array>
 
-    <string name="title_activity_new_taxi_post">합승등록</string>
+    <string name="title_activity_new_taxi_post">합승정보등록</string>
 
 </resources>

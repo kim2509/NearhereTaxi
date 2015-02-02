@@ -86,7 +86,8 @@ public class UserMessageArrayAdapter extends ArrayAdapter<UserMessage> {
 			if ( item.isMe() == false )
 			{
 				ImageView imgProfile = (ImageView) row.findViewById(R.id.imgProfile);
-				imgProfile.setImageDrawable(null);
+				imgProfile.setImageResource(R.drawable.no_image);
+				
 				if ( item.getFromUser() != null && item.getFromUser().getProfileImageURL() != null && 
 						!"".equals( item.getFromUser().getProfileImageURL() ) )
 				{

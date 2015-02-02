@@ -25,16 +25,17 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> {
 	private AdapterDelegate delegate = null;
 
 	LayoutInflater inflater = null;
-
+	
 	@Override
 	public void add(Post object) {
 		itemList.add(object);
 		super.add(object);
 	}
 
-	public TaxiArrayAdapter(Context context, int textViewResourceId) {
+	public TaxiArrayAdapter(Context context, AdapterDelegate delegate, int textViewResourceId) {
 		super(context, textViewResourceId);
 		inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.delegate = delegate;
 	}
 
 	public int getCount() {
@@ -62,6 +63,10 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> {
 			if (row == null) {
 				row = inflater.inflate(R.layout.list_taxi_post_item, parent, false);
 			}
+
+			ImageView imageView = (ImageView) row.findViewById(R.id.imgProfile);
+			imageView.invalidate();
+			imageView.setImageResource(R.drawable.no_image);
 			
 			String titleDummy = "";
 			
@@ -73,6 +78,14 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> {
 			
 			if ( titleDummy.isEmpty() == false )
 				titleDummy = "(" + titleDummy.trim() + ")";
+			
+			TextView txtUserName = (TextView) row.findViewById(R.id.txtUserName);
+			if ( Util.isEmptyString( item.getUser().getUserName() ) )
+			{
+				txtUserName.setText( item.getUser().getUserID() );
+			}
+			else
+				txtUserName.setText( item.getUser().getUserName() );
 			
 			TextView txtTitle = (TextView) row.findViewById(R.id.txtTitle);
 			txtTitle.setText( item.getMessage() + titleDummy );
@@ -89,17 +102,13 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> {
 			TextView txtCreatedDate = (TextView) row.findViewById(R.id.txtCreatedDate);
 			txtCreatedDate.setText( Util.getFormattedDateString(item.getCreatedDate(), "yyyy-MM-dd HH:mm"));	
 			
-			if ( item.getDepartureDateTime() != null )
+			if ( item.getDepartureDate() != null )
 			{
 				TextView txtDepartureDateTime = (TextView) row.findViewById(R.id.txtDepartureDateTime);
-				txtDepartureDateTime.setText( item.getDepartureDateTime() );	
+				txtDepartureDateTime.setText( item.getDepartureDate() + " " + item.getDepartureTime() );	
 			}
 			
-			ImageView imageView = (ImageView) row.findViewById(R.id.imgProfile);
-			imageView.invalidate();
-			imageView.setImageBitmap(null);
-			
-			if ( item.getUser() != null && item.getUser().getProfileImageURL() != null )
+			if ( item.getUser() != null && !Util.isEmptyString( item.getUser().getProfileImageURL() ) )
 			{
 				ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
 						item.getUser().getProfileImageURL() , imageView);	
@@ -109,7 +118,7 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> {
 		}
 		catch( Exception ex )
 		{
-			Log.e("error", ex.getMessage());
+			delegate.doAction("logException", ex);
 		}
 
 		return row;
@@ -122,9 +131,4 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> {
 	public AdapterDelegate getDelegate() {
 		return delegate;
 	}
-
-	public void setDelegate(AdapterDelegate delegate) {
-		this.delegate = delegate;
-	}
-
 }

@@ -1,6 +1,11 @@
 package com.tessoft.nearhere;
 
 import java.io.IOException;
+import java.util.HashMap;
+
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.type.TypeReference;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -20,7 +25,10 @@ import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.tessoft.common.AddressTaskDelegate;
 import com.tessoft.common.Constants;
 import com.tessoft.common.GetAddressTask;
+import com.tessoft.common.MainMenuArrayAdapter;
 import com.tessoft.common.Util;
+import com.tessoft.domain.APIResponse;
+import com.tessoft.domain.MainMenuItem;
 import com.tessoft.domain.User;
 
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -53,47 +61,56 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class MainActivity extends BaseActivity 
-	implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, AddressTaskDelegate{
+implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, AddressTaskDelegate{
 
 	public static boolean active = false;
 	DrawerLayout mDrawerLayout = null;
 	ListView mDrawerList = null;
 	String mTitle = "";
-	String[] mMenuList = null;
 	private ActionBarDrawerToggle mDrawerToggle;
 	private Fragment mainFragment = null;
 	GoogleApiClient mGoogleApiClient = null;
 
 	public static final String EXTRA_MESSAGE = "message";
-    public static final String PROPERTY_REG_ID = "registration_id";
-    private static final String PROPERTY_APP_VERSION = "appVersion";
-    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    String SENDER_ID = "30113798803";
-    GoogleCloudMessaging gcm;
-    
+	public static final String PROPERTY_REG_ID = "registration_id";
+	private static final String PROPERTY_APP_VERSION = "appVersion";
+	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+	protected static final int GET_UNREAD_COUNT = 3;
+	String SENDER_ID = "30113798803";
+	GoogleCloudMessaging gcm;
+
+	MainMenuArrayAdapter adapter = null;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
 		try
 		{
 			super.onCreate(savedInstanceState);
-			
+
 			active = true;
-			getApplicationContext().registerReceiver(mMessageReceiver, new IntentFilter("nearhereMain"));
-			
+			getApplicationContext().registerReceiver(mMessageReceiver, new IntentFilter("updateUnreadCount"));
+
 			supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-			
+
 			setContentView(R.layout.activity_main);
-			
+
 			initImageLoader();
 
-			mMenuList = getResources().getStringArray(R.array.menu_list);
 			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 			mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
 			// Set the adapter for the list view
-			mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-					R.layout.drawer_list_item, mMenuList));
+			adapter = new MainMenuArrayAdapter( getApplicationContext(), 0);
+			adapter.add(new MainMenuItem("홈"));
+			adapter.add(new MainMenuItem("내 정보"));
+			adapter.add(new MainMenuItem("알림메시지"));
+			adapter.add(new MainMenuItem("쪽지함"));
+			adapter.add(new MainMenuItem("공지사항"));
+			adapter.add(new MainMenuItem("설정"));
+			adapter.add(new MainMenuItem("로그아웃"));
+
+			mDrawerList.setAdapter( adapter );
 
 			// Set the list's click listener
 			mDrawerList.setOnItemClickListener( new OnItemClickListener() {
@@ -125,7 +142,7 @@ public class MainActivity extends BaseActivity
 
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 			getActionBar().setHomeButtonEnabled(true);
-			
+
 			mainFragment = new TaxiFragment();
 
 			// Insert the fragment by replacing any existing fragment
@@ -133,10 +150,10 @@ public class MainActivity extends BaseActivity
 			fragmentManager.beginTransaction()
 			.add(R.id.content_frame, mainFragment)
 			.commit();
-		
+
 			buildGoogleApiClient();
 			createLocationRequest();
-			
+
 			gcm = GoogleCloudMessaging.getInstance(this);
 			regid = getMetaInfoString("registrationID");
 			if ( regid.isEmpty() )
@@ -150,14 +167,14 @@ public class MainActivity extends BaseActivity
 		}
 
 	}
-	
+
 	@Override
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
 		mGoogleApiClient.connect();
 	}
-	
+
 	@Override
 	protected void onStop() {
 		// TODO Auto-generated method stub
@@ -165,28 +182,57 @@ public class MainActivity extends BaseActivity
 		stopLocationUpdates();
 		mGoogleApiClient.disconnect();
 	}
-	
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		try
+		{
+			getUnreadCount();			
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
+
+	public  void getUnreadCount() throws IOException,
+	JsonGenerationException, JsonMappingException {
+		HashMap hash = new HashMap();
+		hash.put("userID", getLoginUser().getUserID() );
+		setProgressBarIndeterminateVisibility(true);
+		sendHttp("/taxi/getUnreadCount.do", mapper.writeValueAsString(hash), GET_UNREAD_COUNT );
+	}
+
 	//This is the handler that will manager to process the broadcast intent
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-	    @Override
-	    public void onReceive(Context context, Intent intent) {
+		@Override
+		public void onReceive(Context context, Intent intent) {
 
-	        // Extract data included in the Intent
-	        String message = intent.getStringExtra("message");
+			try
+			{
+				// Extract data included in the Intent
+				//		        String message = intent.getStringExtra("message");
 
-	        showToastMessage("received.");
-	        //do other stuff here
-	    }
+				//		        showToastMessage("received.");
+				//do other stuff here
+				getUnreadCount();
+			}
+			catch( Exception ex )
+			{
+				catchException(this, ex);
+			}
+		}
 	};
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
-		
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
@@ -194,6 +240,9 @@ public class MainActivity extends BaseActivity
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_refresh) {
+
+			Intent intent = new Intent("refreshContents");
+			getApplicationContext().sendBroadcast(intent);
 			return true;
 		}
 
@@ -203,26 +252,28 @@ public class MainActivity extends BaseActivity
 
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	/** Swaps fragments in the main content view */
 	private void selectItem(int position) {
 		// Create a new fragment and specify the planet to show based on position
-		
+
 		boolean bFragment = true;
-		
-		if ( "홈".equals( mMenuList[position]) )
+
+		MainMenuItem item = adapter.getItem( position );
+
+		if ( "홈".equals( item.getMenuName() ) )
 			mainFragment = new TaxiFragment();
-		else if ( "내 정보".equals( mMenuList[position]) )
+		else if ( "내 정보".equals( item.getMenuName() ) )
 			mainFragment = new MyInfoFragment();
-		else if ( "알림메시지".equals( mMenuList[position]) )
+		else if ( "알림메시지".equals( item.getMenuName() ) )
 			mainFragment = new PushMessageListFragment();
-		else if ( "쪽지함".equals( mMenuList[position]) )
+		else if ( "쪽지함".equals( item.getMenuName() ) )
 			mainFragment = new MessageBoxFragment();
-		else if ( "공지사항".equals( mMenuList[position]) )
+		else if ( "공지사항".equals( item.getMenuName() ) )
 			mainFragment = new NoticeListFragment();
-		else if ( "설정".equals( mMenuList[position]) )
+		else if ( "설정".equals( item.getMenuName() ) )
 			mainFragment = new SettingsFragment();
-		else if ( "로그아웃".equals( mMenuList[position]) )
+		else if ( "로그아웃".equals( item.getMenuName() ) )
 		{
 			showYesNoDialog("확인", "정말 로그아웃 하시겠습니까?", "logout" );
 			mDrawerList.setItemChecked(position, false);
@@ -237,8 +288,8 @@ public class MainActivity extends BaseActivity
 			fragmentManager.beginTransaction()
 			.replace(R.id.content_frame, mainFragment)
 			.commit();
-			
-			setTitle( mMenuList[position] );
+
+			setTitle( item.getMenuName() );
 		}
 		else
 		{
@@ -258,7 +309,7 @@ public class MainActivity extends BaseActivity
 		try
 		{
 			super.yesClicked(param);
-			
+
 			if ( "logout".equals( param ) )
 			{
 				setProgressBarIndeterminateVisibility(true);
@@ -267,10 +318,10 @@ public class MainActivity extends BaseActivity
 		}
 		catch( Exception ex )
 		{
-			
+
 		}
 	}
-	
+
 	@Override
 	public void setTitle(CharSequence title) {
 		mTitle = title.toString();
@@ -311,7 +362,7 @@ public class MainActivity extends BaseActivity
 		.build();
 		ImageLoader.getInstance().init(config);
 	}
-	
+
 	protected synchronized void buildGoogleApiClient() {
 		mGoogleApiClient = new GoogleApiClient.Builder(this)
 		.addConnectionCallbacks(this)
@@ -327,9 +378,9 @@ public class MainActivity extends BaseActivity
 		{
 			setMetaInfo("latitude", String.valueOf( location.getLatitude()));
 			setMetaInfo("longitude", String.valueOf( location.getLongitude()));
-			
+
 			new GetAddressTask( this, this, 1 ).execute(location);
-			
+
 			if ( mainFragment instanceof TaxiFragment )
 			{
 				TaxiFragment f = (TaxiFragment) mainFragment;
@@ -341,7 +392,7 @@ public class MainActivity extends BaseActivity
 			catchException(this, ex);
 		}
 	}
-	
+
 	@Override
 	public void onAddressTaskPostExecute(int requestCode, Object result) {
 		// TODO Auto-generated method stub
@@ -352,7 +403,7 @@ public class MainActivity extends BaseActivity
 	@Override
 	public void onConnectionFailed(ConnectionResult arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -364,57 +415,57 @@ public class MainActivity extends BaseActivity
 		}
 		catch( Exception ex )
 		{
-			
+
 		}
 	}
 
 	LocationRequest mLocationRequest = null;
 	protected void createLocationRequest() {
 		mLocationRequest = new LocationRequest();
-	    mLocationRequest.setInterval(10000);
-	    mLocationRequest.setFastestInterval(5000);
-	    mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+		mLocationRequest.setInterval(10000);
+		mLocationRequest.setFastestInterval(5000);
+		mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 	}
-	
+
 	protected void startLocationUpdates() {
 		LocationServices.FusedLocationApi.requestLocationUpdates(
-	            mGoogleApiClient, mLocationRequest, this);
+				mGoogleApiClient, mLocationRequest, this);
 	}
-	
+
 	protected void stopLocationUpdates() {
-	    LocationServices.FusedLocationApi.removeLocationUpdates(
-	            mGoogleApiClient, this);
+		LocationServices.FusedLocationApi.removeLocationUpdates(
+				mGoogleApiClient, this);
 	}
-	
+
 	@Override
 	public void onConnectionSuspended(int arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	static final String TAG = "Nearhere";
-	
+
 	/**
 	 * @return Application's {@code SharedPreferences}.
 	 */
 	private SharedPreferences getGCMPreferences(Context context) {
-	    // This sample app persists the registration ID in shared preferences, but
-	    // how you store the regID in your app is up to you.
-	    return getSharedPreferences(MainActivity.class.getSimpleName(),
-	            Context.MODE_PRIVATE);
+		// This sample app persists the registration ID in shared preferences, but
+		// how you store the regID in your app is up to you.
+		return getSharedPreferences(MainActivity.class.getSimpleName(),
+				Context.MODE_PRIVATE);
 	}
-	
+
 	private static int getAppVersion(Context context) {
-	    try {
-	        PackageInfo packageInfo = context.getPackageManager()
-	                .getPackageInfo(context.getPackageName(), 0);
-	        return packageInfo.versionCode;
-	    } catch (NameNotFoundException e) {
-	        // should never happen
-	        throw new RuntimeException("Could not get package name: " + e);
-	    }
+		try {
+			PackageInfo packageInfo = context.getPackageManager()
+					.getPackageInfo(context.getPackageName(), 0);
+			return packageInfo.versionCode;
+		} catch (NameNotFoundException e) {
+			// should never happen
+			throw new RuntimeException("Could not get package name: " + e);
+		}
 	}
-	
+
 	String regid;
 	/**
 	 * Registers the application with GCM servers asynchronously.
@@ -468,7 +519,7 @@ public class MainActivity extends BaseActivity
 			catchException(this, ex);
 		}
 	}
-	
+
 	@Override
 	public void doPostTransaction(int requestCode, Object result) {
 		// TODO Auto-generated method stub
@@ -480,25 +531,51 @@ public class MainActivity extends BaseActivity
 				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
 				return;
 			}
-			
+
 			setProgressBarIndeterminateVisibility(false);
 			super.doPostTransaction(requestCode, result);
+
+			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
 			
-			if ( requestCode == 2 )
+			if ( "0000".equals( response.getResCode() ) )
 			{
-				setMetaInfo("userID", "");
-				setMetaInfo("userName", "");
-				setMetaInfo("profileImageURL", "");
-				setMetaInfo("registrationID", "");
-				
-				Intent intent = null;
-				intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
-				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				startActivity(intent);
-				finish();
-				
-				overridePendingTransition(android.R.anim.fade_in, 
-						android.R.anim.fade_out);
+				if ( requestCode == 2 )
+				{
+					//				setMetaInfo("userNo", "");
+					//				setMetaInfo("registerUserFinished", "");
+					setMetaInfo("logout", "true");
+					setMetaInfo("userID", "");
+					setMetaInfo("userName", "");
+					setMetaInfo("profileImageURL", "");
+					setMetaInfo("registrationID", "");
+
+					Intent intent = null;
+					intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(intent);
+					finish();
+
+					overridePendingTransition(android.R.anim.fade_in, 
+							android.R.anim.fade_out);
+				}
+				else if ( requestCode == GET_UNREAD_COUNT )
+				{
+					HashMap<String, Integer> hash = (HashMap<String,Integer>) response.getData();
+					
+					int pushCount = hash.get("pushCount");
+					int messageCount = hash.get("messageCount");
+					
+					for ( int i = 0; i < adapter.getCount(); i++ )
+					{
+						MainMenuItem item = adapter.getItem(i);
+						if ( "알림메시지".equals( item.getMenuName() ) )
+							item.setNotiCount( pushCount );
+						else if ( "쪽지함".equals( item.getMenuName() ) )
+							item.setNotiCount( messageCount );
+					}
+					
+					adapter.notifyDataSetChanged();
+				}				
 			}
 		}
 		catch( Exception ex )
@@ -506,7 +583,7 @@ public class MainActivity extends BaseActivity
 			catchException(this, ex);
 		}
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
@@ -514,24 +591,24 @@ public class MainActivity extends BaseActivity
 		active = false;
 		getApplicationContext().unregisterReceiver(mMessageReceiver);
 	}
-	
+
 	boolean doubleBackToExitPressedOnce = false;
 	@Override
 	public void onBackPressed() {
-	    if (doubleBackToExitPressedOnce) {
-	        super.onBackPressed();
-	        return;
-	    }
+		if (doubleBackToExitPressedOnce) {
+			super.onBackPressed();
+			return;
+		}
 
-	    this.doubleBackToExitPressedOnce = true;
-	    Toast.makeText(this, "이전 버튼을 한번 더 누르면 종료합니다.", Toast.LENGTH_SHORT).show();
+		this.doubleBackToExitPressedOnce = true;
+		Toast.makeText(this, "이전 버튼을 한번 더 누르면 종료합니다.", Toast.LENGTH_SHORT).show();
 
-	    new Handler().postDelayed(new Runnable() {
+		new Handler().postDelayed(new Runnable() {
 
-	        @Override
-	        public void run() {
-	            doubleBackToExitPressedOnce=false;                       
-	        }
-	    }, 2000);
+			@Override
+			public void run() {
+				doubleBackToExitPressedOnce=false;                       
+			}
+		}, 2000);
 	}
 }

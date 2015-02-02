@@ -10,9 +10,17 @@
     
     <ImageView
         android:id="@+id/imgProfile" 
-        android:layout_width="50dp"
-        android:layout_centerVertical="true"
-        android:layout_height="50dp"/>
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="10dp"/>
+    
+    <TextView android:id="@+id/txtUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imgProfile"
+        android:text="..."
+        android:padding="5dp"
+        android:textColor="#3B5D98" />
     
     <TextView android:id="@+id/txtTitle"
         android:layout_width="wrap_content"
@@ -29,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/txtTitle"
         android:layout_alignLeft="@+id/txtTitle"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:text="@string/departure"
         android:textColor="@android:color/black" />
     
@@ -40,8 +48,9 @@
         android:layout_alignBaseline="@+id/txtGuide1"
         android:layout_toRightOf="@+id/txtGuide1"
         android:layout_marginLeft="10dp"
-        android:text="강남구 역삼동"
-        android:textColor="#3B5D98" />
+        android:singleLine="false"
+        android:text="..."
+        android:textColor="@android:color/black" />
     
     <TextView
         android:id="@+id/txtGuide2"
@@ -49,6 +58,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/txtGuide1"
         android:layout_below="@+id/txtGuide1"
+        android:layout_marginTop="5dp"
         android:text="@string/destination"
         android:textColor="@android:color/black" />
     
@@ -59,7 +69,8 @@
         android:layout_alignLeft="@+id/txtDeparture"
         android:layout_toRightOf="@+id/txtGuide2"
         android:layout_alignBaseline="@+id/txtGuide2"
-        android:text="강남구 역삼동"
+        android:singleLine="false"
+        android:text="..."
         android:textColor="@android:color/black" />
 
     <TextView
@@ -68,7 +79,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/txtGuide2"
         android:layout_below="@+id/txtGuide2"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:text="출발예정시간"
         android:textColor="@android:color/black" />
     
@@ -79,8 +90,8 @@
         android:layout_toRightOf="@+id/txtGuide3"
         android:layout_alignBaseline="@+id/txtGuide3"
         android:layout_marginLeft="10dp"
-        android:text="1시간 전"
-        android:textColor="@android:color/black" />
+        android:text="..."
+        android:textColor="#3B5D98" />
     
     <TextView
         android:id="@+id/txtCreatedDate"
@@ -90,7 +101,7 @@
         android:layout_below="@+id/txtGuide3"
         android:layout_marginTop="5dp"
         android:textSize="12sp"
-        android:text="1시간 전" />
+        android:text="..." />
     
     <TextView
         android:id="@+id/txtDistance"

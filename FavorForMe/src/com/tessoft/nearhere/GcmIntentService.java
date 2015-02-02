@@ -115,7 +115,7 @@ public class GcmIntentService extends IntentService {
         
         if ( MainActivity.active )
         {
-        	intent = new Intent("nearhereMain");
+        	intent = new Intent("updateUnreadCount");
         	intent.putExtra("type", type );
         	if ( "message".equals( type ) )
             	intent.putExtra("fromUserID", extras.getString("fromUserID") );

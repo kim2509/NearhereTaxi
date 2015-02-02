@@ -6,6 +6,7 @@ public class APIResponse {
 	private String resMsg = "SUCCESS";
 	
 	private Object data = null;
+	private Object data2 = null;
 
 	public String getResCode() {
 		return resCode;
@@ -29,5 +30,13 @@ public class APIResponse {
 
 	public void setData(Object data) {
 		this.data = data;
+	}
+
+	public Object getData2() {
+		return data2;
+	}
+
+	public void setData2(Object data2) {
+		this.data2 = data2;
 	}
 }

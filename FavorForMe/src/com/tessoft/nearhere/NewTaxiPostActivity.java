@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -30,8 +31,14 @@ import android.widget.TimePicker;
 
 public class NewTaxiPostActivity extends BaseActivity implements OnClickListener, OnTimeSetListener, OnDateSetListener{
 
+	private static final int MODIFY_POST = 2;
 	TextView txtDeparture = null;
 	TextView txtDestination = null;
+	Post post = null;
+	Spinner spSexInfo = null;
+	Spinner spNumOfUsers = null;
+	EditText edtMessage = null;
+	String mode = "new";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,19 +53,6 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 
 			txtDeparture = (TextView) findViewById(R.id.txtDeparture);
 			
-			if ( getIntent().getExtras() != null && getIntent().getExtras().containsKey("departure") )
-			{
-				departure = (LatLng) getIntent().getExtras().get("departure");
-				txtDeparture.setText( getIntent().getExtras().getString("address"));
-			}
-			else if ( getMetaInfoString("address") != null && getMetaInfoString("address").isEmpty() == false )
-			{
-				double latitude = getMetaInfoDouble("latitude");
-				double longitude = getMetaInfoDouble("longitude");
-				departure = new LatLng(latitude, longitude);
-				txtDeparture.setText( getMetaInfoString("address") );
-			}
-			
 			txtDestination = (TextView) findViewById(R.id.txtDestination);
 			
 			TextView txtChangeDeparture = (TextView) findViewById(R.id.txtChangeDeparture);
@@ -70,13 +64,13 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 			TextView txtChangeDepartureDate = (TextView) findViewById(R.id.txtChangeDepartureDate);
 			txtChangeDepartureDate.setOnClickListener(this);
 			
-			Spinner spSex = (Spinner) findViewById(R.id.spSex);
+			spSexInfo = (Spinner) findViewById(R.id.spSex);
 			ArrayAdapter<CharSequence> sexAdapter = ArrayAdapter.createFromResource( this ,
 					R.array.sex_select_list, android.R.layout.simple_spinner_item);
 			sexAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-			spSex.setAdapter(sexAdapter);
+			spSexInfo.setAdapter(sexAdapter);
 
-			Spinner spNumOfUsers = (Spinner) findViewById(R.id.spNumOfUsers);
+			spNumOfUsers = (Spinner) findViewById(R.id.spNumOfUsers);
 			ArrayAdapter<CharSequence> nouAdapter = ArrayAdapter.createFromResource( this ,
 					R.array.nou_list, android.R.layout.simple_spinner_item);
 			nouAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -84,6 +78,43 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 			
 			txtDepartureDate = (TextView) findViewById(R.id.txtDepartureDate);
 			txtDepartureTime = (TextView) findViewById(R.id.txtDepartureTime);
+			
+			edtMessage = (EditText) findViewById(R.id.edtMessage);
+			
+			Button btnSend = (Button) findViewById(R.id.btnSend);
+			
+			if ( getIntent().getExtras() != null && getIntent().getExtras().containsKey("mode"))
+			{
+				// 수정
+				if ( "modify".equals( getIntent().getExtras().getString("mode") ))
+				{
+					setTitle("합승정보수정");
+					post = (Post) getIntent().getExtras().get("post");
+					btnSend.setText("수정하기");
+					displayModifyInfo();
+					mode = "modify";
+				}
+			}
+			else
+			{
+				// 신규
+				if ( getIntent().getExtras() != null && getIntent().getExtras().containsKey("departure") )
+				{
+					departure = (LatLng) getIntent().getExtras().get("departure");
+					txtDeparture.setText( getIntent().getExtras().getString("address"));
+				}
+				else if ( getMetaInfoString("address") != null && getMetaInfoString("address").isEmpty() == false )
+				{
+					double latitude = getMetaInfoDouble("latitude");
+					double longitude = getMetaInfoDouble("longitude");
+					departure = new LatLng(latitude, longitude);
+					txtDeparture.setText( getMetaInfoString("address") );
+				}	
+				
+				btnSend.setText("등록하기");
+				
+				mode = "new";
+			}
 		}
 		catch( Exception ex )
 		{
@@ -218,9 +249,9 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 	{
 		try
 		{
-			Post post = new Post();
-
-			EditText edtMessage = (EditText) findViewById(R.id.edtMessage);
+			// 신규등록일 경우
+			if ( post == null )
+				post = new Post();
 
 			if ( TextUtils.isEmpty( edtMessage.getText() ) )
 			{
@@ -247,11 +278,8 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 			post.setLatitude( String.valueOf( destination.latitude) );
 			post.setLongitude( String.valueOf( destination.longitude) );
 			post.setToAddress( txtDestination.getText().toString()  );
-			
-			String departureDateTime = "";
-			departureDateTime = txtDepartureDate.getText().toString();
-			departureDateTime += " " + txtDepartureTime.getText().toString();
-			post.setDepartureDateTime( departureDateTime );
+			post.setDepartureDate( txtDepartureDate.getText().toString() );
+			post.setDepartureTime( txtDepartureTime.getText().toString() );
 			
 			Spinner spSex = (Spinner)findViewById(R.id.spSex);
 			post.setSexInfo( spSex.getSelectedItem().toString() );
@@ -262,7 +290,11 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 			post.setUser( getLoginUser() );
 
 			setProgressBarIndeterminateVisibility(true);
-			sendHttp("/taxi/insertPost.do", mapper.writeValueAsString(post), 1);
+			
+			if ( "new".equals( mode ) )
+				sendHttp("/taxi/insertPost.do", mapper.writeValueAsString(post), 1);
+			else
+				sendHttp("/taxi/modifyPost.do", mapper.writeValueAsString(post), MODIFY_POST );
 		}
 		catch( Exception ex )
 		{
@@ -305,5 +337,28 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 		{
 			catchException(this, ex);
 		}
+	}
+	
+	public void displayModifyInfo()
+	{
+		if ( post == null ) return;
+		
+		departure = new LatLng( Double.parseDouble( post.getFromLatitude() ), 
+				Double.parseDouble( post.getFromLongitude() ));
+		txtDeparture.setText( post.getFromAddress());
+		
+		destination = new LatLng( Double.parseDouble( post.getLatitude() ), 
+				Double.parseDouble( post.getLongitude() ));
+		txtDestination.setText( post.getToAddress() );
+	
+		txtDepartureDate.setText( Util.getString( post.getDepartureDate() ) );
+		txtDepartureTime.setText( Util.getString( post.getDepartureTime() ) );
+		
+		ArrayAdapter<CharSequence> adapter = (ArrayAdapter<CharSequence>) spSexInfo.getAdapter();
+		spSexInfo.setSelection( adapter.getPosition( post.getSexInfo() ) );
+		adapter = (ArrayAdapter<CharSequence>) spNumOfUsers.getAdapter();
+		spNumOfUsers.setSelection( adapter.getPosition( post.getNumOfUsers() ) );
+		
+		edtMessage.setText( post.getMessage() );
 	}
 }

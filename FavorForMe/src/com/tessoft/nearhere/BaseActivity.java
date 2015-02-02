@@ -189,6 +189,7 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 	@Override
 	public void doAction(String actionName, Object param) {
 		// TODO Auto-generated method stub
-		
+		if ("logException".equals( actionName ) )
+			Log.e("이근처", "exception", (Exception) param);
 	}
 }

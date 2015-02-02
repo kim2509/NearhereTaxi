@@ -2,6 +2,7 @@ package com.tessoft.domain;
 
 public class UserPushMessage {
 
+	private String pushNo;
 	private String toUserID;
 	private String message;
 	private boolean isRead;
@@ -43,5 +44,11 @@ public class UserPushMessage {
 	}
 	public void setParam1(String param1) {
 		this.param1 = param1;
+	}
+	public String getPushNo() {
+		return pushNo;
+	}
+	public void setPushNo(String pushNo) {
+		this.pushNo = pushNo;
 	}
 }

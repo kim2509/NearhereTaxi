@@ -94,7 +94,7 @@ public class HttpTransactionReturningString extends AsyncTask<Object, Integer, S
 
 			Log.d("HTTPRequest", "Successfully got response!!" );
 			
-			Log.d("HTTPRequest", "ResponseString:" + json.toString() );
+			Log.d("HTTPRequest", "ResponseString:" + responseString );
 			
 			return responseString;
 

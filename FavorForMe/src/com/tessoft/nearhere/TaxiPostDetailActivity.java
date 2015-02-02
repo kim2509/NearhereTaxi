@@ -1,11 +1,6 @@
 package com.tessoft.nearhere;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.codehaus.jackson.type.TypeReference;
 
@@ -17,26 +12,19 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tessoft.common.Constants;
-import com.tessoft.common.TaxiArrayAdapter;
 import com.tessoft.common.TaxiPostReplyListAdapter;
 import com.tessoft.common.Util;
 import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.Post;
 import com.tessoft.domain.PostReply;
-import com.tessoft.domain.User;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -45,21 +33,26 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class TaxiPostDetailActivity extends BaseListActivity implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener{
+public class TaxiPostDetailActivity extends BaseListActivity 
+	implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, OnClickListener{
 
+	private static final int DELETE_POST = 3;
+	private static final int POST_DETAIL = 1;
+	private static final int INSERT_POST_REPLY = 2;
+	private static final int REQUEST_MODIFY_POST = 0;
 	TaxiPostReplyListAdapter adapter = null;
 	Post post = null;
 	View header2 = null;
 	GoogleMap map = null;
 	int ZoomLevel = 13;
+	ImageView imgProfile = null;
+	TextView txtUserName = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -79,17 +72,8 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 			adapter = new TaxiPostReplyListAdapter( getApplicationContext(), 0 );
 			listMain.setAdapter(adapter);
 			adapter.setDelegate(this);
-
+			
 			initializeComponent();
-
-			TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
-			txtUserName.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					goUserProfileActivity();
-				}
-			});
 
 			setProgressBarIndeterminateVisibility(true);
 
@@ -98,7 +82,7 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 			hash.put("latitude", getMetaInfoString("latitude"));
 			hash.put("longitude", getMetaInfoString("longitude"));
 
-			sendHttp("/taxi/getPostDetail.do", mapper.writeValueAsString(hash), 1);
+			sendHttp("/taxi/getPostDetail.do", mapper.writeValueAsString(hash), POST_DETAIL );
 		}
 		catch(Exception ex )
 		{
@@ -112,6 +96,13 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 				.findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
 		makeMapScrollable();
+		
+		imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
+		imgProfile.setImageResource(R.drawable.no_image);
+		imgProfile.setOnClickListener( this );
+		
+		txtUserName = (TextView) header.findViewById(R.id.txtUserName);
+		txtUserName.setOnClickListener( this );
 	}
 
 	@Override
@@ -168,11 +159,14 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 		});
 	}
 
+	private Menu menu = null;
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.taxi_post_detail, menu);
-		return false;
+		this.menu = menu;
+		return true;
 	}
 
 	@Override
@@ -181,16 +175,44 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
+		
 		if (id == R.id.action_settings) {
 			return true;
 		}
+		else if ( id == R.id.action_edit )
+			modifyPost();
+		else if (id == R.id.action_delete) {
+			showYesNoDialog("확인", "정말 삭제하시겠습니까?", "postDelete");
+			return true;
+		}
+		
 		return super.onOptionsItemSelected(item);
 	}
+	
+	@Override
+	public void yesClicked(Object param) {
+		// TODO Auto-generated method stub
+		super.yesClicked(param);
+		
+		
+		try
+		{
+			if ( "postDelete".equals( param ) )
+			{
+				setProgressBarIndeterminateVisibility(true);
+				sendHttp("/taxi/deletePost.do", mapper.writeValueAsString(post), DELETE_POST );				
+			}
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
 
-	public void goUserProfileActivity()
+	public void goUserProfileActivity( String userID )
 	{
 		Intent intent = new Intent( this, UserProfileActivity.class);
-		intent.putExtra("userID", post.getUser().getUserID());
+		intent.putExtra("userID", userID );
 		startActivity(intent);
 		overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
 	}
@@ -304,7 +326,7 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 			postReply.setMessage( edtPostReply.getText().toString() );
 			edtPostReply.setText("");
 
-			sendHttp("/taxi/insertPostReply.do", mapper.writeValueAsString(postReply), 2);
+			sendHttp("/taxi/insertPostReply.do", mapper.writeValueAsString(postReply), INSERT_POST_REPLY );
 		}
 		catch( Exception ex )
 		{
@@ -328,7 +350,7 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 
 			super.doPostTransaction(requestCode, result);
 
-			if ( requestCode == 1 )
+			if ( requestCode == POST_DETAIL )
 			{
 				APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
 				String postData = mapper.writeValueAsString( response.getData() );
@@ -336,17 +358,21 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 
 				drawPostOnMap();
 
-				ImageView imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
-				ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
-						post.getUser().getProfileImageURL() , imgProfile);
+				if ( !Util.isEmptyString(post.getUser().getProfileImageURL()))
+				{
+					ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
+							post.getUser().getProfileImageURL() , imgProfile);			
+				}
 
 				String age = "";
 
 				if ( post.getUser().getAge() != null && !"".equals( post.getUser().getAge() ) )
 					age = " (" + post.getUser().getAge() + ")";
 
-				TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
-				txtUserName.setText( post.getUser().getUserName() + age );
+				if ( Util.isEmptyString( post.getUser().getUserName() ) )
+					txtUserName.setText( post.getUser().getUserID() + age );
+				else
+					txtUserName.setText( post.getUser().getUserName() + age );
 
 				String titleDummy = "";
 				
@@ -371,10 +397,10 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 				TextView txtDistance = (TextView) header.findViewById(R.id.txtDistance);
 				txtDistance.setText( Util.getDistance(post.getDistance()) );
 
-				if ( post.getDepartureDateTime() != null )
+				if ( post.getDepartureDate() != null )
 				{
 					TextView txtDepartureDateTime = (TextView) header.findViewById(R.id.txtDepartureDateTime);
-					txtDepartureDateTime.setText( post.getDepartureDateTime() );	
+					txtDepartureDateTime.setText( post.getDepartureDate() + " " + post.getDepartureTime());	
 				}
 				
 				TextView txtCreatedDate = (TextView) header.findViewById(R.id.txtCreatedDate);
@@ -382,16 +408,93 @@ public class TaxiPostDetailActivity extends BaseListActivity implements OnMapRea
 
 				adapter.setItemList( post.getPostReplies() );
 				adapter.notifyDataSetChanged();
+				
+				if ( post.getUser().getUserID().equals( getLoginUser().getUserID() ))
+				{
+					menu.findItem(R.id.action_edit).setVisible(true);
+					menu.findItem(R.id.action_delete).setVisible(true);	
+				}
+				else
+				{
+					menu.findItem(R.id.action_edit).setVisible(false);
+					menu.findItem(R.id.action_delete).setVisible(false);
+				}
 			}
-			else if ( requestCode == 2 )
+			else if ( requestCode == INSERT_POST_REPLY )
 			{
 				setProgressBarIndeterminateVisibility(true);
-				sendHttp("/taxi/getPostDetail.do", mapper.writeValueAsString(post), 1);
+				sendHttp("/taxi/getPostDetail.do", mapper.writeValueAsString(post), POST_DETAIL );
+			}
+			else if ( requestCode == DELETE_POST )
+			{
+				Intent data = new Intent();
+				data.putExtra("reload", true);
+				setResult(RESULT_OK, data);
+				finish();
 			}
 		}
 		catch( Exception ex )
 		{
 			catchException(this, ex);
 		}
+	}
+	
+	public void modifyPost()
+	{
+		Intent intent = new Intent( this, NewTaxiPostActivity.class);
+		intent.putExtra("mode", "modify");
+		intent.putExtra("post", post);
+		startActivityForResult(intent, REQUEST_MODIFY_POST );
+		overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int responseCode, Intent data ) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, responseCode, data);
+		
+		try
+		{
+			if ( responseCode == RESULT_OK )
+			{
+				setProgressBarIndeterminateVisibility(true);
+				sendHttp("/taxi/getPostDetail.do", mapper.writeValueAsString(post), POST_DETAIL );
+				
+				Intent result = new Intent();
+				result.putExtra("reload", true);
+				setResult(RESULT_OK, result);	
+			}			
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
+
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		try
+		{
+			int id = v.getId();
+			
+			if ( id == R.id.txtUserName || id == R.id.imgProfile )
+			{
+				goUserProfileActivity( post.getUser().getUserID() );
+			}
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
+	
+	@Override
+	public void doAction(String actionName, Object param) {
+		// TODO Auto-generated method stub
+		super.doAction(actionName, param);
+		
+		if ( "userProfile".equals( actionName ) )
+			goUserProfileActivity( param.toString() );
 	}
 }

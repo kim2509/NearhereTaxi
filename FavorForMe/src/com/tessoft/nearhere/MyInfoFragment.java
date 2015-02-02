@@ -57,13 +57,14 @@ public class MyInfoFragment extends BaseListFragment {
 			super.onCreateView(inflater, container, savedInstanceState);
 			
 			header = getActivity().getLayoutInflater().inflate(R.layout.user_profile_list_header1, null);
+			footer = getActivity().getLayoutInflater().inflate(R.layout.fragment_messagebox_footer, null);
 			
 			listMain = (ListView) rootView.findViewById(R.id.listMain);
 			listMain.addHeaderView(header);
+			listMain.addFooterView(footer, null, false );
 			
-			adapter = new TaxiArrayAdapter( getActivity(), 0 );
+			adapter = new TaxiArrayAdapter( getActivity(), this, 0 );
 			listMain.setAdapter(adapter);
-			adapter.setDelegate(this);
 			
 			initializeComponent();
 			
@@ -327,15 +328,21 @@ public class MyInfoFragment extends BaseListFragment {
 					List<Post> userPostsReplied = mapper.readValue(postsUserRepliedString, new TypeReference<List<Post>>(){});
 					postList.addAll( userPostsReplied );
 					
+					ImageView imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
+					imgProfile.setImageResource(R.drawable.no_image);
+					
 					if ( user != null && user.getProfileImageURL() != null && user.getProfileImageURL().isEmpty() == false )
 					{
-						ImageView imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
 						ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
 								user.getProfileImageURL() , imgProfile);
 					}
 					
 					TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
-					txtUserName.setText( user.getUserName() );
+					
+					if ( Util.isEmptyString( user.getUserName() ) )
+						txtUserName.setText( user.getUserID() );
+					else
+						txtUserName.setText( user.getUserName() + " (" + user.getUserID() + ")" );
 					
 					if ( user.getBirthday() != null && !"".equals( user.getBirthday() ) )
 					{
@@ -372,6 +379,16 @@ public class MyInfoFragment extends BaseListFragment {
 					
 					adapter.setItemList(postList);
 					adapter.notifyDataSetChanged();
+					
+					if ( postList.size() == 0 )
+					{
+						listMain.removeFooterView(footer);
+						listMain.addFooterView(footer, null, false );
+						TextView txtView = (TextView) footer.findViewById(R.id.txtGuide);
+						txtView.setText("합승내역이 없습니다.");
+					}
+					else
+						listMain.removeFooterView(footer);
 				}
 				else
 					showToastMessage(response.getResMsg());

@@ -27,9 +27,10 @@ public class PushMessageListAdapter extends ArrayAdapter<UserPushMessage> {
 		super.add(object);
 	}
 
-	public PushMessageListAdapter(Context context, int textViewResourceId) {
+	public PushMessageListAdapter(Context context, AdapterDelegate delegate, int textViewResourceId) {
 		super(context, textViewResourceId);
 		inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.delegate = delegate;
 	}
 
 	public int getCount() {
@@ -63,11 +64,17 @@ public class PushMessageListAdapter extends ArrayAdapter<UserPushMessage> {
 			TextView txtCreatedDate = (TextView) row.findViewById(R.id.txtCreatedDate);
 			txtCreatedDate.setText( Util.getFormattedDateString( item.getCreatedDate(), "yyyy-MM-dd" ) );
 			
+			TextView txtNew = (TextView) row.findViewById(R.id.txtNew);
+			if ( item.isRead() == false )
+				txtNew.setVisibility(ViewGroup.VISIBLE);
+			else
+				txtNew.setVisibility(ViewGroup.GONE);
+			
 			row.setTag( item );
 		}
 		catch( Exception ex )
 		{
-			Log.e("error", ex.getMessage());
+			delegate.doAction("logException", ex );
 		}
 
 		return row;
