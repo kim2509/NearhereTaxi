@@ -35,6 +35,7 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -88,7 +89,6 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		{
 			super.onCreate(savedInstanceState);
 
-			active = true;
 			getApplicationContext().registerReceiver(mMessageReceiver, new IntentFilter("updateUnreadCount"));
 
 			supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
@@ -212,12 +212,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 			try
 			{
-				// Extract data included in the Intent
-				//		        String message = intent.getStringExtra("message");
-
-				//		        showToastMessage("received.");
-				//do other stuff here
-				getUnreadCount();
+				if ( "updateUnreadCount".equals( intent.getAction() ) )
+					getUnreadCount();
 			}
 			catch( Exception ex )
 			{
@@ -287,6 +283,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			FragmentManager fragmentManager = getFragmentManager();
 			fragmentManager.beginTransaction()
 			.replace(R.id.content_frame, mainFragment)
+			.addToBackStack(null)
 			.commit();
 
 			setTitle( item.getMenuName() );
@@ -541,8 +538,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			{
 				if ( requestCode == 2 )
 				{
-					//				setMetaInfo("userNo", "");
-					//				setMetaInfo("registerUserFinished", "");
+//					setMetaInfo("userNo", "");
+//					setMetaInfo("registerUserFinished", "");
 					setMetaInfo("logout", "true");
 					setMetaInfo("userID", "");
 					setMetaInfo("userName", "");
@@ -588,7 +585,6 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
-		active = false;
 		getApplicationContext().unregisterReceiver(mMessageReceiver);
 	}
 

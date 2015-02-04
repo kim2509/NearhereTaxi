@@ -1,10 +1,13 @@
 package com.tessoft.nearhere;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.type.TypeReference;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -19,7 +22,10 @@ import com.tessoft.domain.Post;
 import com.tessoft.domain.User;
 import com.tessoft.domain.UserLocation;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -46,8 +52,7 @@ import android.widget.TextView;
 public class MyInfoFragment extends BaseListFragment {
 
 	TaxiArrayAdapter adapter = null;
-	Spinner spSex = null;
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -55,44 +60,52 @@ public class MyInfoFragment extends BaseListFragment {
 		try
 		{
 			super.onCreateView(inflater, container, savedInstanceState);
-			
+
 			header = getActivity().getLayoutInflater().inflate(R.layout.user_profile_list_header1, null);
 			footer = getActivity().getLayoutInflater().inflate(R.layout.fragment_messagebox_footer, null);
-			
+
 			listMain = (ListView) rootView.findViewById(R.id.listMain);
 			listMain.addHeaderView(header);
 			listMain.addFooterView(footer, null, false );
-			
+
 			adapter = new TaxiArrayAdapter( getActivity(), this, 0 );
 			listMain.setAdapter(adapter);
-			
+
 			initializeComponent();
-			
-			User user = getLoginUser();
-			getActivity().setProgressBarIndeterminateVisibility(true);
-			sendHttp("/taxi/getUserInfo.do", mapper.writeValueAsString( user ), 1);
+
+			inquiryUserInfo();
 		}
 		catch( Exception ex )
 		{
 			catchException(this, ex);
 		}
-		
+
 		return rootView;
 	}
 
+	private void inquiryUserInfo() throws IOException, JsonGenerationException,
+	JsonMappingException {
+		User user = getLoginUser();
+		getActivity().setProgressBarIndeterminateVisibility(true);
+		sendHttp("/taxi/getUserInfo.do", mapper.writeValueAsString( user ), 1);
+	}
+
 	private void initializeComponent() {
-		
+
 		TextView txtPickHomeLocation = (TextView) rootView.findViewById(R.id.txtPickHomeLocation);
 		txtPickHomeLocation.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				try
 				{
 					Intent intent = new Intent( getActivity(), SetDestinationActivity.class);
-					intent.putExtra("command", "address");
-					startActivityForResult(intent, 1);
+					intent.putExtra("title", "집 위치 선택");
+					intent.putExtra("subTitle", "위치를 선택해 주십시오.");
+					intent.putExtra("anim1", R.anim.stay );
+					intent.putExtra("anim2", R.anim.slide_out_to_bottom );
+					startActivityForResult(intent, 1 );
 					getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
 				}
 				catch( Exception ex )
@@ -101,16 +114,22 @@ public class MyInfoFragment extends BaseListFragment {
 				}
 			}
 		});
-		
+
 		TextView txtPickOfficeLocation = (TextView) rootView.findViewById(R.id.txtPickOfficeLocation);
 		txtPickOfficeLocation.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				try
 				{
-					openGalery();
+					Intent intent = new Intent( getActivity(), SetDestinationActivity.class);
+					intent.putExtra("title", "직장 위치 선택");
+					intent.putExtra("subTitle", "위치를 선택해 주십시오.");
+					intent.putExtra("anim1", R.anim.stay );
+					intent.putExtra("anim2", R.anim.slide_out_to_bottom );
+					startActivityForResult(intent, 2 );
+					getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
 				}
 				catch( Exception ex )
 				{
@@ -118,52 +137,10 @@ public class MyInfoFragment extends BaseListFragment {
 				}
 			}
 		});
-		
-		spSex = (Spinner) header.findViewById(R.id.spSex);
-		ArrayAdapter<CharSequence> sexAdapter = ArrayAdapter.createFromResource( getActivity(),
-		        R.array.sex_list, android.R.layout.simple_spinner_item);
-		sexAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spSex.setAdapter(sexAdapter);
-		spSex.setOnItemSelectedListener(new OnItemSelectedListener() {
 
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-				
-				try
-				{
-					if ( bDataFirstLoaded )
-					{
-						// TODO Auto-generated method stub
-						TextView txtView = (TextView) arg1;
-						User user = getLoginUser();
-						if ( "남".equals( txtView.getText() ))
-							user.setSex("M");
-						else if ( "여".equals( txtView.getText() ))
-							user.setSex("F");
-						else
-							return;
-						
-						getActivity().setProgressBarIndeterminateVisibility(true);
-						sendHttp("/taxi/updateUserSex.do", mapper.writeValueAsString(user), 1);							
-					}
-				}
-				catch( Exception ex )
-				{
-					catchException(MyInfoFragment.this, ex);
-				}
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-		
 		TextView txtUpdateJobTitle = (TextView) rootView.findViewById(R.id.txtUpdateJobTitle);
 		txtUpdateJobTitle.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
@@ -181,10 +158,10 @@ public class MyInfoFragment extends BaseListFragment {
 				}
 			}
 		});
-		
+
 		TextView txtChangeBirthday = (TextView) header.findViewById(R.id.txtChangeBirthday);
 		txtChangeBirthday.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
@@ -192,7 +169,7 @@ public class MyInfoFragment extends BaseListFragment {
 				{
 					TextView txtView = (TextView) v;
 					RelativeLayout layoutBirthday = (RelativeLayout) header.findViewById(R.id.layoutBirthday);
-					
+
 					if ("변경하기".equals(txtView.getText()))
 					{
 						txtView.setText("취소");
@@ -210,10 +187,10 @@ public class MyInfoFragment extends BaseListFragment {
 				}
 			}
 		});
-		
+
 		TextView txtSetDatePicker = (TextView) header.findViewById(R.id.txtSetDatePicker);
 		txtSetDatePicker.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
@@ -224,14 +201,14 @@ public class MyInfoFragment extends BaseListFragment {
 					TextView txtBirthday = (TextView) header.findViewById(R.id.txtBirthday);
 					layoutBirthday.setVisibility(ViewGroup.GONE);
 					txtChangeBirthday.setText("변경하기");
-					
+
 					DatePicker dp = (DatePicker) header.findViewById(R.id.datepicker);
 					Date date = new Date( dp.getYear()-1900, dp.getMonth(), dp.getDayOfMonth());
 
 					User user = getLoginUser();
 					user.setBirthday(Util.getDateStringFromDate(date, "yyyy-MM-dd"));
 					txtBirthday.setText( user.getBirthday() );
-					
+
 					getActivity().setProgressBarIndeterminateVisibility(true);
 					sendHttp("/taxi/updateUserBirthday.do", mapper.writeValueAsString( user ), 3 );
 				}
@@ -241,7 +218,7 @@ public class MyInfoFragment extends BaseListFragment {
 				}
 			}
 		});
-		
+
 		listMain.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -249,17 +226,17 @@ public class MyInfoFragment extends BaseListFragment {
 					int arg2, long arg3) {
 				// TODO Auto-generated method stub
 				Post post = (Post) arg1.getTag();
-			
+
 				Intent intent = new Intent( getActivity(), TaxiPostDetailActivity.class);
 				intent.putExtra("postID", post.getPostID());
 				startActivity(intent);
 				getActivity().overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 			}
 		});
-		
+
 		ImageView imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
 		imgProfile.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
@@ -277,18 +254,10 @@ public class MyInfoFragment extends BaseListFragment {
 			}
 		});
 	}
-	
-	public void openGalery()
-	{
-		Intent intent = new Intent( getActivity(), SetDestinationActivity.class);
-		intent.putExtra("command", "address");
-		startActivityForResult(intent, 1);
-		getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
-	}
-	
-	
-	
+
 	private static final int PICK_IMAGE = 1;
+
+	private static final int PROFILE_IMAGE_UPLOAD = 6;
 
 	public boolean bDataFirstLoaded = false;
 	@Override
@@ -302,55 +271,58 @@ public class MyInfoFragment extends BaseListFragment {
 				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
 				return;
 			}
-			
+
 			getActivity().setProgressBarIndeterminateVisibility(false);
-			
+
 			super.doPostTransaction(requestCode, result);
 
-			if ( requestCode == 1 )
+			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
+
+			if ( "0000".equals( response.getResCode() ) )
 			{
-				APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
-				
-				if ( "0000".equals( response.getResCode() ) )
+				if ( requestCode == 1 )
 				{
 					bDataFirstLoaded = true;
-					
+
 					HashMap hash = (HashMap) response.getData();
-							
+
 					String userString = mapper.writeValueAsString( hash.get("user") );
 					String locationListString = mapper.writeValueAsString( hash.get("locationList") );
 					String userPostString = mapper.writeValueAsString( hash.get("userPost") );
 					String postsUserRepliedString = mapper.writeValueAsString( hash.get("postsUserReplied") );
-					
+
 					User user = mapper.readValue(userString, new TypeReference<User>(){});
 					List<UserLocation> locationList = mapper.readValue(locationListString, new TypeReference<List<UserLocation>>(){});
 					List<Post> postList = mapper.readValue(userPostString, new TypeReference<List<Post>>(){});
 					List<Post> userPostsReplied = mapper.readValue(postsUserRepliedString, new TypeReference<List<Post>>(){});
 					postList.addAll( userPostsReplied );
-					
+
 					ImageView imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
 					imgProfile.setImageResource(R.drawable.no_image);
-					
+
 					if ( user != null && user.getProfileImageURL() != null && user.getProfileImageURL().isEmpty() == false )
 					{
 						ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
 								user.getProfileImageURL() , imgProfile);
 					}
-					
+
 					TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
-					
+
 					if ( Util.isEmptyString( user.getUserName() ) )
 						txtUserName.setText( user.getUserID() );
 					else
 						txtUserName.setText( user.getUserName() + " (" + user.getUserID() + ")" );
-					
+
+					TextView txtCreditValue = (TextView) header.findViewById(R.id.txtCreditValue);
+					txtCreditValue.setText( user.getProfilePoint() + "%");
+
 					if ( user.getBirthday() != null && !"".equals( user.getBirthday() ) )
 					{
 						String birthday = Util.getFormattedDateString(user.getBirthday(),"yyyy-MM-dd", "yyyy.MM.dd");
 						TextView txtBirthday = (TextView) header.findViewById(R.id.txtBirthday );
 						txtBirthday.setText( birthday );
 					}
-					
+
 					for ( int i = 0; i < locationList.size(); i++ )
 					{
 						UserLocation loc = locationList.get(i);
@@ -365,21 +337,32 @@ public class MyInfoFragment extends BaseListFragment {
 							txtOfficeLocation.setText( loc.getAddress() );
 						}
 					}
-					
+
+					ImageView imgSex = (ImageView) header.findViewById(R.id.imgSex);
+					TextView txtSex = (TextView) header.findViewById(R.id.txtSex);
+
 					if ( "M".equals( user.getSex() ))
-						spSex.setSelection(1);
+					{
+						imgSex.setImageResource(R.drawable.male);
+						txtSex.setText("남자");
+					}
 					else if ( "F".equals( user.getSex() ))
-						spSex.setSelection(2);
-					
+					{
+						imgSex.setImageResource(R.drawable.female);
+						txtSex.setText("여자");
+					}
+					else
+						imgSex.setVisibility(ViewGroup.GONE);
+
 					if ( user.getJobTitle() != null && !"".equals( user.getJobTitle() ))
 					{
 						EditText edtJobTitle = (EditText) header.findViewById(R.id.edtJobTitle);
 						edtJobTitle.setText( user.getJobTitle() );
 					}
-					
+
 					adapter.setItemList(postList);
 					adapter.notifyDataSetChanged();
-					
+
 					if ( postList.size() == 0 )
 					{
 						listMain.removeFooterView(footer);
@@ -391,32 +374,36 @@ public class MyInfoFragment extends BaseListFragment {
 						listMain.removeFooterView(footer);
 				}
 				else
-					showToastMessage(response.getResMsg());
+				{
+					inquiryUserInfo();
+				}
 			}
+			else
+				showToastMessage(response.getResMsg());
 		}
 		catch( Exception ex )
 		{
 			catchException(this, ex);
 		}
 	}
-	
+
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
 		try
 		{
 			super.onActivityResult(requestCode, resultCode, data);
-			
+
 			if ( requestCode == 1 || requestCode ==2 )
 			{
-				String selectedAddress = data.getExtras().get("selectedAddress").toString();
+				String selectedAddress = data.getExtras().get("address").toString();
 				LatLng location = (LatLng) data.getExtras().get("location");
-				
+
 				if ( requestCode == 1 )
 				{
 					TextView txtHomeLocation = (TextView) header.findViewById(R.id.txtHomeLocation);
 					txtHomeLocation.setText( selectedAddress );
-					
+
 					User user = getLoginUser();
 					UserLocation userLocation = new UserLocation();
 					userLocation.setUser( user );
@@ -445,22 +432,22 @@ public class MyInfoFragment extends BaseListFragment {
 			}
 			else if ( requestCode == 3 )
 			{
-			    if( data != null && data.getData() != null) {
-			        Uri _uri = data.getData();
+				if( data != null && data.getData() != null) {
+					Uri _uri = data.getData();
 
-			        //User had pick an image.
-			        Cursor cursor = getActivity().getContentResolver().query(_uri, 
-			        		new String[] { android.provider.MediaStore.Images.ImageColumns.DATA }, 
-			        		null, null, null);
-			        cursor.moveToFirst();
+					//User had pick an image.
+					Cursor cursor = getActivity().getContentResolver().query(_uri, 
+							new String[] { android.provider.MediaStore.Images.ImageColumns.DATA }, 
+							null, null, null);
+					cursor.moveToFirst();
 
-			        //Link to the image
-			        final String imageFilePath = cursor.getString(0);
-			        cursor.close();
-			        
-			        Bitmap myBitmap = BitmapFactory.decodeFile( imageFilePath );
-			        sendPhoto( myBitmap );
-			    }
+					//Link to the image
+					final String imageFilePath = cursor.getString(0);
+					cursor.close();
+
+					Bitmap myBitmap = BitmapFactory.decodeFile( imageFilePath );
+					sendPhoto( myBitmap );
+				}
 
 			}
 		}
@@ -469,11 +456,38 @@ public class MyInfoFragment extends BaseListFragment {
 			catchException(this, ex);
 		}
 	}
-	
+
 	private void sendPhoto(Bitmap f) throws Exception {
-		
 		User user = getLoginUser();
-		
-		new UploadTask( getActivity(), user.getUserID() ).execute(f);
+		new UploadTask( getActivity(), this, user.getUserID() , PROFILE_IMAGE_UPLOAD ).execute(f);
+	}
+
+	//This is the handler that will manager to process the broadcast intent
+	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			try
+			{
+				inquiryUserInfo();
+			}
+			catch( Exception ex )
+			{
+				catchException(this, ex);
+			}
+		}
+	};
+
+	@Override
+	public void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+		getActivity().registerReceiver(mMessageReceiver, new IntentFilter("refreshContents"));
+	}
+
+	@Override
+	public void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
+		getActivity().unregisterReceiver(mMessageReceiver);
 	}
 }

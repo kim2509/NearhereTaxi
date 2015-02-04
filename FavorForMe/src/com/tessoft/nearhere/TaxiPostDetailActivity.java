@@ -1,7 +1,10 @@
 package com.tessoft.nearhere;
 
+import java.io.IOException;
 import java.util.HashMap;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.type.TypeReference;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -25,7 +28,10 @@ import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.Post;
 import com.tessoft.domain.PostReply;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -40,12 +46,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class TaxiPostDetailActivity extends BaseListActivity 
-	implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, OnClickListener{
+implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, OnClickListener{
 
 	private static final int DELETE_POST = 3;
 	private static final int POST_DETAIL = 1;
 	private static final int INSERT_POST_REPLY = 2;
 	private static final int REQUEST_MODIFY_POST = 0;
+	private static final int DELETE_POST_REPLY = 4;
 	TaxiPostReplyListAdapter adapter = null;
 	Post post = null;
 	View header2 = null;
@@ -68,26 +75,33 @@ public class TaxiPostDetailActivity extends BaseListActivity
 			listMain.addHeaderView(header, null, false );
 			listMain.addHeaderView(header2 );
 			listMain.addFooterView(footer);
+			
+			listMain.setSelector(android.R.color.transparent);
 
-			adapter = new TaxiPostReplyListAdapter( getApplicationContext(), 0 );
+			adapter = new TaxiPostReplyListAdapter( getApplicationContext(), getLoginUser(),0 );
 			listMain.setAdapter(adapter);
 			adapter.setDelegate(this);
-			
+
 			initializeComponent();
 
-			setProgressBarIndeterminateVisibility(true);
-
-			HashMap hash = new HashMap();
-			hash.put("postID", getIntent().getExtras().getString("postID") );
-			hash.put("latitude", getMetaInfoString("latitude"));
-			hash.put("longitude", getMetaInfoString("longitude"));
-
-			sendHttp("/taxi/getPostDetail.do", mapper.writeValueAsString(hash), POST_DETAIL );
+			inquiryPostDetail();
 		}
 		catch(Exception ex )
 		{
 			catchException(this, ex);
 		}
+	}
+
+	private void inquiryPostDetail() throws IOException,
+			JsonGenerationException, JsonMappingException {
+		HashMap hash = new HashMap();
+		hash.put("postID", getIntent().getExtras().getString("postID") );
+		hash.put("latitude", getMetaInfoString("latitude"));
+		hash.put("longitude", getMetaInfoString("longitude"));
+		hash.put("userID", getLoginUser().getUserID() );
+
+		setProgressBarIndeterminateVisibility(true);
+		sendHttp("/taxi/getPostDetail.do", mapper.writeValueAsString(hash), POST_DETAIL );
 	}
 
 	public void initializeComponent() throws Exception
@@ -96,25 +110,13 @@ public class TaxiPostDetailActivity extends BaseListActivity
 				.findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
 		makeMapScrollable();
-		
+
 		imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
 		imgProfile.setImageResource(R.drawable.no_image);
 		imgProfile.setOnClickListener( this );
-		
+
 		txtUserName = (TextView) header.findViewById(R.id.txtUserName);
 		txtUserName.setOnClickListener( this );
-	}
-
-	@Override
-	protected void onStop() {
-		// TODO Auto-generated method stub
-		super.onStop();
-	}
-
-	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onDestroy();
 	}
 
 	private void makeMapScrollable() {
@@ -160,7 +162,7 @@ public class TaxiPostDetailActivity extends BaseListActivity
 	}
 
 	private Menu menu = null;
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -175,32 +177,45 @@ public class TaxiPostDetailActivity extends BaseListActivity
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		
-		if (id == R.id.action_settings) {
-			return true;
+
+		try
+		{
+			if (id == R.id.action_refresh) {
+				inquiryPostDetail();
+				return true;
+			}
+			else if ( id == R.id.action_edit )
+				modifyPost();
+			else if (id == R.id.action_delete) {
+				showYesNoDialog("확인", "정말 삭제하시겠습니까?", "postDelete");
+				return true;
+			}	
 		}
-		else if ( id == R.id.action_edit )
-			modifyPost();
-		else if (id == R.id.action_delete) {
-			showYesNoDialog("확인", "정말 삭제하시겠습니까?", "postDelete");
-			return true;
+		catch( Exception ex )
+		{
+			catchException(this, ex);
 		}
-		
+
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	@Override
 	public void yesClicked(Object param) {
 		// TODO Auto-generated method stub
 		super.yesClicked(param);
-		
-		
+
+
 		try
 		{
-			if ( "postDelete".equals( param ) )
+			if ( param instanceof String && "postDelete".equals( param ) )
 			{
 				setProgressBarIndeterminateVisibility(true);
 				sendHttp("/taxi/deletePost.do", mapper.writeValueAsString(post), DELETE_POST );				
+			}
+			else if ( param instanceof PostReply )
+			{
+				setProgressBarIndeterminateVisibility(true);
+				sendHttp("/taxi/deletePostReply.do", mapper.writeValueAsString(param), DELETE_POST_REPLY );	
 			}
 		}
 		catch( Exception ex )
@@ -345,7 +360,7 @@ public class TaxiPostDetailActivity extends BaseListActivity
 				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
 				return;
 			}
-			
+
 			setProgressBarIndeterminateVisibility(false);
 
 			super.doPostTransaction(requestCode, result);
@@ -375,16 +390,16 @@ public class TaxiPostDetailActivity extends BaseListActivity
 					txtUserName.setText( post.getUser().getUserName() + age );
 
 				String titleDummy = "";
-				
+
 				if ( post.getSexInfo() != null && !"상관없음".equals( post.getSexInfo() ) )
 					titleDummy += post.getSexInfo();
-				
+
 				if ( post.getNumOfUsers() != null && !"상관없음".equals( post.getNumOfUsers() ) )
 					titleDummy += " " + post.getNumOfUsers();
-				
+
 				if ( titleDummy.isEmpty() == false )
 					titleDummy = "(" + titleDummy.trim() + ")";
-				
+
 				TextView txtTitle = (TextView) header.findViewById(R.id.txtTitle);
 				txtTitle.setText( post.getMessage() + titleDummy );
 
@@ -402,13 +417,13 @@ public class TaxiPostDetailActivity extends BaseListActivity
 					TextView txtDepartureDateTime = (TextView) header.findViewById(R.id.txtDepartureDateTime);
 					txtDepartureDateTime.setText( post.getDepartureDate() + " " + post.getDepartureTime());	
 				}
-				
+
 				TextView txtCreatedDate = (TextView) header.findViewById(R.id.txtCreatedDate);
 				txtCreatedDate.setText( Util.getFormattedDateString(post.getCreatedDate(), "yyyy-MM-dd HH:mm") );
 
 				adapter.setItemList( post.getPostReplies() );
 				adapter.notifyDataSetChanged();
-				
+
 				if ( post.getUser().getUserID().equals( getLoginUser().getUserID() ))
 				{
 					menu.findItem(R.id.action_edit).setVisible(true);
@@ -432,13 +447,17 @@ public class TaxiPostDetailActivity extends BaseListActivity
 				setResult(RESULT_OK, data);
 				finish();
 			}
+			else if ( requestCode == DELETE_POST_REPLY )
+			{
+				inquiryPostDetail();
+			}
 		}
 		catch( Exception ex )
 		{
 			catchException(this, ex);
 		}
 	}
-	
+
 	public void modifyPost()
 	{
 		Intent intent = new Intent( this, NewTaxiPostActivity.class);
@@ -447,19 +466,19 @@ public class TaxiPostDetailActivity extends BaseListActivity
 		startActivityForResult(intent, REQUEST_MODIFY_POST );
 		overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
 	}
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int responseCode, Intent data ) {
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, responseCode, data);
-		
+
 		try
 		{
 			if ( responseCode == RESULT_OK )
 			{
 				setProgressBarIndeterminateVisibility(true);
 				sendHttp("/taxi/getPostDetail.do", mapper.writeValueAsString(post), POST_DETAIL );
-				
+
 				Intent result = new Intent();
 				result.putExtra("reload", true);
 				setResult(RESULT_OK, result);	
@@ -477,7 +496,7 @@ public class TaxiPostDetailActivity extends BaseListActivity
 		try
 		{
 			int id = v.getId();
-			
+
 			if ( id == R.id.txtUserName || id == R.id.imgProfile )
 			{
 				goUserProfileActivity( post.getUser().getUserID() );
@@ -488,13 +507,70 @@ public class TaxiPostDetailActivity extends BaseListActivity
 			catchException(this, ex);
 		}
 	}
-	
+
 	@Override
 	public void doAction(String actionName, Object param) {
 		// TODO Auto-generated method stub
-		super.doAction(actionName, param);
-		
-		if ( "userProfile".equals( actionName ) )
-			goUserProfileActivity( param.toString() );
+		try
+		{
+			super.doAction(actionName, param);
+
+			if ( "userProfile".equals( actionName ) )
+				goUserProfileActivity( param.toString() );
+			else if ( "deleteReply".equals( actionName ) )
+			{
+				showYesNoDialog("확인", "정말 삭제하시겠습니까?", param );
+				return;
+			}	
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
+
+	//This is the handler that will manager to process the broadcast intent
+	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			try
+			{
+				if ( intent.getExtras() != null && intent.getExtras().containsKey("type"))
+				{
+					String type = intent.getExtras().getString("type");
+					if ( "postReply".equals( type ) && intent.getExtras().containsKey("postID"))
+					{
+						String postID = intent.getExtras().getString("postID");
+						if ( post.getPostID().equals( postID ) )
+							inquiryPostDetail();
+					}
+				}
+			}
+			catch( Exception ex )
+			{
+				catchException(this, ex);
+			}
+		}
+	};
+
+	@Override
+	public void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+		try
+		{
+			registerReceiver(mMessageReceiver, new IntentFilter("updateUnreadCount"));
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
+
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
+		unregisterReceiver(mMessageReceiver);
 	}
 }

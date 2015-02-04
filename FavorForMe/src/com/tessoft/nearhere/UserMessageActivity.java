@@ -1,8 +1,11 @@
 package com.tessoft.nearhere;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.type.TypeReference;
 
 import com.tessoft.common.Constants;
@@ -11,6 +14,10 @@ import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.User;
 import com.tessoft.domain.UserMessage;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -31,69 +38,51 @@ public class UserMessageActivity extends BaseActivity {
 	View footer = null;
 	UserMessageArrayAdapter adapter = null;
 	HashMap messageInfo = null;
-	Runnable mRunnable = null;
-	Handler mHandler = null; 
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		try
 		{
 			super.onCreate(savedInstanceState);
-			
+
 			supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-			
+
 			setContentView(R.layout.activity_user_message);
-			
+
 			header = getLayoutInflater().inflate(R.layout.list_header_user_message, null);
-			
+
 			listMain = (ListView) findViewById(R.id.listMain);
 			//listMain.addHeaderView(header);
-			
+
 			adapter = new UserMessageArrayAdapter( getApplicationContext(), this, getLoginUser(), 0 );
 			listMain.setAdapter(adapter);
 			adapter.setDelegate(this);
-			
+
 			listMain.setDivider(null);
-			
+
 			listMain.setOnScrollListener( new OnScrollListener() {
-				
+
 				@Override
 				public void onScrollStateChanged(AbsListView view, int scrollState) {
 					// TODO Auto-generated method stub
 					bForceScrollDown = false;
 				}
-				
+
 				@Override
 				public void onScroll(AbsListView view, int firstVisibleItem,
 						int visibleItemCount, int totalItemCount) {
 					// TODO Auto-generated method stub
-					
+
 				}
 			});
-			
+
 			messageInfo = (HashMap) getIntent().getExtras().get("messageInfo");
-			setProgressBarIndeterminateVisibility(true);
-			sendHttp("/taxi/getUserMessage.do", mapper.writeValueAsString( messageInfo ), 1);
 			
-			mRunnable = new Runnable() {
-	            @Override
-	            public void run() {
-	            	try
-	            	{
-	            		setProgressBarIndeterminateVisibility(true);
-	            		sendHttp("/taxi/getUserMessage.do", mapper.writeValueAsString( messageInfo ), 1);	
-	            	}
-	            	catch( Exception ex )
-	            	{
-	            		catchException(this, ex);
-	            	}
-	            }
-	        };
-	        mHandler = new Handler();
-			
+			inquiryUserMessage();
+
 			Button btnSend = (Button) findViewById(R.id.btnSend);
 			btnSend.setOnClickListener(new OnClickListener() {
-				
+
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
@@ -102,7 +91,7 @@ public class UserMessageActivity extends BaseActivity {
 						EditText edtMessage = (EditText) findViewById(R.id.edtMessage);
 						String message = edtMessage.getText().toString();
 						edtMessage.setText("");
-						
+
 						UserMessage userMessage = new UserMessage();
 						userMessage.setFromUser( getLoginUser() );
 						User toUser = new User();
@@ -126,6 +115,12 @@ public class UserMessageActivity extends BaseActivity {
 		}
 	}
 
+	private void inquiryUserMessage() throws IOException,
+			JsonGenerationException, JsonMappingException {
+		setProgressBarIndeterminateVisibility(true);
+		sendHttp("/taxi/getUserMessage.do", mapper.writeValueAsString( messageInfo ), 1);
+	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -144,25 +139,23 @@ public class UserMessageActivity extends BaseActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	@Override
 	public void finish() {
 		// TODO Auto-generated method stub
 		super.finish();
 		this.overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
 	}
-	
-	private boolean bStopFetchMessage = false;
-	
+
 	@Override
 	protected void onStop() {
 		// TODO Auto-generated method stub
 		super.onStop();
-		bStopFetchMessage = true;
+		unregisterReceiver(mMessageReceiver);
 	}
-	
+
 	boolean bForceScrollDown = true;
-	
+
 	@Override
 	public void doPostTransaction(int requestCode, Object result) {
 
@@ -174,38 +167,35 @@ public class UserMessageActivity extends BaseActivity {
 				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
 				return;
 			}
-			
+
 			setProgressBarIndeterminateVisibility(false);
-			
+
 			// TODO Auto-generated method stub
 			super.doPostTransaction(requestCode, result);	
-			
+
 			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
-			
+
 			if ( requestCode == 1 && "0000".equals( response.getResCode() ) )
 			{
 				String userMessageString = mapper.writeValueAsString( response.getData() );
 				List<UserMessage> messageList = mapper.readValue( userMessageString , new TypeReference<List<UserMessage>>(){});
 				adapter.setItemList(messageList);
 				adapter.notifyDataSetChanged();
-				
+
 				if ( bForceScrollDown )
 					listMain.setSelection(adapter.getCount() - 1);
-		        
-				if ( bStopFetchMessage == false )
-					mHandler.postDelayed(mRunnable, 5000);
 			}
-			
+
 		}
 		catch( Exception ex )
 		{
 			catchException(this, ex);
 		}
 	}
-	
+
 	@Override
 	public void doAction(String actionName, Object param) {
-		
+
 		try
 		{
 			// TODO Auto-generated method stub
@@ -217,4 +207,33 @@ public class UserMessageActivity extends BaseActivity {
 		}
 	}
 
+	//This is the handler that will manager to process the broadcast intent
+	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			try
+			{
+				inquiryUserMessage();
+			}
+			catch( Exception ex )
+			{
+				catchException(this, ex);
+			}
+		}
+	};
+
+	@Override
+	public void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+		try
+		{
+			registerReceiver(mMessageReceiver, new IntentFilter("updateUnreadCount"));
+			inquiryUserMessage();
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
 }

@@ -84,7 +84,22 @@ public class UserProfileActivity extends BaseListActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.user_profile, menu);
+		try
+		{
+			getMenuInflater().inflate(R.menu.user_profile, menu);
+			
+			MenuItem item = menu.findItem(R.id.action_chat);
+			
+			if ( getIntent().getExtras().getString("userID").equals( getLoginUser().getUserID() ))
+				item.setVisible(false);
+			else
+				item.setVisible(true);
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+		
 		return true;
 	}
 
@@ -161,15 +176,20 @@ public class UserProfileActivity extends BaseListActivity {
 					List<Post> userPostsReplied = mapper.readValue(postsUserRepliedString, new TypeReference<List<Post>>(){});
 					postList.addAll( userPostsReplied );
 					
+					ImageView imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
+					imgProfile.setImageResource(R.drawable.no_image);
+					
 					if ( user != null && user.getProfileImageURL() != null && user.getProfileImageURL().isEmpty() == false )
 					{
-						ImageView imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
 						ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
 								user.getProfileImageURL() , imgProfile);
 					}
 					
 					TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
 					txtUserName.setText( user.getUserName() );
+					
+					TextView txtCreditValue = (TextView) header.findViewById(R.id.txtCreditValue);
+					txtCreditValue.setText( user.getProfilePoint() + "%" );
 					
 					if ( user.getBirthday() != null && !"".equals( user.getBirthday() ) )
 					{
@@ -193,11 +213,22 @@ public class UserProfileActivity extends BaseListActivity {
 						}
 					}
 					
+					ImageView imgSex = (ImageView) header.findViewById(R.id.imgSex);
 					TextView txtSex = (TextView) header.findViewById(R.id.txtSex);
+					imgSex.setVisibility(ViewGroup.VISIBLE);
+					
 					if ( "M".equals( user.getSex() ))
+					{
+						imgSex.setImageResource(R.drawable.male);
 						txtSex.setText("남자");
+					}
 					else if ( "F".equals( user.getSex() ))
+					{
+						imgSex.setImageResource(R.drawable.female);
 						txtSex.setText("여자");
+					}
+					else
+						imgSex.setVisibility(ViewGroup.GONE);
 					
 					if ( user.getJobTitle() != null && !"".equals( user.getJobTitle() ))
 					{

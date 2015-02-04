@@ -8,16 +8,27 @@
     android:paddingRight="10dp"
     android:paddingBottom="10dp">
     
-    <ImageView
+    <com.tessoft.common.CustomImageView
         android:id="@+id/imgProfile" 
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_marginTop="10dp"/>
     
+    <ImageView
+        android:id="@+id/imgSex"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/imgProfile"
+        android:paddingBottom="2dp"
+        android:src="@drawable/male"/>
+    
     <TextView android:id="@+id/txtUserName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/imgProfile"
+        android:layout_toRightOf="@+id/imgSex"
+        android:layout_alignBaseline="@+id/imgSex"
         android:text="..."
         android:padding="5dp"
         android:textColor="#3B5D98" />

@@ -16,15 +16,24 @@
 
 package com.tessoft.nearhere;
 
+import java.util.List;
+
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.ActivityManager.RunningTaskInfo;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.os.Vibrator;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -113,14 +122,53 @@ public class GcmIntentService extends IntentService {
         
         Intent intent = null;
         
-        if ( MainActivity.active )
+        boolean isActive = false;
+        
+        // check if background
+//        ActivityManager activityManager = (ActivityManager) this.getSystemService( ACTIVITY_SERVICE );
+//        List<RunningAppProcessInfo> procInfos = activityManager.getRunningAppProcesses();
+//        for(int i = 0; i < procInfos.size(); i++)
+//        {
+//            if(procInfos.get(i).processName.equals("com.tessoft.nearhere")) 
+//	            isActive = true;
+//        }
+        
+        // check if foreground
+        ActivityManager activityManager = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+        List<RunningTaskInfo> services = activityManager
+                .getRunningTasks(Integer.MAX_VALUE);
+
+        if (services.get(0).topActivity.getPackageName().toString()
+                .equalsIgnoreCase( getApplicationContext().getPackageName().toString())) {
+        	isActive = true;
+        }
+
+        if ( isActive )
         {
         	intent = new Intent("updateUnreadCount");
         	intent.putExtra("type", type );
         	if ( "message".equals( type ) )
+        	{
             	intent.putExtra("fromUserID", extras.getString("fromUserID") );
+            	
+            	Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                r.play();
+                
+                Vibrator v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                v.vibrate(500);
+        	}
             else if ( "postReply".equals( type ) )
+            {
             	intent.putExtra("postID", extras.getString("postID") );
+            	
+            	Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                r.play();
+                
+                Vibrator v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                v.vibrate(500);
+            }
         	
             getApplicationContext().sendBroadcast(intent);
         }

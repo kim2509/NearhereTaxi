@@ -126,25 +126,17 @@ public class TermsAgreementActivity extends BaseActivity {
 					showOKDialog("경고", response.getResMsg(), null );
 					return;
 				}
-				
-				setMetaInfo("logout", "false");
-				setMetaInfo("registerUserFinished", "true");
-				
-				goTaxiTutorialActivity();
+
+				Intent intent = new Intent( this, MoreUserInfoActivity.class);
+				startActivity(intent);
+				overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
+				super.finish();
 			}
 		}
 		catch( Exception ex )
 		{
 			catchException(this, ex);
 		}
-	}
-	
-	public void goTaxiTutorialActivity()
-	{
-		Intent intent = new Intent( this, TaxiTutorialActivity.class);
-		startActivity(intent);
-		overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
-		super.finish();
 	}
 	
 	@Override

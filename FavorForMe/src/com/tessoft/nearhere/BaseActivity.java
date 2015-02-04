@@ -192,4 +192,18 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		if ("logException".equals( actionName ) )
 			Log.e("이근처", "exception", (Exception) param);
 	}
+	
+	@Override
+	protected void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+		MainActivity.active = true;
+	}
+	
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
+		MainActivity.active = false;
+	}
 }

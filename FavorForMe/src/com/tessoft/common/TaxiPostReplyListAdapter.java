@@ -3,8 +3,10 @@ package com.tessoft.common;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.android.gms.wearable.NodeApi.GetLocalNodeResult;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tessoft.domain.PostReply;
+import com.tessoft.domain.User;
 import com.tessoft.nearhere.R;
 
 import android.content.Context;
@@ -23,6 +25,7 @@ public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> implements
 
 	private List<PostReply> itemList = new ArrayList<PostReply>();
 	private AdapterDelegate delegate = null;
+	private User loginUser = null;
 
 	LayoutInflater inflater = null;
 
@@ -32,9 +35,10 @@ public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> implements
 		super.add(object);
 	}
 
-	public TaxiPostReplyListAdapter(Context context, int textViewResourceId) {
+	public TaxiPostReplyListAdapter(Context context, User user, int textViewResourceId) {
 		super(context, textViewResourceId);
 		inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.loginUser = user;
 	}
 
 	public int getCount() {
@@ -58,9 +62,26 @@ public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> implements
 		try
 		{
 			PostReply item = getItem(position);
-
+			
+			ImageView imageView = null;
+			TextView txtUserName = null;
+			TextView txtDeleteReply = null;
+			
 			if (row == null) {
 				row = inflater.inflate(R.layout.list_taxi_post_reply_item, parent, false);
+				
+				imageView = (ImageView) row.findViewById(R.id.imgProfile);
+				imageView.setOnClickListener( this );
+				txtUserName = (TextView) row.findViewById(R.id.txtUserName);
+				txtUserName.setOnClickListener( this );
+				txtDeleteReply = (TextView) row.findViewById(R.id.txtDeleteReply);
+				txtDeleteReply.setOnClickListener( this );
+			}
+			else
+			{
+				imageView = (ImageView) row.findViewById(R.id.imgProfile);
+				txtUserName = (TextView) row.findViewById(R.id.txtUserName);
+				txtDeleteReply = (TextView) row.findViewById(R.id.txtDeleteReply);
 			}
 
 			TextView txtMessage = (TextView) row.findViewById(R.id.txtMessage);
@@ -69,7 +90,6 @@ public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> implements
 			TextView txtDistance = (TextView) row.findViewById(R.id.txtDistance);
 			txtDistance.setText( Util.getDistance( item.getDistance()) );
 			
-			ImageView imageView = (ImageView) row.findViewById(R.id.imgProfile);
 			imageView.setImageResource(R.drawable.no_image);
 			
 			if ( !Util.isEmptyString( item.getUser().getProfileImageURL() ) )
@@ -78,14 +98,18 @@ public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> implements
 						item.getUser().getProfileImageURL() , imageView);	
 			}
 			
-			TextView txtUserName = (TextView) row.findViewById(R.id.txtUserName);
-			txtUserName.setText( item.getUser().getUserName() );
-			
-			imageView.setOnClickListener( this );
-			txtUserName.setOnClickListener( this );
+			if ( Util.isEmptyString( item.getUser().getUserName() ) )
+				txtUserName.setText( item.getUser().getUserID() );
+			else
+				txtUserName.setText( item.getUser().getUserName() );
 			
 			TextView txtCreatedDate = (TextView) row.findViewById(R.id.txtCreatedDate);
 			txtCreatedDate.setText( Util.getFormattedDateString( item.getCreatedDate(), "HH:mm"));
+			
+			if ( item.getUser().getUserID().equals( loginUser.getUserID() ) )
+				txtDeleteReply.setVisibility(ViewGroup.VISIBLE);
+			else
+				txtDeleteReply.setVisibility(ViewGroup.GONE);
 			
 			row.setTag( item );
 		}
@@ -114,7 +138,11 @@ public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> implements
 		// TODO Auto-generated method stub
 		View row = (View) v.getParent();
 		PostReply reply = (PostReply) row.getTag();
-		delegate.doAction("userProfile", reply.getUser().getUserID() );
+		
+		if ( v.getId() == R.id.txtDeleteReply )
+			delegate.doAction("deleteReply", reply );
+		else
+			delegate.doAction("userProfile", reply.getUser().getUserID() );
 	}
 
 }

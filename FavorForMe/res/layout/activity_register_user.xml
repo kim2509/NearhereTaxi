@@ -9,7 +9,8 @@
         android:id="@+id/layoutRandom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_centerVertical="true"
+        android:gravity="center_horizontal"
         android:orientation="vertical" >
 
         <TextView
@@ -21,7 +22,7 @@
             android:id="@+id/btnRandomID"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:enabled="false"
             android:onClick="goTermsAgreementActivity"
             android:text="로딩중.." />

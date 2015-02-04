@@ -42,13 +42,11 @@
         <item>남</item>
         <item>여</item>
     </string-array>
-    
     <string-array name="sex_select_list">
         <item>상관없음</item>
         <item>남자만</item>
         <item>여자만</item>
     </string-array>
-    
     <string-array name="nou_list">
         <item>상관없음</item>
         <item>1명</item>
@@ -57,5 +55,7 @@
     </string-array>
 
     <string name="title_activity_new_taxi_post">합승정보등록</string>
+    <string name="title_activity_more_user_info">사용자 정보입력</string>
+    <string name="title_activity_profile_image_view">ProfileImageViewActivity</string>
 
 </resources>

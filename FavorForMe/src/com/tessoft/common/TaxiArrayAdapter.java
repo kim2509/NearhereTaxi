@@ -79,6 +79,16 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> {
 			if ( titleDummy.isEmpty() == false )
 				titleDummy = "(" + titleDummy.trim() + ")";
 			
+			ImageView imgSex = (ImageView) row.findViewById(R.id.imgSex);
+			imgSex.setVisibility(ViewGroup.VISIBLE);
+			
+			if("M".equals( item.getUser().getSex() ) )
+				imgSex.setImageResource(R.drawable.male);
+			else if("F".equals( item.getUser().getSex() ) )
+				imgSex.setImageResource(R.drawable.female);
+			else
+				imgSex.setVisibility(ViewGroup.GONE);
+			
 			TextView txtUserName = (TextView) row.findViewById(R.id.txtUserName);
 			if ( Util.isEmptyString( item.getUser().getUserName() ) )
 			{

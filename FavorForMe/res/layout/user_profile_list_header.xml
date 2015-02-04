@@ -5,18 +5,28 @@
     android:paddingBottom="10dp"
     android:paddingTop="10dp" >
 
-    <ImageView
+    <com.tessoft.common.CustomImageView
         android:id="@+id/imgProfile"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:paddingLeft="10dp" />
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginLeft="10dp"
+        android:src="@drawable/no_image"/>
 
+    <ImageView
+        android:id="@+id/imgSex"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="20dp"
+        android:layout_toRightOf="@+id/imgProfile" />
+    
     <TextView
         android:id="@+id/txtUserName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_toRightOf="@+id/imgProfile"
+        android:layout_toRightOf="@+id/imgSex"
+        android:layout_alignBottom="@+id/imgSex"
         android:text="로딩중"
         android:textColor="#3B5D98"
         android:textSize="18sp"
@@ -26,10 +36,10 @@
         android:id="@+id/txtCreditGuide1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/txtUserName"
+        android:layout_alignLeft="@+id/imgSex"
         android:layout_below="@+id/txtUserName"
         android:layout_marginTop="10dp"
-        android:text="신뢰도" />
+        android:text="프로필 완성도" />
 
     <TextView
         android:id="@+id/txtCreditValue"
@@ -154,33 +164,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp" >
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="70"
-                android:gravity="left"
-                android:text="페이스북" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="30"
-                android:gravity="left"
-                android:text="미입력" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:layout_marginTop="20dp" >
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="left"
-                android:text="내 합승내역"
+                android:text="합승내역"
                 android:textColor="#3B5D98" />
         </LinearLayout>
     </LinearLayout>

@@ -70,7 +70,7 @@ public class MessageBoxFragment extends BaseListFragment {
 	}
 
 	private void inquiryMessage() throws IOException, JsonGenerationException,
-			JsonMappingException {
+	JsonMappingException {
 		User user = getLoginUser();
 
 		getActivity().setProgressBarIndeterminateVisibility(true);
@@ -156,7 +156,15 @@ public class MessageBoxFragment extends BaseListFragment {
 	public void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
-		getActivity().registerReceiver(mMessageReceiver, new IntentFilter("refreshContents"));
+		try
+		{
+			getActivity().registerReceiver(mMessageReceiver, new IntentFilter("updateUnreadCount"));
+			inquiryMessage();
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
 	}
 
 	@Override
