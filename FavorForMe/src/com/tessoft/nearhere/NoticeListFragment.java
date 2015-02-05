@@ -19,6 +19,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,6 +44,7 @@ public class NoticeListFragment extends BaseListFragment {
 			footer = getActivity().getLayoutInflater().inflate(R.layout.fragment_messagebox_footer, null);
 
 			listMain = (ListView) rootView.findViewById(R.id.listMain);
+			listMain.setSelector(new ColorDrawable(0x0));
 			listMain.addFooterView(footer, null, false );
 			adapter = new NoticeListAdapter(getActivity(), 0);
 			listMain.setAdapter(adapter);
@@ -98,7 +100,11 @@ public class NoticeListFragment extends BaseListFragment {
 				else
 					listMain.removeFooterView(footer);
 			}
-
+			else
+			{
+				showOKDialog("경고", response.getResMsg(), null);
+				return;
+			}
 		}
 		catch( Exception ex )
 		{

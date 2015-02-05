@@ -24,7 +24,7 @@
         android:id="@+id/txtUserName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="10dp"
         android:layout_toRightOf="@+id/imgSex"
         android:layout_alignBottom="@+id/imgSex"
         android:text="로딩중"

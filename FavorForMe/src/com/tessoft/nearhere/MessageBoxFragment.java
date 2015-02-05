@@ -112,6 +112,11 @@ public class MessageBoxFragment extends BaseListFragment {
 				else
 					listMain.removeFooterView(footer);
 			}
+			else
+			{
+				showOKDialog("경고", response.getResMsg(), null);
+				return;
+			}
 		}
 		catch( Exception ex )
 		{

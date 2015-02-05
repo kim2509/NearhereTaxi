@@ -1,10 +1,10 @@
 package com.tessoft.domain;
 
 public class UserSetting {
-
 	private String userID;
-	private String settingName;
-	private String settingValue;
+	private String messagePushReceiveYN;
+	private String replyPushReceiveYN;
+	private String recommendPushReceiveYN;
 	private String createdDate;
 	public String getUserID() {
 		return userID;
@@ -12,17 +12,23 @@ public class UserSetting {
 	public void setUserID(String userID) {
 		this.userID = userID;
 	}
-	public String getSettingName() {
-		return settingName;
+	public String getMessagePushReceiveYN() {
+		return messagePushReceiveYN;
 	}
-	public void setSettingName(String settingName) {
-		this.settingName = settingName;
+	public void setMessagePushReceiveYN(String messagePushReceiveYN) {
+		this.messagePushReceiveYN = messagePushReceiveYN;
 	}
-	public String getSettingValue() {
-		return settingValue;
+	public String getReplyPushReceiveYN() {
+		return replyPushReceiveYN;
 	}
-	public void setSettingValue(String settingValue) {
-		this.settingValue = settingValue;
+	public void setReplyPushReceiveYN(String replyPushReceiveYN) {
+		this.replyPushReceiveYN = replyPushReceiveYN;
+	}
+	public String getRecommendPushReceiveYN() {
+		return recommendPushReceiveYN;
+	}
+	public void setRecommendPushReceiveYN(String recommendPushReceiveYN) {
+		this.recommendPushReceiveYN = recommendPushReceiveYN;
 	}
 	public String getCreatedDate() {
 		return createdDate;
@@ -30,5 +36,4 @@ public class UserSetting {
 	public void setCreatedDate(String createdDate) {
 		this.createdDate = createdDate;
 	}
-	
 }

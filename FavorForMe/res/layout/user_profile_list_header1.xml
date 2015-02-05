@@ -48,8 +48,16 @@
         android:layout_alignBaseline="@+id/txtCreditGuide1"
         android:layout_toRightOf="@+id/txtCreditGuide1"
         android:layout_marginLeft="20dp"
-        android:text="로딩중"
+        android:text=""
         android:textColor="#dd0000" />
+    
+    <Button android:id="@+id/btnChangeProfileImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="이미지 변경"
+        android:layout_toRightOf="@+id/imgProfile"
+        android:layout_marginLeft="20dp"
+        android:layout_alignBottom="@+id/imgProfile"/>
 
     <LinearLayout
         android:id="@+id/layoutProfile"
@@ -265,7 +273,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="본인의 프로필을 완성할수록 신뢰도가 높아집니다. 신뢰도를 높여 다른 회원들에게 믿음을 주세요." />
+                android:text="본인의 프로필을 완성할수록 다른 회원들이 믿고 합승할 수 있습니다. 프로필을 완성해서 다른 회원들에게 믿음을 주세요." />
         </LinearLayout>
 
         <LinearLayout

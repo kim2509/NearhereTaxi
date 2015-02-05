@@ -145,6 +145,11 @@ public class PushMessageListFragment extends BaseListFragment {
 					getActivity().sendBroadcast( new Intent("updateUnreadCount") );
 				}
 			}
+			else
+			{
+				showOKDialog("경고", response.getResMsg(), null);
+				return;
+			}
 		}
 		catch( Exception ex )
 		{

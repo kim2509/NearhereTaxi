@@ -39,6 +39,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -75,7 +76,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			listMain.addHeaderView(header, null, false );
 			listMain.addHeaderView(header2 );
 			listMain.addFooterView(footer);
-			
+
 			listMain.setSelector(android.R.color.transparent);
 
 			adapter = new TaxiPostReplyListAdapter( getApplicationContext(), getLoginUser(),0 );
@@ -85,6 +86,9 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			initializeComponent();
 
 			inquiryPostDetail();
+
+			//			getActionBar().setHomeButtonEnabled(true);
+			//			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
 		catch(Exception ex )
 		{
@@ -93,7 +97,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 	}
 
 	private void inquiryPostDetail() throws IOException,
-			JsonGenerationException, JsonMappingException {
+	JsonGenerationException, JsonMappingException {
 		HashMap hash = new HashMap();
 		hash.put("postID", getIntent().getExtras().getString("postID") );
 		hash.put("latitude", getMetaInfoString("latitude"));
@@ -365,91 +369,114 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 
 			super.doPostTransaction(requestCode, result);
 
-			if ( requestCode == POST_DETAIL )
+			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
+
+			if ( "0000".equals( response.getResCode() ) )
 			{
-				APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
-				String postData = mapper.writeValueAsString( response.getData() );
-				post = mapper.readValue( postData, new TypeReference<Post>(){});
-
-				drawPostOnMap();
-
-				if ( !Util.isEmptyString(post.getUser().getProfileImageURL()))
+				if ( requestCode == POST_DETAIL )
 				{
-					ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
-							post.getUser().getProfileImageURL() , imgProfile);			
+					String postData = mapper.writeValueAsString( response.getData() );
+					post = mapper.readValue( postData, new TypeReference<Post>(){});
+
+					drawPostOnMap();
+
+					if ( !Util.isEmptyString(post.getUser().getProfileImageURL()))
+					{
+						ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
+								post.getUser().getProfileImageURL() , imgProfile);			
+					}
+
+					String age = "";
+
+					if ( post.getUser().getAge() != null && !"".equals( post.getUser().getAge() ) )
+						age = " (" + post.getUser().getAge() + ")";
+
+					if ( Util.isEmptyString( post.getUser().getUserName() ) )
+						txtUserName.setText( post.getUser().getUserID() + age );
+					else
+						txtUserName.setText( post.getUser().getUserName() + age );
+					
+					ImageView imgSex = (ImageView) header.findViewById(R.id.imgSex);
+					imgSex.setVisibility(ViewGroup.VISIBLE);
+					
+					if ( "M".equals( post.getUser().getSex() ))
+					{
+						imgSex.setImageResource(R.drawable.male);
+					}
+					else if ( "F".equals( post.getUser().getSex() ))
+					{
+						imgSex.setImageResource(R.drawable.female);
+					}
+					else
+						imgSex.setVisibility(ViewGroup.GONE);
+
+					String titleDummy = "";
+
+					if ( post.getSexInfo() != null && !"상관없음".equals( post.getSexInfo() ) )
+						titleDummy += post.getSexInfo();
+
+					if ( post.getNumOfUsers() != null && !"상관없음".equals( post.getNumOfUsers() ) )
+						titleDummy += " " + post.getNumOfUsers();
+
+					if ( titleDummy.isEmpty() == false )
+						titleDummy = "(" + titleDummy.trim() + ")";
+
+					TextView txtTitle = (TextView) header.findViewById(R.id.txtTitle);
+					txtTitle.setText( post.getMessage() + titleDummy );
+
+					TextView txtDeparture = (TextView) header.findViewById(R.id.txtDeparture);
+					txtDeparture.setText( post.getFromAddress() );
+
+					TextView txtDestination = (TextView) header.findViewById(R.id.txtDestination);
+					txtDestination.setText( post.getToAddress() );
+
+					TextView txtDistance = (TextView) header.findViewById(R.id.txtDistance);
+					txtDistance.setText( Util.getDistance(post.getDistance()) );
+
+					if ( post.getDepartureDate() != null )
+					{
+						TextView txtDepartureDateTime = (TextView) header.findViewById(R.id.txtDepartureDateTime);
+						txtDepartureDateTime.setText( post.getDepartureDate() + " " + post.getDepartureTime());	
+					}
+
+					TextView txtCreatedDate = (TextView) header.findViewById(R.id.txtCreatedDate);
+					txtCreatedDate.setText( Util.getFormattedDateString(post.getCreatedDate(), "yyyy-MM-dd HH:mm") );
+
+					adapter.setItemList( post.getPostReplies() );
+					adapter.notifyDataSetChanged();
+
+					if ( post.getUser().getUserID().equals( getLoginUser().getUserID() ))
+					{
+						menu.findItem(R.id.action_edit).setVisible(true);
+						menu.findItem(R.id.action_delete).setVisible(true);	
+					}
+					else
+					{
+						menu.findItem(R.id.action_edit).setVisible(false);
+						menu.findItem(R.id.action_delete).setVisible(false);
+					}
 				}
-
-				String age = "";
-
-				if ( post.getUser().getAge() != null && !"".equals( post.getUser().getAge() ) )
-					age = " (" + post.getUser().getAge() + ")";
-
-				if ( Util.isEmptyString( post.getUser().getUserName() ) )
-					txtUserName.setText( post.getUser().getUserID() + age );
-				else
-					txtUserName.setText( post.getUser().getUserName() + age );
-
-				String titleDummy = "";
-
-				if ( post.getSexInfo() != null && !"상관없음".equals( post.getSexInfo() ) )
-					titleDummy += post.getSexInfo();
-
-				if ( post.getNumOfUsers() != null && !"상관없음".equals( post.getNumOfUsers() ) )
-					titleDummy += " " + post.getNumOfUsers();
-
-				if ( titleDummy.isEmpty() == false )
-					titleDummy = "(" + titleDummy.trim() + ")";
-
-				TextView txtTitle = (TextView) header.findViewById(R.id.txtTitle);
-				txtTitle.setText( post.getMessage() + titleDummy );
-
-				TextView txtDeparture = (TextView) header.findViewById(R.id.txtDeparture);
-				txtDeparture.setText( post.getFromAddress() );
-
-				TextView txtDestination = (TextView) header.findViewById(R.id.txtDestination);
-				txtDestination.setText( post.getToAddress() );
-
-				TextView txtDistance = (TextView) header.findViewById(R.id.txtDistance);
-				txtDistance.setText( Util.getDistance(post.getDistance()) );
-
-				if ( post.getDepartureDate() != null )
+				else if ( requestCode == INSERT_POST_REPLY )
 				{
-					TextView txtDepartureDateTime = (TextView) header.findViewById(R.id.txtDepartureDateTime);
-					txtDepartureDateTime.setText( post.getDepartureDate() + " " + post.getDepartureTime());	
+					setProgressBarIndeterminateVisibility(true);
+					sendHttp("/taxi/getPostDetail.do", mapper.writeValueAsString(post), POST_DETAIL );
 				}
-
-				TextView txtCreatedDate = (TextView) header.findViewById(R.id.txtCreatedDate);
-				txtCreatedDate.setText( Util.getFormattedDateString(post.getCreatedDate(), "yyyy-MM-dd HH:mm") );
-
-				adapter.setItemList( post.getPostReplies() );
-				adapter.notifyDataSetChanged();
-
-				if ( post.getUser().getUserID().equals( getLoginUser().getUserID() ))
+				else if ( requestCode == DELETE_POST )
 				{
-					menu.findItem(R.id.action_edit).setVisible(true);
-					menu.findItem(R.id.action_delete).setVisible(true);	
+					Intent data = new Intent();
+					data.putExtra("reload", true);
+					setResult(RESULT_OK, data);
+					finish();
 				}
-				else
+				else if ( requestCode == DELETE_POST_REPLY )
 				{
-					menu.findItem(R.id.action_edit).setVisible(false);
-					menu.findItem(R.id.action_delete).setVisible(false);
+					inquiryPostDetail();
 				}
 			}
-			else if ( requestCode == INSERT_POST_REPLY )
+			else
 			{
-				setProgressBarIndeterminateVisibility(true);
-				sendHttp("/taxi/getPostDetail.do", mapper.writeValueAsString(post), POST_DETAIL );
-			}
-			else if ( requestCode == DELETE_POST )
-			{
-				Intent data = new Intent();
-				data.putExtra("reload", true);
-				setResult(RESULT_OK, data);
-				finish();
-			}
-			else if ( requestCode == DELETE_POST_REPLY )
-			{
-				inquiryPostDetail();
+				showOKDialog("경고", response.getResMsg(), null);
+				return;
 			}
 		}
 		catch( Exception ex )

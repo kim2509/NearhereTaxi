@@ -235,35 +235,44 @@ public class TaxiFragment extends BaseFragment implements AddressTaskDelegate, A
 
 			super.doPostTransaction(requestCode, result);
 
-			if ( requestCode == GET_POSTS )
+			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
+			
+			if ( "0000".equals( response.getResCode() ) )
 			{
-				APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
-				String postData = mapper.writeValueAsString( response.getData() );
-				List<Post> postList = mapper.readValue( postData, new TypeReference<List<Post>>(){});
-				adapter.setItemList(postList);
-				adapter.notifyDataSetChanged();
+				if ( requestCode == GET_POSTS )
+				{
+					String postData = mapper.writeValueAsString( response.getData() );
+					List<Post> postList = mapper.readValue( postData, new TypeReference<List<Post>>(){});
+					adapter.setItemList(postList);
+					adapter.notifyDataSetChanged();
 
-				TextView txtNumOfUsers = (TextView) header2.findViewById(R.id.txtNumOfUsers);
-				txtNumOfUsers.setText("합승내역 : " + postList.size() );
-				
-				int userCount = Integer.parseInt( response.getData2().toString() );
-				
-				if ( postList.size() == 0 )
-				{
-					listMain.removeFooterView(footer);
-					listMain.addFooterView(footer, null, false );
-					TextView txtView = (TextView) footer.findViewById(R.id.txtGuide);
+					TextView txtNumOfUsers = (TextView) header2.findViewById(R.id.txtNumOfUsers);
+					txtNumOfUsers.setText("합승내역 : " + postList.size() );
 					
-					if ( userCount > 0 )
-						txtView.setText("근처에 " + userCount + " 명의 회원이 있습니다\r\n"
-								+ "새 글을 등록해서 합승을 제안해보세요.\r\n근처의 회원들에게는 푸쉬메시지가 전송됩니다.");
+					int userCount = Integer.parseInt( response.getData2().toString() );
+					
+					if ( postList.size() == 0 )
+					{
+						listMain.removeFooterView(footer);
+						listMain.addFooterView(footer, null, false );
+						TextView txtView = (TextView) footer.findViewById(R.id.txtGuide);
+						
+						if ( userCount > 0 )
+							txtView.setText("근처에 " + userCount + " 명의 회원이 있습니다\r\n"
+									+ "새 글을 등록해서 합승을 제안해보세요.\r\n근처의 회원들에게는 푸쉬메시지가 전송됩니다.");
+						else
+							txtView.setText("현재 등록된 내역이 없습니다.\r\n새 글을 등록해서 합승을 제안해보세요.\r\n근처의 회원들에게는 푸쉬메시지가 전송됩니다.");
+					}
 					else
-						txtView.setText("현재 등록된 내역이 없습니다.\r\n새 글을 등록해서 합승을 제안해보세요.\r\n근처의 회원들에게는 푸쉬메시지가 전송됩니다.");
-				}
-				else
-				{
-					listMain.removeFooterView(footer);
-				}
+					{
+						listMain.removeFooterView(footer);
+					}
+				}				
+			}
+			else
+			{
+				showOKDialog("경고", response.getResMsg(), null);
+				return;
 			}
 		}
 		catch( Exception ex )

@@ -1,0 +1,18 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/container"
+    tools:context="com.tessoft.nearhere.BaseListActivity" >
+
+    <ListView
+        android:id="@+id/listMain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </ListView>
+    
+    <ImageView android:id="@+id/expanded_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</FrameLayout>

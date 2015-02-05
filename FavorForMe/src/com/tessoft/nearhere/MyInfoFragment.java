@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -22,6 +23,10 @@ import com.tessoft.domain.Post;
 import com.tessoft.domain.User;
 import com.tessoft.domain.UserLocation;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -29,18 +34,22 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager.OnActivityResultListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.DecelerateInterpolator;
 import android.view.ViewGroup;
 import android.webkit.WebView.FindListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -49,17 +58,22 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-public class MyInfoFragment extends BaseListFragment {
+public class MyInfoFragment extends BaseFragment {
 
 	TaxiArrayAdapter adapter = null;
-
+	View rootView = null;
+	ListView listMain = null;
+	View header = null;
+	View footer = null;
+	ObjectMapper mapper = new ObjectMapper();
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		try
 		{
-			super.onCreateView(inflater, container, savedInstanceState);
+			rootView = inflater.inflate(R.layout.activity_user_profile, container, false);
 
 			header = getActivity().getLayoutInflater().inflate(R.layout.user_profile_list_header1, null);
 			footer = getActivity().getLayoutInflater().inflate(R.layout.fragment_messagebox_footer, null);
@@ -242,6 +256,23 @@ public class MyInfoFragment extends BaseListFragment {
 				// TODO Auto-generated method stub
 				try
 				{
+					zoomImageFromThumb( v );
+				}
+				catch( Exception ex )
+				{
+					catchException(this, ex);
+				}
+			}
+		});
+		
+		Button btnChangeProfileImage = (Button) header.findViewById(R.id.btnChangeProfileImage);
+		btnChangeProfileImage.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				try
+				{
 					Intent intent = new Intent();
 					intent.setType("image/*");
 					intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -253,6 +284,8 @@ public class MyInfoFragment extends BaseListFragment {
 				}
 			}
 		});
+		
+		mShortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
 	}
 
 	private static final int PICK_IMAGE = 1;
@@ -304,6 +337,7 @@ public class MyInfoFragment extends BaseListFragment {
 					{
 						ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
 								user.getProfileImageURL() , imgProfile);
+						imgProfile.setTag( user.getProfileImageURL() );
 					}
 
 					TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
@@ -379,7 +413,10 @@ public class MyInfoFragment extends BaseListFragment {
 				}
 			}
 			else
-				showToastMessage(response.getResMsg());
+			{
+				showOKDialog("경고", response.getResMsg(), null);
+				return;
+			}
 		}
 		catch( Exception ex )
 		{
@@ -446,6 +483,7 @@ public class MyInfoFragment extends BaseListFragment {
 					cursor.close();
 
 					Bitmap myBitmap = BitmapFactory.decodeFile( imageFilePath );
+					myBitmap = resizeBitmapImageFn( myBitmap, 1024 );
 					sendPhoto( myBitmap );
 				}
 
@@ -490,4 +528,189 @@ public class MyInfoFragment extends BaseListFragment {
 		super.onStop();
 		getActivity().unregisterReceiver(mMessageReceiver);
 	}
+	
+	/*
+	 * 비트맵(Bitmap) 이미지의 가로, 세로 이미지를 리사이징
+	 * @param bmpSource 원본 Bitmap 객체
+	 * @param maxResolution 제한 해상도
+	 * @return 리사이즈된 이미지 Bitmap 객체
+	 */
+	public Bitmap resizeBitmapImageFn(
+	Bitmap bmpSource, int maxResolution){ 
+	        int iWidth = bmpSource.getWidth();      //비트맵이미지의 넓이
+	        int iHeight = bmpSource.getHeight();     //비트맵이미지의 높이
+	        int newWidth = iWidth ;
+	        int newHeight = iHeight ;
+	        float rate = 0.0f;
+	        
+	        //이미지의 가로 세로 비율에 맞게 조절
+	        if(iWidth > iHeight ){
+	                if(maxResolution < iWidth ){ 
+	                        rate = maxResolution / (float) iWidth ; 
+	                        newHeight = (int) (iHeight * rate); 
+	                        newWidth = maxResolution; 
+	                }
+	        }else{
+	                if(maxResolution < iHeight ){
+	                        rate = maxResolution / (float) iHeight ; 
+	                        newWidth = (int) (iWidth * rate);
+	                        newHeight = maxResolution;
+	                }
+	        }
+	 
+	        return Bitmap.createScaledBitmap(
+	bmpSource, newWidth, newHeight, true); 
+	}
+	
+	/**
+     * "Zooms" in a thumbnail view by assigning the high resolution image to a hidden "zoomed-in"
+     * image view and animating its bounds to fit the entire activity content area. More
+     * specifically:
+     *
+     * <ol>
+     *   <li>Assign the high-res image to the hidden "zoomed-in" (expanded) image view.</li>
+     *   <li>Calculate the starting and ending bounds for the expanded view.</li>
+     *   <li>Animate each of four positioning/sizing properties (X, Y, SCALE_X, SCALE_Y)
+     *       simultaneously, from the starting bounds to the ending bounds.</li>
+     *   <li>Zoom back out by running the reverse animation on click.</li>
+     * </ol>
+     *
+     * @param thumbView  The thumbnail view to zoom in.
+     * @param imageResId The high-resolution version of the image represented by the thumbnail.
+     */
+	
+	private Animator mCurrentAnimator;
+	private int mShortAnimationDuration;
+	
+    private void zoomImageFromThumb(final View thumbView ) {
+        // If there's an animation in progress, cancel it immediately and proceed with this one.
+        if (mCurrentAnimator != null) {
+            mCurrentAnimator.cancel();
+        }
+        
+        String imageURL = "";
+        if ( thumbView.getTag() == null || thumbView.getTag() instanceof String == false ) return;
+        
+        imageURL = thumbView.getTag().toString();
+        if ( Util.isEmptyString( imageURL ) ) return;
+
+        // Load the high-resolution "zoomed-in" image.
+        final ImageView expandedImageView = (ImageView) rootView.findViewById(R.id.expanded_image);
+        ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
+        		imageURL, expandedImageView);
+
+        // Calculate the starting and ending bounds for the zoomed-in image. This step
+        // involves lots of math. Yay, math.
+        final Rect startBounds = new Rect();
+        final Rect finalBounds = new Rect();
+        final Point globalOffset = new Point();
+
+        // The start bounds are the global visible rectangle of the thumbnail, and the
+        // final bounds are the global visible rectangle of the container view. Also
+        // set the container view's offset as the origin for the bounds, since that's
+        // the origin for the positioning animation properties (X, Y).
+        thumbView.getGlobalVisibleRect(startBounds);
+        rootView.findViewById(R.id.container).getGlobalVisibleRect(finalBounds, globalOffset);
+        startBounds.offset(-globalOffset.x, -globalOffset.y);
+        finalBounds.offset(-globalOffset.x, -globalOffset.y);
+
+        // Adjust the start bounds to be the same aspect ratio as the final bounds using the
+        // "center crop" technique. This prevents undesirable stretching during the animation.
+        // Also calculate the start scaling factor (the end scaling factor is always 1.0).
+        float startScale;
+        if ((float) finalBounds.width() / finalBounds.height()
+                > (float) startBounds.width() / startBounds.height()) {
+            // Extend start bounds horizontally
+            startScale = (float) startBounds.height() / finalBounds.height();
+            float startWidth = startScale * finalBounds.width();
+            float deltaWidth = (startWidth - startBounds.width()) / 2;
+            startBounds.left -= deltaWidth;
+            startBounds.right += deltaWidth;
+        } else {
+            // Extend start bounds vertically
+            startScale = (float) startBounds.width() / finalBounds.width();
+            float startHeight = startScale * finalBounds.height();
+            float deltaHeight = (startHeight - startBounds.height()) / 2;
+            startBounds.top -= deltaHeight;
+            startBounds.bottom += deltaHeight;
+        }
+
+        // Hide the thumbnail and show the zoomed-in view. When the animation begins,
+        // it will position the zoomed-in view in the place of the thumbnail.
+        thumbView.setAlpha(0f);
+        expandedImageView.setVisibility(View.VISIBLE);
+
+        // Set the pivot point for SCALE_X and SCALE_Y transformations to the top-left corner of
+        // the zoomed-in view (the default is the center of the view).
+        expandedImageView.setPivotX(0f);
+        expandedImageView.setPivotY(0f);
+
+        // Construct and run the parallel animation of the four translation and scale properties
+        // (X, Y, SCALE_X, and SCALE_Y).
+        AnimatorSet set = new AnimatorSet();
+        set
+                .play(ObjectAnimator.ofFloat(expandedImageView, View.X, startBounds.left,
+                        finalBounds.left))
+                .with(ObjectAnimator.ofFloat(expandedImageView, View.Y, startBounds.top,
+                        finalBounds.top))
+                .with(ObjectAnimator.ofFloat(expandedImageView, View.SCALE_X, startScale, 1f))
+                .with(ObjectAnimator.ofFloat(expandedImageView, View.SCALE_Y, startScale, 1f));
+        set.setDuration(mShortAnimationDuration);
+        set.setInterpolator(new DecelerateInterpolator());
+        set.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mCurrentAnimator = null;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                mCurrentAnimator = null;
+            }
+        });
+        set.start();
+        mCurrentAnimator = set;
+
+        // Upon clicking the zoomed-in image, it should zoom back down to the original bounds
+        // and show the thumbnail instead of the expanded image.
+        final float startScaleFinal = startScale;
+        expandedImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mCurrentAnimator != null) {
+                    mCurrentAnimator.cancel();
+                }
+
+                // Animate the four positioning/sizing properties in parallel, back to their
+                // original values.
+                AnimatorSet set = new AnimatorSet();
+                set
+                        .play(ObjectAnimator.ofFloat(expandedImageView, View.X, startBounds.left))
+                        .with(ObjectAnimator.ofFloat(expandedImageView, View.Y, startBounds.top))
+                        .with(ObjectAnimator
+                                .ofFloat(expandedImageView, View.SCALE_X, startScaleFinal))
+                        .with(ObjectAnimator
+                                .ofFloat(expandedImageView, View.SCALE_Y, startScaleFinal));
+                set.setDuration(mShortAnimationDuration);
+                set.setInterpolator(new DecelerateInterpolator());
+                set.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        thumbView.setAlpha(1f);
+                        expandedImageView.setVisibility(View.GONE);
+                        mCurrentAnimator = null;
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        thumbView.setAlpha(1f);
+                        expandedImageView.setVisibility(View.GONE);
+                        mCurrentAnimator = null;
+                    }
+                });
+                set.start();
+                mCurrentAnimator = set;
+            }
+        });
+    }
 }

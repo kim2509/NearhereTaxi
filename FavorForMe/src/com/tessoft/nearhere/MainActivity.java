@@ -571,8 +571,18 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 							item.setNotiCount( messageCount );
 					}
 					
+					if ( pushCount + messageCount > 0 )
+						getActionBar().setIcon(R.drawable.icon_new);
+					else
+						getActionBar().setIcon(R.color.transparent);
+					
 					adapter.notifyDataSetChanged();
 				}				
+			}
+			else
+			{
+				showOKDialog("경고", response.getResMsg(), null);
+				return;
 			}
 		}
 		catch( Exception ex )
@@ -591,6 +601,13 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	boolean doubleBackToExitPressedOnce = false;
 	@Override
 	public void onBackPressed() {
+		
+		if ( mainFragment instanceof TaxiFragment == false )
+		{
+			selectItem(0);
+			return;
+		}
+		
 		if (doubleBackToExitPressedOnce) {
 			super.onBackPressed();
 			return;

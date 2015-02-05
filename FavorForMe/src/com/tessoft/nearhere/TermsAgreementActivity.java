@@ -99,38 +99,38 @@ public class TermsAgreementActivity extends BaseActivity {
 			
 			setProgressBarIndeterminateVisibility(false);
 			
-			if ( requestCode == 1 )
+			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
+			
+			if ( "0000".equals( response.getResCode() ) )
 			{
-				super.doPostTransaction(requestCode, result);
-				
-				APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
-				
-				HashMap hash = (HashMap) response.getData();
-				
-				commonTermsVersion = (hash.get("commonTermsVersion") == null ) ? "" : hash.get("commonTermsVersion").toString();
-				commonTermsContent = (hash.get("COMMON") == null ) ? "" : hash.get("COMMON").toString();
-				locationTermsVersion = (hash.get("locationTermsVersion") == null ) ? "" : hash.get("locationTermsVersion").toString();
-				locationTermsContent = (hash.get("LOCATION") == null ) ? "" : hash.get("LOCATION").toString();
-				
-				TextView txtCommonTerms = (TextView) findViewById(R.id.txtCommonTerms);
-				txtCommonTerms.setText( commonTermsContent );
-				TextView txtLocationTerms = (TextView) findViewById(R.id.txtLocationTerms);
-				txtLocationTerms.setText( locationTermsContent );
+				if ( requestCode == 1 )
+				{
+					super.doPostTransaction(requestCode, result);
+					
+					HashMap hash = (HashMap) response.getData();
+					
+					commonTermsVersion = (hash.get("commonTermsVersion") == null ) ? "" : hash.get("commonTermsVersion").toString();
+					commonTermsContent = (hash.get("COMMON") == null ) ? "" : hash.get("COMMON").toString();
+					locationTermsVersion = (hash.get("locationTermsVersion") == null ) ? "" : hash.get("locationTermsVersion").toString();
+					locationTermsContent = (hash.get("LOCATION") == null ) ? "" : hash.get("LOCATION").toString();
+					
+					TextView txtCommonTerms = (TextView) findViewById(R.id.txtCommonTerms);
+					txtCommonTerms.setText( commonTermsContent );
+					TextView txtLocationTerms = (TextView) findViewById(R.id.txtLocationTerms);
+					txtLocationTerms.setText( locationTermsContent );
+				}
+				else
+				{
+					Intent intent = new Intent( this, MoreUserInfoActivity.class);
+					startActivity(intent);
+					overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
+					super.finish();
+				}
 			}
 			else
 			{
-				APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
-				
-				if ( !"0000".equals( response.getResCode() ) )
-				{
-					showOKDialog("경고", response.getResMsg(), null );
-					return;
-				}
-
-				Intent intent = new Intent( this, MoreUserInfoActivity.class);
-				startActivity(intent);
-				overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
-				super.finish();
+				showOKDialog("경고", response.getResMsg(), null);
+				return;
 			}
 		}
 		catch( Exception ex )

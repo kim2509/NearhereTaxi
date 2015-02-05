@@ -217,7 +217,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:gravity="left"
-                    android:text="인원" />
+                    android:text="추가인원" />
 
                 <Spinner
                     android:id="@+id/spNumOfUsers"
@@ -242,6 +242,12 @@
             android:layout_height="wrap_content"
             android:onClick="addPost"
             android:text="등록하기" />
+        
+        <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:singleLine="false"
+            android:text="본인의 프로필 완성도를 높일수록 다른 회원들이 믿고 합승할 수 있습니다."/>
     </LinearLayout>
 
 </RelativeLayout>

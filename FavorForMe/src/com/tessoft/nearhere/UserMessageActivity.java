@@ -175,15 +175,23 @@ public class UserMessageActivity extends BaseActivity {
 
 			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
 
-			if ( requestCode == 1 && "0000".equals( response.getResCode() ) )
+			if ( "0000".equals( response.getResCode() ) )
 			{
-				String userMessageString = mapper.writeValueAsString( response.getData() );
-				List<UserMessage> messageList = mapper.readValue( userMessageString , new TypeReference<List<UserMessage>>(){});
-				adapter.setItemList(messageList);
-				adapter.notifyDataSetChanged();
+				if ( requestCode == 1 )
+				{
+					String userMessageString = mapper.writeValueAsString( response.getData() );
+					List<UserMessage> messageList = mapper.readValue( userMessageString , new TypeReference<List<UserMessage>>(){});
+					adapter.setItemList(messageList);
+					adapter.notifyDataSetChanged();
 
-				if ( bForceScrollDown )
-					listMain.setSelection(adapter.getCount() - 1);
+					if ( bForceScrollDown )
+						listMain.setSelection(adapter.getCount() - 1);
+				}	
+			}
+			else
+			{
+				showOKDialog("경고", response.getResMsg(), null);
+				return;
 			}
 
 		}

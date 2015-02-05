@@ -1,9 +1,6 @@
 package com.tessoft.common;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.tessoft.domain.UserSetting;
+import com.tessoft.domain.SettingListItem;
 import com.tessoft.nearhere.R;
 
 import android.content.Context;
@@ -16,16 +13,14 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
-public class SettingsAdapter extends ArrayAdapter<UserSetting> implements OnCheckedChangeListener{
+public class SettingsAdapter extends ArrayAdapter<SettingListItem> implements OnCheckedChangeListener{
 
-	private List<UserSetting> itemList = new ArrayList<UserSetting>();
 	private AdapterDelegate delegate = null;
 
 	LayoutInflater inflater = null;
 
 	@Override
-	public void add(UserSetting object) {
-		itemList.add(object);
+	public void add(SettingListItem object) {
 		super.add(object);
 	}
 
@@ -35,27 +30,13 @@ public class SettingsAdapter extends ArrayAdapter<UserSetting> implements OnChec
 		this.delegate = delegate;
 	}
 
-	public int getCount() {
-		return this.itemList.size();
-	}
-
-	public UserSetting getItem(int index) {
-		return this.itemList.get(index);
-	}
-
-	public void setItemList( List<UserSetting> itemList )
-	{
-		this.itemList = itemList;
-		notifyDataSetChanged();
-	}
-
 	public View getView(int position, View convertView, ViewGroup parent) {
 
 		View row = convertView;
 
 		try
 		{
-			UserSetting item = getItem(position);
+			SettingListItem item = getItem(position);
 
 			CheckBox setting = null;
 			
@@ -100,7 +81,7 @@ public class SettingsAdapter extends ArrayAdapter<UserSetting> implements OnChec
 		{
 			if ( buttonView.getTag() != null )
 			{
-				UserSetting setting = (UserSetting) buttonView.getTag();
+				SettingListItem setting = (SettingListItem) buttonView.getTag();
 				setting.setSettingValue( isChecked ? "Y":"N" );
 				delegate.doAction( "updateSetting", setting );	
 			}			

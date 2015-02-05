@@ -177,7 +177,8 @@ public class RegisterUserActivity extends BaseActivity {
 			}
 			else
 			{
-				showOKDialog( "경고", response.getResMsg(), null);
+				showOKDialog("경고", response.getResMsg(), null);
+				return;
 			}
 		}
 		catch( Exception ex )
@@ -186,6 +187,27 @@ public class RegisterUserActivity extends BaseActivity {
 		}
 	}
 
+	public void proceed( View v )
+	{
+		try
+		{
+			if ( "true".equals( getMetaInfoString("logout") ) )
+			{
+				setMetaInfo("logout", "false");
+				goMainActivity();
+				finish();
+			}
+			else
+			{
+				goTermsAgreementActivity(null);
+			}
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
+	
 	public void goTermsAgreementActivity( View v )
 	{
 		Intent intent = new Intent( this, TermsAgreementActivity.class);

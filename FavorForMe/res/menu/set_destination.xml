@@ -4,9 +4,11 @@
     tools:context="com.tessoft.nearhere.SetDestinationActivity" >
 
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_search"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never"/>
+        android:title="검색하기"
+        android:icon="@drawable/ic_action_search"
+        android:actionViewClass="android.widget.SearchView"
+        app:showAsAction="ifRoom"/>
 
 </menu>
