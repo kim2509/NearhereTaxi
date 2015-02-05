@@ -15,29 +15,45 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class TermsAgreementActivity extends BaseActivity {
 
-	String commonTermsContent = "";
-	String locationTermsContent = "";
-	String commonTermsVersion = "";
-	String locationTermsVersion = "";
+	private static final int INSERT_USER_TERMS_AGREEMENT = 1;
+	WebView webView1 = null;
+	WebView webView2 = null;
+	WebView webView3 = null;
+
+	WebViewClient webViewClient = new WebViewClient() {
+		public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+			Toast.makeText( getApplicationContext(), description, Toast.LENGTH_SHORT).show();
+		}
+	};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
+
 		try
 		{
 			super.onCreate(savedInstanceState);
-			
+
 			supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-			
+
 			setContentView(R.layout.activity_terms_agreement);	
+
+			webView1 = (WebView) findViewById(R.id.webView1);
+			webView1.setWebViewClient( webViewClient );
+			webView2 = (WebView) findViewById(R.id.webView2);
+			webView2.setWebViewClient( webViewClient );
+			webView3 = (WebView) findViewById(R.id.webView3);
+			webView3.setWebViewClient( webViewClient );
 			
-			setProgressBarIndeterminateVisibility(true);
-			sendHttp("/taxi/getTermsContent.do", null, 1);
+			webView1.loadUrl( Constants.serverURL + "/taxi/getUserTerms.do?type=nearhere&version=1.0");
+			webView2.loadUrl( Constants.serverURL + "/taxi/getUserTerms.do?type=personal&version=1.0");
+			webView3.loadUrl( Constants.serverURL + "/taxi/getUserTerms.do?type=location&version=1.0");
 		}
 		catch( Exception ex )
 		{
@@ -63,28 +79,27 @@ public class TermsAgreementActivity extends BaseActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void updateTermsAgreement( View v )
 	{
 		try
 		{
 			setProgressBarIndeterminateVisibility(true);
-			
+
 			HashMap hash = new HashMap();
 			hash.put("userID", getMetaInfoString("userID"));
-			hash.put("common_ver", commonTermsVersion);
-			hash.put("common", "Y");
-			hash.put("location_ver", locationTermsVersion);
-			hash.put("location", "Y");
-			sendHttp("/taxi/insertTermsAgreement.do", mapper.writeValueAsString(hash), 2);	
+			hash.put("nearhere_ver", "1.0");
+			hash.put("personal_ver", "1.0");
+			hash.put("location_ver", "1.0");
+			sendHttp("/taxi/insertTermsAgreement.do", mapper.writeValueAsString(hash), INSERT_USER_TERMS_AGREEMENT);	
 		}
 		catch( Exception ex )
 		{
 			catchException(this, ex);
 		}
 	}
-	
+
 	@Override
 	public void doPostTransaction(int requestCode, Object result) {
 		// TODO Auto-generated method stub
@@ -96,30 +111,14 @@ public class TermsAgreementActivity extends BaseActivity {
 				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
 				return;
 			}
-			
+
 			setProgressBarIndeterminateVisibility(false);
-			
+
 			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
-			
+
 			if ( "0000".equals( response.getResCode() ) )
 			{
-				if ( requestCode == 1 )
-				{
-					super.doPostTransaction(requestCode, result);
-					
-					HashMap hash = (HashMap) response.getData();
-					
-					commonTermsVersion = (hash.get("commonTermsVersion") == null ) ? "" : hash.get("commonTermsVersion").toString();
-					commonTermsContent = (hash.get("COMMON") == null ) ? "" : hash.get("COMMON").toString();
-					locationTermsVersion = (hash.get("locationTermsVersion") == null ) ? "" : hash.get("locationTermsVersion").toString();
-					locationTermsContent = (hash.get("LOCATION") == null ) ? "" : hash.get("LOCATION").toString();
-					
-					TextView txtCommonTerms = (TextView) findViewById(R.id.txtCommonTerms);
-					txtCommonTerms.setText( commonTermsContent );
-					TextView txtLocationTerms = (TextView) findViewById(R.id.txtLocationTerms);
-					txtLocationTerms.setText( locationTermsContent );
-				}
-				else
+				if ( requestCode == INSERT_USER_TERMS_AGREEMENT )
 				{
 					Intent intent = new Intent( this, MoreUserInfoActivity.class);
 					startActivity(intent);
@@ -138,15 +137,15 @@ public class TermsAgreementActivity extends BaseActivity {
 			catchException(this, ex);
 		}
 	}
-	
+
 	@Override
 	public void finish() {
 		// TODO Auto-generated method stub
 		super.finish();
-		
+
 		overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
 	}
-	
+
 	@Override
 	public void onBackPressed() {
 		super.onBackPressed();
