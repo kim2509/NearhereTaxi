@@ -54,7 +54,9 @@ public class TaxiTutorialActivity extends BaseActivity {
 			fragments.add( new TaxiTutorialFragment0() );
 			fragments.add( new TaxiTutorialFragment1() );
 			fragments.add( new TaxiTutorialFragment2() );
+			fragments.add( new TaxiTutorialFragment4() );
 			fragments.add( new TaxiTutorialFragment3() );
+			
 			mAdapter.setItemList( fragments );
 			
 			mPager = (ViewPager)findViewById(R.id.pager);

@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:gravity="center_horizontal"
-            android:text="내 합승정보 등록"
+            android:text="메시지보내기"
             android:textSize="17sp" />
 
         <TextView
@@ -24,28 +24,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:gravity="center_horizontal"
-            android:text="찾고자 하는 정보가 없을 땐\n등록하기 버튼으로 합승정보를 추가하세요."
+            android:text="원활한 커뮤니케이션을 위해 메시지를 보내보세요.\n푸시알림으로 서로에게 알림이 옵니다."
             android:textSize="14sp" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:layout_marginRight="20dp"
             android:layout_marginLeft="20dp"
-            android:src="@drawable/tutorial3" />
+            android:layout_marginRight="20dp"
+            android:src="@drawable/tutorial5" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btnClose"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:onClick="closeTutorial"
-        android:text="닫기" />
-    
 </RelativeLayout>

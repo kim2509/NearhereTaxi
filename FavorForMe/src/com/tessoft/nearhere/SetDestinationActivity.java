@@ -1,38 +1,25 @@
 package com.tessoft.nearhere;
 
-import org.codehaus.jackson.type.TypeReference;
-
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.tessoft.common.AddressTaskDelegate;
-import com.tessoft.common.Constants;
 import com.tessoft.common.GetAddressTask;
 import com.tessoft.common.Util;
-import com.tessoft.domain.APIResponse;
-import com.tessoft.domain.Post;
-import com.tessoft.domain.UserLocation;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v7.widget.SearchView;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.EditText;
 import android.widget.TextView;
 
 public class SetDestinationActivity extends BaseActivity 
@@ -200,17 +187,17 @@ implements OnMapReadyCallback, AddressTaskDelegate {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.set_destination, menu);
 		
-		// Associate searchable configuration with the SearchView
-	    SearchManager searchManager =
-	           (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-	    SearchView searchView =
-	            (SearchView) menu.findItem(R.id.action_search).getActionView();
-//	    searchView.setSearchableInfo(
-//	            searchManager.getSearchableInfo(getComponentName()));
+		try
+		{
+			getMenuInflater().inflate(R.menu.set_destination, menu);
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
 	    
-		return true;
+		return false;
 	}
 
 	@Override

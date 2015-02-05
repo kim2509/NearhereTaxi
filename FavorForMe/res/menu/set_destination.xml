@@ -5,7 +5,6 @@
 
     <item
         android:id="@+id/action_search"
-        android:orderInCategory="100"
         android:title="검색하기"
         android:icon="@drawable/ic_action_search"
         android:actionViewClass="android.widget.SearchView"

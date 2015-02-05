@@ -121,9 +121,6 @@
             android:name=".SetDestinationActivity"
             android:label="@string/title_activity_set_destination"
             android:screenOrientation="portrait" >
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
         </activity>
         <activity
             android:name=".MessageBoxFragment"
@@ -161,13 +158,6 @@
         <activity
             android:name=".MoreUserInfoActivity"
             android:label="@string/title_activity_more_user_info" >
-        </activity>
-        <activity
-            android:name=".MapSearchResultActivity"
-            android:label="@string/title_activity_map_search_result" >
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
         </activity>
     </application>
 

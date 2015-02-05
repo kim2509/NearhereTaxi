@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<searchable xmlns:android="http://schemas.android.com/apk/res/android"
-    android:hint="장소를 입력하세요."
-    android:label="@string/title_activity_set_destination" />

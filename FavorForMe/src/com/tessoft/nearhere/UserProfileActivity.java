@@ -269,7 +269,8 @@ public class UserProfileActivity extends BaseActivity {
 						txtJobTitle.setText( user.getJobTitle() );
 					}
 
-					adapter.setItemList(postList);
+					adapter.clear();
+					adapter.addAll(postList);
 					adapter.notifyDataSetChanged();
 
 					if ( postList.size() == 0 )

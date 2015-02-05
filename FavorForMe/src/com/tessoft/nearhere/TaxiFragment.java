@@ -243,7 +243,8 @@ public class TaxiFragment extends BaseFragment implements AddressTaskDelegate, A
 				{
 					String postData = mapper.writeValueAsString( response.getData() );
 					List<Post> postList = mapper.readValue( postData, new TypeReference<List<Post>>(){});
-					adapter.setItemList(postList);
+					adapter.clear();
+					adapter.addAll(postList);
 					adapter.notifyDataSetChanged();
 
 					TextView txtNumOfUsers = (TextView) header2.findViewById(R.id.txtNumOfUsers);
@@ -362,7 +363,26 @@ public class TaxiFragment extends BaseFragment implements AddressTaskDelegate, A
 
 		setAddressText( address );
 	}
+	
+	@Override
+	public void doAction(String actionName, Object param) {
+		// TODO Auto-generated method stub
+		super.doAction(actionName, param);
+		
+		if ( "userProfile".equals( actionName ) )
+		{
+			goUserProfileActivity(param.toString());
+		}
+	}
 
+	public void goUserProfileActivity( String userID )
+	{
+		Intent intent = new Intent( getActivity(), UserProfileActivity.class);
+		intent.putExtra("userID", userID );
+		startActivity(intent);
+		getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
+	}
+	
 	//This is the handler that will manager to process the broadcast intent
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 		@Override

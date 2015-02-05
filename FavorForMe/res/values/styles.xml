@@ -40,6 +40,12 @@
         <item name="android:actionBarStyle">@style/baseActionBarStyle</item>
     </style>
 
+    <style name="IntroTheme" parent="Theme.AppCompat.Light">
+        <item name="android:windowBackground">@drawable/intro</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+    
     <style name="baseActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar">
         <item name="android:background">#7BA2C8</item>
         <item name="android:titleTextStyle">@style/BaseTheme.ActionBar.TitleTextStyle</item>
@@ -47,12 +53,6 @@
 
     <style name="BaseTheme.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
         <item name="android:textColor">#ffffff</item>
-    </style>
-
-    <style name="IntroTheme" parent="Theme.AppCompat.Light">
-        <item name="android:windowBackground">@drawable/intro</item>
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
     </style>
 
     <style name="TutorialTheme" parent="Theme.AppCompat.Light">

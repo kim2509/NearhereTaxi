@@ -31,11 +31,10 @@
         android:id="@+id/txtContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="구구절절한 내용"
         android:layout_marginTop="10dp"
         android:layout_below="@+id/txtTitle"
         android:textColor="@android:color/black"
-        android:background="#C0C0C0"
+        android:background="#ffffff"
         android:textIsSelectable="true"
         android:padding="10dp"
         android:singleLine="false"/>

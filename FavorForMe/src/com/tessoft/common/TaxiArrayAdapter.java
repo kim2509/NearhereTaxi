@@ -1,8 +1,5 @@
 package com.tessoft.common;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tessoft.domain.Post;
 import com.tessoft.nearhere.R;
@@ -10,46 +7,24 @@ import com.tessoft.nearhere.R;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class TaxiArrayAdapter extends ArrayAdapter<Post> {
+public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListener{
 
-	private List<Post> itemList = new ArrayList<Post>();
 	private AdapterDelegate delegate = null;
 
 	LayoutInflater inflater = null;
 	
-	@Override
-	public void add(Post object) {
-		itemList.add(object);
-		super.add(object);
-	}
-
 	public TaxiArrayAdapter(Context context, AdapterDelegate delegate, int textViewResourceId) {
 		super(context, textViewResourceId);
 		inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.delegate = delegate;
-	}
-
-	public int getCount() {
-		return this.itemList.size();
-	}
-
-	public Post getItem(int index) {
-		return this.itemList.get(index);
-	}
-
-	public void setItemList( List<Post> itemList )
-	{
-		this.itemList = itemList;
-		notifyDataSetChanged();
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -97,6 +72,8 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> {
 			else
 				txtUserName.setText( item.getUser().getUserName() );
 			
+			imageView.setOnClickListener( this );
+			
 			TextView txtTitle = (TextView) row.findViewById(R.id.txtTitle);
 			txtTitle.setText( item.getMessage() + titleDummy );
 
@@ -140,5 +117,22 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> {
 
 	public AdapterDelegate getDelegate() {
 		return delegate;
+	}
+
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		try
+		{
+			if ( v != null && v.getId() == R.id.imgProfile )
+			{
+				Post post = (Post) ( (View) v.getParent() ).getTag();
+				delegate.doAction("userProfile", post.getUser().getUserID() );	
+			}
+		}
+		catch( Exception ex )
+		{
+			delegate.doAction("logException", null);
+		}
 	}
 }

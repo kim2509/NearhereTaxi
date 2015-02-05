@@ -394,7 +394,8 @@ public class MyInfoFragment extends BaseFragment {
 						edtJobTitle.setText( user.getJobTitle() );
 					}
 
-					adapter.setItemList(postList);
+					adapter.clear();
+					adapter.addAll(postList);
 					adapter.notifyDataSetChanged();
 
 					if ( postList.size() == 0 )
