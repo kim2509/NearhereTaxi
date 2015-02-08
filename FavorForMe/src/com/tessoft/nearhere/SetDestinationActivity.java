@@ -1,5 +1,7 @@
 package com.tessoft.nearhere;
 
+import java.util.ArrayList;
+
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -9,18 +11,28 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.tessoft.common.AdapterDelegate;
 import com.tessoft.common.AddressTaskDelegate;
 import com.tessoft.common.GetAddressTask;
+import com.tessoft.common.GoogleMapkiUtil;
 import com.tessoft.common.Util;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 public class SetDestinationActivity extends BaseActivity 
 implements OnMapReadyCallback, AddressTaskDelegate {
@@ -38,33 +50,42 @@ implements OnMapReadyCallback, AddressTaskDelegate {
 		{
 			super.onCreate(savedInstanceState);
 
-			supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-
 			setContentView(R.layout.activity_set_destination);
 
 			MapFragment mapFragment = (MapFragment) getFragmentManager()
 					.findFragmentById(R.id.map);
 			mapFragment.getMapAsync(this);
 
-			if ( getIntent().getExtras().containsKey("departure"))
+			if ( getIntent().getExtras().containsKey("initLocation"))
 			{
-				initLocation = (LatLng) getIntent().getExtras().get("departure");
+				initLocation = (LatLng) getIntent().getExtras().get("initLocation");
 			}
 			else
 			{
-				initLocation = new LatLng( Double.parseDouble( getMetaInfoString("latitude") ),
-						Double.parseDouble( getMetaInfoString("longitude") ));
+				initLocation = new LatLng( Util.getDouble( MainActivity.latitude ),
+						Util.getDouble( MainActivity.longitude ) );
 			}
 			
-			if ( getIntent().getExtras().containsKey("title") )
-			{
-				setTitle( getIntent().getExtras().getString("title") ); 
-			}
-			
-			if ( getIntent().getExtras().containsKey("subTitle") )
-			{
-				getActionBar().setSubtitle(getIntent().getExtras().getString("subTitle"));
-			}
+			EditText edtSearchLocation = (EditText) findViewById(R.id.edtSearchLocation);
+			edtSearchLocation.setOnEditorActionListener( new OnEditorActionListener() {
+				
+				@Override
+				public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+					// TODO Auto-generated method stub
+					try
+					{
+						if ( actionId == EditorInfo.IME_NULL  
+							      && event.getKeyCode() == KeyEvent.KEYCODE_ENTER )
+							searchOnMap( null );
+					}
+					catch( Exception ex )
+					{
+						catchException(this, ex);
+					}
+					
+					return false;
+				}
+			});
 		}
 		catch( Exception ex )
 		{
@@ -109,6 +130,8 @@ implements OnMapReadyCallback, AddressTaskDelegate {
 					selectedLocation = location;
 					
 					addMarker( location );
+					
+					findViewById(R.id.btnSetDestination).setEnabled(false);
 					getAddress(location, 1);
 				}
 			});
@@ -133,8 +156,7 @@ implements OnMapReadyCallback, AddressTaskDelegate {
 	{
 		map.clear();
 		marker = map.addMarker(new MarkerOptions()
-		.position( location )
-		.title("목적지"));
+		.position( location ));
 	}
 
 	private void moveMap( LatLng location )
@@ -157,6 +179,8 @@ implements OnMapReadyCallback, AddressTaskDelegate {
 		
 		title = "위치 : " + Util.getDongAddressString( result );
 		txtTitle.setText( title );
+		
+		findViewById(R.id.btnSetDestination).setEnabled(true);
 	}
 
 	public void setDestination( View v )
@@ -223,5 +247,96 @@ implements OnMapReadyCallback, AddressTaskDelegate {
 		}
 		else
 			overridePendingTransition(R.anim.stay, R.anim.slide_out_to_right);
+	}
+	
+	GoogleMapkiUtil httpUtil = new GoogleMapkiUtil();
+	
+	public ProgressDialog progressDialog = null;
+	
+	public void searchOnMap( View v )
+	{
+		try
+		{
+			EditText edtSearchLocation = (EditText) findViewById(R.id.edtSearchLocation);
+			
+			if ( TextUtils.isEmpty( edtSearchLocation.getText() ) )
+			{
+				edtSearchLocation.setError("지역을  입력해 주십시오.");
+				return;
+			}
+			
+			if (progressDialog != null && progressDialog.isShowing())
+				return;
+			
+			progressDialog = ProgressDialog.show(
+					this, "확인", "검색 중입니다");
+			
+			httpUtil.requestMapSearch( new ResultHandler( this ), edtSearchLocation.getText().toString().trim(), "");
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
+	
+	static class ResultHandler extends Handler {
+		
+		AdapterDelegate delegate = null;
+		
+		public ResultHandler( AdapterDelegate delegate) {
+			// TODO Auto-generated constructor stub
+			this.delegate = delegate;
+		}
+		
+		@Override
+		public void handleMessage(Message msg) {
+			
+			String result = msg.getData().getString(GoogleMapkiUtil.RESULT);
+		
+			ArrayList<String> searchList = null;
+			
+			if (result.equals(GoogleMapkiUtil.SUCCESS_RESULT)) {
+				searchList = msg.getData().getStringArrayList("searchList");
+			}
+			
+			this.delegate.doAction("mapSearchResult", searchList );
+		}
+	}
+	
+	@Override
+	public void doAction(String actionName, Object param) {
+		// TODO Auto-generated method stub
+		super.doAction(actionName, param);
+
+		try
+		{
+			progressDialog.dismiss();
+			
+			ArrayList<String> searchList = null;
+			if ( param == null )
+			{
+				showOKDialog("경고", "검색 결과가 올바르지 않습니다.\r\n인터넷 연결을 확인해 보시기 바랍니다.", null);
+				return;
+			}
+			
+			searchList = (ArrayList<String>) param;
+			
+			if ( searchList.size() > 2)
+			{
+				Double latitude = Double.parseDouble( searchList.get(1) );
+				Double longitude = Double.parseDouble( searchList.get(2));
+				LatLng location =  new LatLng(latitude, longitude);
+				moveMap( location );
+				map.clear();
+				addMarker( location );
+				getAddress(location, 1);
+				selectedLocation = location;
+			}
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+		
 	}
 }

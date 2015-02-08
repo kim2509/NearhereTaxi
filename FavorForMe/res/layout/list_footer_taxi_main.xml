@@ -4,12 +4,23 @@
     android:layout_height="match_parent"
     android:paddingTop="10dp">
 
-    <TextView android:id="@+id/txtGuide"
+    <TextView android:id="@+id/txtGuide1"
         android:layout_width="wrap_content"
-        android:layout_height="80dp"
+        android:layout_height="300dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:gravity="center_vertical"
         android:singleLine="false"
+        android:text="현재 위치를 로딩중입니다.\n잠시만 기다려 주시기 바랍니다."/>
+    
+    <TextView android:id="@+id/txtGuide"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical"
+        android:singleLine="false"
+        android:visibility="gone"
         android:text="..."/>
 
 </RelativeLayout>

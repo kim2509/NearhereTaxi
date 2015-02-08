@@ -59,5 +59,19 @@
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
     </style>
-
+    
+    <style name="btn_style">
+        <item name="android:layout_height">35dp</item>
+        <item name="android:background">@drawable/btn_common_selector</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@drawable/btn_common_text_color_selector</item>
+    </style>
+    
+    <style name="btn_important_style">
+        <item name="android:layout_height">35dp</item>
+        <item name="android:background">@drawable/btn_important_selector</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">#ffffff</item>
+    </style>
+    
 </resources>

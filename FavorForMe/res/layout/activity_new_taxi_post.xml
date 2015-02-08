@@ -42,16 +42,13 @@
                     android:layout_toLeftOf="@+id/txtChangeDeparture"
                     android:text="출발지를 지정하세요." />
 
-                <TextView
+                <Button
                     android:id="@+id/txtChangeDeparture"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:text="변경"
-                    android:textColor="#3B5D98"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    style="@style/btn_style"/>
             </RelativeLayout>
         </LinearLayout>
 
@@ -85,16 +82,13 @@
                     android:layout_toLeftOf="@+id/txtChangeDestination"
                     android:text="도착지를 지정하세요." />
 
-                <TextView
+                <Button
                     android:id="@+id/txtChangeDestination"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:text="변경"
-                    android:textColor="#3B5D98"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    style="@style/btn_style" />
             </RelativeLayout>
         </LinearLayout>
 
@@ -126,16 +120,13 @@
                     android:gravity="left"
                     android:text="오늘" />
 
-                <TextView
+                <Button
                     android:id="@+id/txtChangeDepartureDate"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:text="변경"
-                    android:textColor="#3B5D98"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    style="@style/btn_style"/>
             </RelativeLayout>
         </LinearLayout>
         
@@ -167,16 +158,13 @@
                     android:gravity="left"
                     android:text="지금" />
 
-                <TextView
+                <Button
                     android:id="@+id/txtChangeDepartureTime"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:text="변경"
-                    android:textColor="#3B5D98"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    style="@style/btn_style"/>
             </RelativeLayout>
         </LinearLayout>
 
@@ -239,8 +227,8 @@
         <Button
             android:id="@+id/btnSend"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:onClick="addPost"
+            style="@style/btn_important_style"
             android:text="등록하기" />
         
         <TextView android:layout_width="match_parent"

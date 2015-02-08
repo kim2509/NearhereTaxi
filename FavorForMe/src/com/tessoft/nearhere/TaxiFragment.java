@@ -38,11 +38,13 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-public class TaxiFragment extends BaseFragment implements AddressTaskDelegate, AdapterDelegate, TransactionDelegate{
+public class TaxiFragment extends BaseFragment 
+	implements AddressTaskDelegate, AdapterDelegate, TransactionDelegate, OnItemSelectedListener, OnClickListener{
 
 	protected static final int REQUEST_POST_DETAIL = 0;
 	private static final int GET_POSTS = 1;
-	protected static final int REQUEST_SET_DESTINATION = 1;
+	protected static final int REQUEST_SET_DEPARTURE= 10;
+	protected static final int REQUEST_SET_DESTINATION = 20;
 	protected static final int REQUEST_NEW_POST = 2;
 	private static final int UPDATE_LOCATION = 3;
 	
@@ -53,10 +55,9 @@ public class TaxiFragment extends BaseFragment implements AddressTaskDelegate, A
 	ObjectMapper mapper = new ObjectMapper();
 	
 	TaxiArrayAdapter adapter = null;
-	View header2 = null;
 	View header3 = null;
 	LatLng departure = null;
-	String distance = "0.5";
+	LatLng destination = null;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,17 +65,20 @@ public class TaxiFragment extends BaseFragment implements AddressTaskDelegate, A
 		// TODO Auto-generated method stub
 		try
 		{
+			getActivity().setTitle("이근처 합승");
+			
 			rootView = inflater.inflate(R.layout.fragment_taxi_main, container, false);
 
 			//header = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header1, null);
 			header3 = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header3, null);
-			header2 = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header2, null);
+//			header2 = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header2, null);
 			footer = getActivity().getLayoutInflater().inflate(R.layout.list_footer_taxi_main, null);
 
 			listMain = (ListView) rootView.findViewById(R.id.listMain);
 			//listMain.addHeaderView(header);
-			listMain.addHeaderView(header3, null, false );
-			listMain.addHeaderView(header2, null, false );
+			listMain.addHeaderView(header3, null, true );
+//			listMain.addHeaderView(header2, null, false );
+			listMain.addFooterView(footer, null, false );
 
 			adapter = new TaxiArrayAdapter( getActivity().getApplicationContext(), this, 0 );
 			listMain.setAdapter(adapter);
@@ -91,84 +95,63 @@ public class TaxiFragment extends BaseFragment implements AddressTaskDelegate, A
 
 					Intent intent = new Intent( getActivity(), TaxiPostDetailActivity.class);
 					intent.putExtra("postID", post.getPostID() );
+					intent.putExtra("fromLatitude", String.valueOf(departure.latitude) );
+					intent.putExtra("fromLongitude", String.valueOf(departure.longitude) );
+					
+					if ( destination != null )
+					{
+						intent.putExtra("toLatitude", String.valueOf(destination.latitude) );
+						intent.putExtra("toLongitude", String.valueOf(destination.longitude) );	
+					}
+					
 					startActivityForResult(intent, REQUEST_POST_DETAIL );
 					getActivity().overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 				}
 			});
-
+			
 			getActivity().setProgressBarIndeterminateVisibility(true);
+			inquiryPosts();
 		}
 		catch( Exception ex )
 		{
-
+			catchException(this, ex);
 		}
+		
 		return rootView;
 	}
 
 	public void initializeComponents()
 	{
-		TextView txtNumOfUsers = (TextView) header2.findViewById(R.id.txtNumOfUsers);
-		txtNumOfUsers.setText("대기승객 : 3");
-
-		Spinner spDistance = (Spinner) header2.findViewById(R.id.spDistance);
-
-		// Create an ArrayAdapter using the string array and a default spinner layout
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource( getActivity(),
+		Spinner spDepartureDistance = (Spinner) header3.findViewById(R.id.spDepartureDistance);
+		
+		ArrayAdapter<CharSequence> adapterDeparture = ArrayAdapter.createFromResource( getActivity(),
 				R.array.distance_list, android.R.layout.simple_spinner_item);
-		// Specify the layout to use when the list of choices appears
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		// Apply the adapter to the spinner
-		spDistance.setAdapter(adapter);
+		adapterDeparture.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spDepartureDistance.setAdapter(adapterDeparture);
+		spDepartureDistance.setSelection(0, false);
+		spDepartureDistance.setOnItemSelectedListener( this );
+		
+		Spinner spDestinationDistance = (Spinner) header3.findViewById(R.id.spDestinationDistance);
+		ArrayAdapter<CharSequence> adapterDestination = ArrayAdapter.createFromResource( getActivity(),
+				R.array.distance_list, android.R.layout.simple_spinner_item);
+		adapterDestination.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spDestinationDistance.setAdapter(adapterDestination);
 
-		spDistance.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-
-				try
-				{
-					// TODO Auto-generated method stub
-					TextView txtView = (TextView) arg1;
-					getActivity().setTitle( txtView.getText() + " 내의 합승내역");
-
-					if ( "500m".equals( txtView.getText().toString()))
-						distance = "0.5";
-					else
-						distance = txtView.getText().toString().replace("km", "");
-
-					inquiryPosts();
-				}
-				catch( Exception ex )
-				{
-					catchException(this, ex);
-				}
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
-
-			}
-		});
-
+		spDestinationDistance.setSelection(0, false);
+		spDestinationDistance.setOnItemSelectedListener( this );
+		
+		Spinner spStatus = (Spinner) rootView.findViewById(R.id.spStatus);
+		ArrayAdapter<CharSequence> adapterStatus = ArrayAdapter.createFromResource( getActivity(),
+				R.array.status_list, android.R.layout.simple_spinner_item);
+		adapterStatus.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spStatus.setAdapter(adapterStatus);
+		spStatus.setSelection(0, false);
+		spStatus.setOnItemSelectedListener( this );
+		
 		Button btnSelectDeparture = (Button) header3.findViewById(R.id.btnSelectDeparture);
-		btnSelectDeparture.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent( getActivity(), SetDestinationActivity.class);
-				intent.putExtra("title", "출발지 선택");
-				intent.putExtra("subTitle", "출발지를 선택해 주십시오.");
-				if ( departure != null )
-					intent.putExtra("departure", departure);
-				intent.putExtra("anim1", R.anim.stay );
-				intent.putExtra("anim2", R.anim.slide_out_to_bottom );
-				startActivityForResult(intent, REQUEST_SET_DESTINATION );
-				getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
-			}
-		});
+		btnSelectDeparture.setOnClickListener( this );
+		Button btnSelectDestination = (Button) header3.findViewById(R.id.btnSelectDestination);
+		btnSelectDestination.setOnClickListener( this );
 
 		Button btnAddPost = (Button) rootView.findViewById(R.id.btnAddPost);
 		btnAddPost.setOnClickListener(new OnClickListener() {
@@ -180,7 +163,7 @@ public class TaxiFragment extends BaseFragment implements AddressTaskDelegate, A
 				if ( departure != null )
 				{
 					TextView txtDeparture = (TextView) header3.findViewById(R.id.txtDeparture);
-					intent.putExtra("address", txtDeparture.getText().toString().replaceAll("출발지:", "") );
+					intent.putExtra("address", txtDeparture.getText().toString() );
 					intent.putExtra("departure", departure);
 				}
 
@@ -199,11 +182,19 @@ public class TaxiFragment extends BaseFragment implements AddressTaskDelegate, A
 
 			if ( resultCode == getActivity().RESULT_OK )
 			{
-				if ( requestCode == REQUEST_SET_DESTINATION )
+				if ( requestCode == REQUEST_SET_DEPARTURE || requestCode == REQUEST_SET_DESTINATION )
 				{
-					departure = (LatLng) data.getExtras().get("location");
-					setAddressText( data.getExtras().getString("address") );
-
+					if ( requestCode == REQUEST_SET_DEPARTURE )
+					{
+						departure = (LatLng) data.getExtras().get("location");
+						setDepartureAddressText( data.getExtras().getString("address") );
+					}
+					else
+					{
+						destination = (LatLng) data.getExtras().get("location");
+						setDestinationAddressText( data.getExtras().getString("address") );
+					}
+					
 					inquiryPosts();
 				}
 				else if ( requestCode == REQUEST_NEW_POST || requestCode == REQUEST_POST_DETAIL )
@@ -231,8 +222,6 @@ public class TaxiFragment extends BaseFragment implements AddressTaskDelegate, A
 				return;
 			}
 
-			getActivity().setProgressBarIndeterminateVisibility(false);
-
 			super.doPostTransaction(requestCode, result);
 
 			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
@@ -241,22 +230,23 @@ public class TaxiFragment extends BaseFragment implements AddressTaskDelegate, A
 			{
 				if ( requestCode == GET_POSTS )
 				{
+					getActivity().setProgressBarIndeterminateVisibility(false);
+					
 					String postData = mapper.writeValueAsString( response.getData() );
 					List<Post> postList = mapper.readValue( postData, new TypeReference<List<Post>>(){});
 					adapter.clear();
 					adapter.addAll(postList);
 					adapter.notifyDataSetChanged();
 
-					TextView txtNumOfUsers = (TextView) header2.findViewById(R.id.txtNumOfUsers);
-					txtNumOfUsers.setText("합승내역 : " + postList.size() );
-					
 					int userCount = Integer.parseInt( response.getData2().toString() );
 					
 					if ( postList.size() == 0 )
 					{
 						listMain.removeFooterView(footer);
 						listMain.addFooterView(footer, null, false );
+						footer.findViewById(R.id.txtGuide1).setVisibility(ViewGroup.GONE);
 						TextView txtView = (TextView) footer.findViewById(R.id.txtGuide);
+						txtView.setVisibility(ViewGroup.VISIBLE);
 						
 						if ( userCount > 0 )
 							txtView.setText("근처에 " + userCount + " 명의 회원이 있습니다\r\n"
@@ -286,19 +276,47 @@ public class TaxiFragment extends BaseFragment implements AddressTaskDelegate, A
 	{
 		HashMap hash = new HashMap();
 
+		String fromLatitude = "";
+		String fromLongitude = "";
+		
 		if ( departure != null )
 		{
-			hash.put("latitude", String.valueOf( departure.latitude )); 
-			hash.put("longitude", String.valueOf( departure.longitude ));	
-		}
-		else
-		{
-			hash.put("latitude", getMetaInfoString("latitude")); 
-			hash.put("longitude", getMetaInfoString("longitude"));
+			fromLatitude = String.valueOf( departure.latitude ); 
+			fromLongitude = String.valueOf( departure.longitude );
 		}
 
-		hash.put("distance", distance);
+		if ( !Util.isEmptyString( fromLatitude ) && !Util.isEmptyString( fromLongitude ) )
+		{
+			hash.put("fromLatitude", fromLatitude);
+			hash.put("fromLongitude", fromLongitude);			
+		}
+		
+		if ( destination != null && destination.latitude != 0 && destination.longitude != 0 )
+		{
+			hash.put("toLatitude", String.valueOf( destination.latitude ) );
+			hash.put("toLongitude", String.valueOf( destination.longitude ) );
+		}
+		
+		Spinner spDepartureDistance = (Spinner) header3.findViewById(R.id.spDepartureDistance);
+		String departureDistance = spDepartureDistance.getSelectedItem().toString();
+		departureDistance = Util.getDistanceDouble(departureDistance);
+		
+		Spinner spDestinationDistance = (Spinner) header3.findViewById(R.id.spDestinationDistance);
+		String destinationDistance = spDestinationDistance.getSelectedItem().toString();
+		destinationDistance = Util.getDistanceDouble(destinationDistance);
+		
+		if ( !Util.isEmptyString( departureDistance ) )
+			hash.put("fromDistance", departureDistance );
+		
+		if ( !Util.isEmptyString( destinationDistance ) )
+			hash.put("toDistance", destinationDistance );
+		
 		hash.put("userID", getLoginUser().getUserID() );
+		
+		Spinner spStatus = (Spinner) rootView.findViewById(R.id.spStatus);
+		String status = spStatus.getSelectedItem().toString();
+		if ( !"전체".equals( status ) )
+			hash.put("status", status );
 
 		getActivity().setProgressBarIndeterminateVisibility(true);
 		sendHttp("/taxi/getPostsNearHere.do", mapper.writeValueAsString(hash), GET_POSTS );
@@ -311,48 +329,52 @@ public class TaxiFragment extends BaseFragment implements AddressTaskDelegate, A
 		{
 			if ( bUpdatedOnce == false )
 			{
-				inquiryPosts();
 				updateMyLocation();
+				
 				bUpdatedOnce = true;
-			}
-
-			if ( departure == null )
-			{
+				
+				departure = new LatLng( location.latitude , location.longitude );
+				
 				Location loc = new Location("taxiFragment");
-				loc.setLatitude(location.latitude);
-				loc.setLongitude(location.longitude);
+				loc.setLatitude(departure.latitude);
+				loc.setLongitude(departure.longitude);
 
 				Location[] locs = new Location[1];
 				locs[0] = loc;
 				new GetAddressTask( getActivity(), this, 1 ).execute(locs);	
+				
+				inquiryPosts();
 			}
-
-			header3.findViewById(R.id.txtGuide1).setVisibility(ViewGroup.GONE);
-			header3.findViewById(R.id.layoutDeparture).setVisibility(ViewGroup.VISIBLE);			
 		}
 		catch( Exception ex )
 		{
 			catchException(this, ex);
 		}
 	}
-
+	
 	public void updateMyLocation() throws Exception
 	{
 		User user = getLoginUser();
 		UserLocation userLocation = new UserLocation();
 		userLocation.setUser( user );
 		userLocation.setLocationName("현재위치");
-		userLocation.setLatitude( getMetaInfoString("latitude"));
-		userLocation.setLongitude( getMetaInfoString("longitude"));
-		userLocation.setAddress( getMetaInfoString("address") );
-		getActivity().setProgressBarIndeterminateVisibility(true);
+		userLocation.setLatitude( MainActivity.latitude );
+		userLocation.setLongitude( MainActivity.longitude );
+		userLocation.setAddress( MainActivity.address );
 		sendHttp("/taxi/updateUserLocation.do", mapper.writeValueAsString( userLocation ), UPDATE_LOCATION );
 		
 	}
-	private void setAddressText( String address )
+	
+	private void setDepartureAddressText( String address )
 	{
 		TextView txtDeparture = (TextView) header3.findViewById(R.id.txtDeparture);
-		txtDeparture.setText("출발지:" + address);
+		txtDeparture.setText(address);
+	}
+	
+	private void setDestinationAddressText( String address )
+	{
+		TextView txtDestination = (TextView) header3.findViewById(R.id.txtDestination);
+		txtDestination.setText(address);
 	}
 
 	@Override
@@ -360,8 +382,7 @@ public class TaxiFragment extends BaseFragment implements AddressTaskDelegate, A
 		// TODO Auto-generated method stub
 
 		String address = Util.getDongAddressString( result );
-
-		setAddressText( address );
+		setDepartureAddressText( address );
 	}
 	
 	@Override
@@ -420,6 +441,84 @@ public class TaxiFragment extends BaseFragment implements AddressTaskDelegate, A
 		try
 		{
 			updateMyLocation();
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
+
+	@Override
+	public void onItemSelected(AdapterView<?> spinner , View selectedView, int arg2,
+			long arg3) {
+		// TODO Auto-generated method stub
+		try
+		{
+			TextView txtView = (TextView) selectedView;
+			
+			if ( spinner.getId() == R.id.spDepartureDistance )
+			{
+				if ( departure == null || departure.latitude == 0 || departure.longitude == 0 )
+				{
+					if ( !"전체".equals( txtView.getText() ) )
+					{
+						showOKDialog("경고", "출발지를 먼저 선택해 주십시오.", null);
+						return;	
+					}
+				}
+			}
+			else if ( spinner.getId() == R.id.spDestinationDistance )
+			{
+				if ( destination == null || destination.latitude == 0 || destination.longitude == 0 )
+				{
+					if ( !"전체".equals( txtView.getText() ) )
+					{
+						showOKDialog("경고", "도착지를 먼저 선택해 주십시오.", null);
+						return;
+					}
+				}
+			}
+			
+			inquiryPosts();
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		try
+		{
+			if ( v.getId() == R.id.btnSelectDeparture || v.getId() == R.id.btnSelectDestination )
+			{
+				Intent intent = new Intent( getActivity(), SetDestinationActivity.class);
+				intent.putExtra("anim1", R.anim.stay );
+				intent.putExtra("anim2", R.anim.slide_out_to_bottom );
+				
+				if ( v.getId() == R.id.btnSelectDeparture )
+				{
+					if ( departure != null )
+						intent.putExtra("initLocation", departure);
+					startActivityForResult(intent, REQUEST_SET_DEPARTURE );
+				}
+				else
+				{
+					if ( destination != null )
+						intent.putExtra("initLocation", destination);
+					startActivityForResult(intent, REQUEST_SET_DESTINATION );
+				}
+				
+				getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
+			}
 		}
 		catch( Exception ex )
 		{

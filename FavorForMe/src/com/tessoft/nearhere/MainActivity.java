@@ -8,6 +8,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.type.TypeReference;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
@@ -81,6 +82,10 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	GoogleCloudMessaging gcm;
 
 	MainMenuArrayAdapter adapter = null;
+	
+	public static String latitude = "";
+	public static String longitude = "";
+	public static String address = "";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -160,6 +165,12 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			{
 				registerInBackground();
 			}
+			
+			if ( checkPlayServices() == false )
+			{
+//				showOKDialog("경고", "Google Play Service 를 업데이트 해 주십시오.\r\n그렇지 않으면 서비스가 원활하지 않을 수 있습니다.", null );
+				return;
+			}
 		}
 		catch( Exception ex )
 		{
@@ -171,16 +182,35 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	@Override
 	protected void onStart() {
 		// TODO Auto-generated method stub
-		super.onStart();
-		mGoogleApiClient.connect();
+		try
+		{
+			super.onStart();
+			if ( mGoogleApiClient != null && mGoogleApiClient.isConnected() == false )
+				mGoogleApiClient.connect();	
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
 	}
 
 	@Override
 	protected void onStop() {
 		// TODO Auto-generated method stub
-		super.onStop();
-		stopLocationUpdates();
-		mGoogleApiClient.disconnect();
+		try
+		{
+			super.onStop();
+			
+			if ( mGoogleApiClient != null && mGoogleApiClient.isConnected() )
+			{
+				stopLocationUpdates();
+				mGoogleApiClient.disconnect();
+			}
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
 	}
 
 	@Override
@@ -201,7 +231,6 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	JsonGenerationException, JsonMappingException {
 		HashMap hash = new HashMap();
 		hash.put("userID", getLoginUser().getUserID() );
-		setProgressBarIndeterminateVisibility(true);
 		sendHttp("/taxi/getUnreadCount.do", mapper.writeValueAsString(hash), GET_UNREAD_COUNT );
 	}
 
@@ -373,8 +402,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		// TODO Auto-generated method stub
 		try
 		{
-			setMetaInfo("latitude", String.valueOf( location.getLatitude()));
-			setMetaInfo("longitude", String.valueOf( location.getLongitude()));
+			MainActivity.latitude = String.valueOf( location.getLatitude() );
+			MainActivity.longitude = String.valueOf( location.getLongitude() );
 
 			new GetAddressTask( this, this, 1 ).execute(location);
 
@@ -393,8 +422,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	@Override
 	public void onAddressTaskPostExecute(int requestCode, Object result) {
 		// TODO Auto-generated method stub
-		String address = Util.getDongAddressString( result );
-		setMetaInfo("address", address);
+		MainActivity.address = Util.getDongAddressString( result );
 	}
 
 	@Override
@@ -529,7 +557,6 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 				return;
 			}
 
-			setProgressBarIndeterminateVisibility(false);
 			super.doPostTransaction(requestCode, result);
 
 			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
@@ -538,8 +565,10 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			{
 				if ( requestCode == 2 )
 				{
-//					setMetaInfo("userNo", "");
-//					setMetaInfo("registerUserFinished", "");
+					setProgressBarIndeterminateVisibility(false);
+					
+					setMetaInfo("userNo", "");
+					setMetaInfo("registerUserFinished", "");
 					setMetaInfo("logout", "true");
 					setMetaInfo("userID", "");
 					setMetaInfo("userName", "");
@@ -623,5 +652,20 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 				doubleBackToExitPressedOnce=false;                       
 			}
 		}, 2000);
+	}
+	
+	private boolean checkPlayServices() {
+		int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		if (resultCode != ConnectionResult.SUCCESS) {
+			if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+				GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+						PLAY_SERVICES_RESOLUTION_REQUEST).show();
+			} else {
+				Log.i("intro", "This device is not supported.");
+				finish();
+			}
+			return false;
+		}
+		return true;
 	}
 }

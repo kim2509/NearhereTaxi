@@ -30,8 +30,8 @@
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/txtSubGuide"
-        android:layout_marginTop="70dp"
-        android:layout_marginBottom="80dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="60dp"
         android:layout_marginRight="70dp"
         android:layout_marginLeft="90dp"
         android:src="@drawable/hand"
@@ -53,8 +53,9 @@
             android:text="투토리얼을 종료하시려면 우측 버튼을 누르세요. "/>
         
         <Button android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:onClick="closeTutorial"
+            android:layout_marginLeft="10dp"
+            style="@style/btn_style"
             android:text="종료"/>
         
     </LinearLayout>

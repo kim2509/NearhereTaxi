@@ -13,27 +13,21 @@ public class Post extends ListItemModel {
 	protected String longitude;
 	protected String toAddress;
 	protected String message;
-	
 	protected String fromLatitude;
 	protected String fromLongitude;
 	protected String fromAddress;
-	
 	protected String content;
-	
 	protected Object tag;
-	
 	protected User user;
-	
-	protected String distance;
 	protected String createdDate;
-	
 	protected String reward;
-	
 	private String sexInfo;
 	private String numOfUsers;
 	private String departureDate;
 	private String departureTime;
-	
+	private String fromDistance;
+	private String toDistance;
+	private String status;
 	protected String type="taxi";
 	
 	protected List<PostLike> postLikes;
@@ -61,12 +55,6 @@ public class Post extends ListItemModel {
 	}
 	public void setMessage(String message) {
 		this.message = message;
-	}
-	public String getDistance() {
-		return distance;
-	}
-	public void setDistance(String distance) {
-		this.distance = distance;
 	}
 	public String getPostID() {
 		return postID;
@@ -197,5 +185,29 @@ public class Post extends ListItemModel {
 
 	public void setDepartureTime(String departureTime) {
 		this.departureTime = departureTime;
+	}
+
+	public String getFromDistance() {
+		return fromDistance;
+	}
+
+	public void setFromDistance(String fromDistance) {
+		this.fromDistance = fromDistance;
+	}
+
+	public String getToDistance() {
+		return toDistance;
+	}
+
+	public void setToDistance(String toDistance) {
+		this.toDistance = toDistance;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 }

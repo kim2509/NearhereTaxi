@@ -99,9 +99,20 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 	private void inquiryPostDetail() throws IOException,
 	JsonGenerationException, JsonMappingException {
 		HashMap hash = new HashMap();
-		hash.put("postID", getIntent().getExtras().getString("postID") );
-		hash.put("latitude", getMetaInfoString("latitude"));
-		hash.put("longitude", getMetaInfoString("longitude"));
+		
+		if ( getIntent().getExtras() != null )
+		{
+			hash.put("postID", getIntent().getExtras().getString("postID") );
+			if ( getIntent().getExtras().containsKey("fromLatitude") )
+				hash.put("fromLatitude", getIntent().getExtras().getString("fromLatitude") );
+			if ( getIntent().getExtras().containsKey("fromLongitude") )
+				hash.put("fromLongitude", getIntent().getExtras().getString("fromLongitude") );
+			if ( getIntent().getExtras().containsKey("toLatitude") )
+				hash.put("toLatitude", getIntent().getExtras().getString("toLatitude") );
+			if ( getIntent().getExtras().containsKey("toLongitude") )
+				hash.put("toLongitude", getIntent().getExtras().getString("toLongitude") );
+		}
+		
 		hash.put("userID", getLoginUser().getUserID() );
 
 		setProgressBarIndeterminateVisibility(true);
@@ -276,7 +287,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 
 		destinationMarker = map.addMarker(new MarkerOptions()
 		.position( location )
-		.title("목적지"));
+		.title("도착지"));
 
 		PolylineOptions rectOptions = new PolylineOptions()
 		.add( Fromlocation ) 
@@ -340,8 +351,8 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			PostReply postReply = new PostReply();
 			postReply.setPostID( post.getPostID() );
 			postReply.setUser( getLoginUser() );
-			postReply.setLatitude( getMetaInfoString("latitude"));
-			postReply.setLongitude( getMetaInfoString("longitude"));
+			postReply.setLatitude( MainActivity.latitude );
+			postReply.setLongitude( MainActivity.longitude );
 			postReply.setMessage( edtPostReply.getText().toString() );
 			edtPostReply.setText("");
 
@@ -430,8 +441,23 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					TextView txtDestination = (TextView) header.findViewById(R.id.txtDestination);
 					txtDestination.setText( post.getToAddress() );
 
-					TextView txtDistance = (TextView) header.findViewById(R.id.txtDistance);
-					txtDistance.setText( Util.getDistance(post.getDistance()) );
+					TextView txtFromDistance = (TextView) header.findViewById(R.id.txtFromDistance);
+					if ( Util.isEmptyString( post.getFromDistance() ) == false )
+					{
+						txtFromDistance.setText( Util.getDistance( post.getFromDistance() ) );
+						txtFromDistance.setVisibility(ViewGroup.VISIBLE);
+					}
+					else
+						txtFromDistance.setVisibility(ViewGroup.INVISIBLE);
+					
+					TextView txtToDistance = (TextView) header.findViewById(R.id.txtToDistance);
+					if ( Util.isEmptyString( post.getToDistance() ) == false )
+					{
+						txtToDistance.setText( Util.getDistance( post.getToDistance() ) );
+						txtToDistance.setVisibility(ViewGroup.VISIBLE);
+					}
+					else
+						txtToDistance.setVisibility(ViewGroup.INVISIBLE);
 
 					if ( post.getDepartureDate() != null )
 					{
@@ -445,7 +471,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					adapter.setItemList( post.getPostReplies() );
 					adapter.notifyDataSetChanged();
 
-					if ( post.getUser().getUserID().equals( getLoginUser().getUserID() ))
+					if ( "true".equals( getMetaInfoString("admin") ) || post.getUser().getUserID().equals( getLoginUser().getUserID() ))
 					{
 						menu.findItem(R.id.action_edit).setVisible(true);
 						menu.findItem(R.id.action_delete).setVisible(true);	
@@ -455,6 +481,14 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 						menu.findItem(R.id.action_edit).setVisible(false);
 						menu.findItem(R.id.action_delete).setVisible(false);
 					}
+					
+					TextView txtStatus = (TextView) header.findViewById(R.id.txtStatus);
+					txtStatus.setText( post.getStatus() );
+					
+					if ( "진행중".equals( post.getStatus() ) )
+						txtStatus.setBackgroundResource(R.color.progressing);
+					else
+						txtStatus.setBackgroundResource(R.color.finished);
 				}
 				else if ( requestCode == INSERT_POST_REPLY )
 				{

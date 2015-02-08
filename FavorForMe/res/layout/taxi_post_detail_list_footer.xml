@@ -17,9 +17,10 @@
     <Button
         android:id="@+id/btnAddPostReply"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/edtPostReply"
         android:layout_alignParentRight="true"
+        android:layout_marginLeft="5dp"
+        style="@style/btn_style"
         android:text="@string/send"
         android:onClick="addPostReply"/>
     

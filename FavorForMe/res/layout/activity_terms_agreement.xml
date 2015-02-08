@@ -76,9 +76,9 @@
     <Button
         android:id="@+id/btnAgree"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginTop="10dp"
+        style="@style/btn_style"
         android:onClick="updateTermsAgreement"
         android:text="@string/agree" />
 

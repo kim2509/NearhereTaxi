@@ -16,6 +16,17 @@ public class Util {
 			return Double.parseDouble(dist) + "km";
 	}
 	
+	public static String getDistanceDouble( String dist )
+	{
+		if ( "전체".equals( dist ) || isEmptyString( dist )) return "";
+		else if ( "500m".equals( dist ))
+		{
+			return "0.5";
+		}
+		else
+			return dist.replaceAll("km", "");
+	}
+	
 	public static Date getDateFromString( String dateString, String format ) throws Exception
 	{
 		if ( dateString == null || "".equals( dateString ) ) return null;
@@ -68,6 +79,13 @@ public class Util {
 		if ( str == null ) return true;
 		if ( "".equals(str.trim())) return true;
 		return false;
+	}
+	
+	public static double getDouble( String str )
+	{
+		if ( isEmptyString(str) ) return 0.0;
+
+		return Double.parseDouble( str );
 	}
 	
 	public static String getString( String str )

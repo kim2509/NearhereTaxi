@@ -20,7 +20,7 @@
     <string name="title_activity_push_message_list">PushMessageListActivity</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="departure">출발지</string>
-    <string name="destination">목적지</string>
+    <string name="destination">도착지</string>
     <string name="input_post_reply">댓글을 입력하세요.</string>
     <string name="send">전송</string>
     <string name="user_id">사용자 아이디</string>

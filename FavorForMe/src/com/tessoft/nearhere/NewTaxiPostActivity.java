@@ -103,18 +103,20 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 					departure = (LatLng) getIntent().getExtras().get("departure");
 					txtDeparture.setText( getIntent().getExtras().getString("address"));
 				}
-				else if ( getMetaInfoString("address") != null && getMetaInfoString("address").isEmpty() == false )
+				else if ( Util.isEmptyString( MainActivity.address ) == false )
 				{
-					double latitude = getMetaInfoDouble("latitude");
-					double longitude = getMetaInfoDouble("longitude");
+					double latitude =  Util.getDouble( MainActivity.latitude );
+					double longitude = Util.getDouble( MainActivity.longitude );
 					departure = new LatLng(latitude, longitude);
-					txtDeparture.setText( getMetaInfoString("address") );
+					txtDeparture.setText( MainActivity.address );
 				}	
 				
 				btnSend.setText("등록하기");
 				
 				mode = "new";
 			}
+			
+			setProgressBarIndeterminateVisibility(false);
 		}
 		catch( Exception ex )
 		{

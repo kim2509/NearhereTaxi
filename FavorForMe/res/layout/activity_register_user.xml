@@ -16,15 +16,17 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="처음이신가요?" />
+            android:text="이근처 합승에 오신걸 환영합니다." />
 
         <Button
             android:id="@+id/btnRandomID"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
+            style="@style/btn_style"
             android:enabled="false"
             android:onClick="proceed"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:text="로딩중.." />
     </LinearLayout>
 

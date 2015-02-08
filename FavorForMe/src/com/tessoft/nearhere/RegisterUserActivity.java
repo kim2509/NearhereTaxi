@@ -191,16 +191,16 @@ public class RegisterUserActivity extends BaseActivity {
 	{
 		try
 		{
-			if ( "true".equals( getMetaInfoString("logout") ) )
-			{
-				setMetaInfo("logout", "false");
-				goMainActivity();
-				finish();
-			}
-			else
-			{
+//			if ( "true".equals( getMetaInfoString("logout") ) )
+//			{
+//				setMetaInfo("logout", "false");
+//				goMainActivity();
+//				finish();
+//			}
+//			else
+//			{
 				goTermsAgreementActivity(null);
-			}
+//			}
 		}
 		catch( Exception ex )
 		{

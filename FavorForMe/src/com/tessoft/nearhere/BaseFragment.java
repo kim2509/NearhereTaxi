@@ -66,6 +66,36 @@ public class BaseFragment extends Fragment implements AdapterDelegate, Transacti
 	{
 		
 	}
+
+	public void showYesNoDialog( String title, String message, final Object param )
+	{
+		AlertDialog.Builder builder = new AlertDialog.Builder( getActivity() );
+		builder.setTitle(title)
+			   .setMessage( message )
+		       .setCancelable(false)
+		       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		        	   yesClicked( param );
+		           }
+		       })
+		       .setNegativeButton("No", new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		        	   noClicked( param );
+		           }
+		       });
+		AlertDialog alert = builder.create();
+		alert.show();
+	}
+	
+	public void yesClicked( Object param )
+	{
+		
+	}
+	
+	public void noClicked( Object param )
+	{
+		
+	}
 	
 	public void sendHttp( String url, Object request, int requestCode )
 	{

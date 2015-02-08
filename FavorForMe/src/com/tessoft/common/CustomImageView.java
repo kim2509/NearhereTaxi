@@ -25,11 +25,19 @@ public class CustomImageView extends ImageView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        //float radius = 36.0f;  
-        Path clipPath = new Path();
-        RectF rect = new RectF(0, 0, this.getWidth(), this.getHeight());
-        clipPath.addRoundRect(rect, radius, radius, Path.Direction.CW);
-        canvas.clipPath(clipPath);
-        super.onDraw(canvas);
+    	
+    	try
+    	{
+    		//float radius = 36.0f;  
+            Path clipPath = new Path();
+            RectF rect = new RectF(0, 0, this.getWidth(), this.getHeight());
+            clipPath.addRoundRect(rect, radius, radius, Path.Direction.CW);
+            canvas.clipPath(clipPath);
+            super.onDraw(canvas);	
+    	}
+    	catch( Exception ex )
+    	{
+    		super.onDraw(canvas);
+    	}
     }
 }

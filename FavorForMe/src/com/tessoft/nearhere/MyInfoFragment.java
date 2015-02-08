@@ -2,6 +2,7 @@ package com.tessoft.nearhere;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -326,9 +327,29 @@ public class MyInfoFragment extends BaseFragment {
 
 					User user = mapper.readValue(userString, new TypeReference<User>(){});
 					List<UserLocation> locationList = mapper.readValue(locationListString, new TypeReference<List<UserLocation>>(){});
-					List<Post> postList = mapper.readValue(userPostString, new TypeReference<List<Post>>(){});
+					List<Post> userPosts = mapper.readValue(userPostString, new TypeReference<List<Post>>(){});
 					List<Post> userPostsReplied = mapper.readValue(postsUserRepliedString, new TypeReference<List<Post>>(){});
-					postList.addAll( userPostsReplied );
+					
+					ArrayList postList = new ArrayList();
+					HashMap postKeys = new HashMap();
+					
+					for ( int i = 0; i < userPosts.size(); i++ )
+					{
+						if ( !postKeys.containsKey( userPosts.get(i).getPostID() ) )
+						{
+							postList.add( userPosts.get(i) );
+							postKeys.put( userPosts.get(i).getPostID(), "exist" );
+						}
+					}
+					
+					for ( int i = 0; i < userPostsReplied.size(); i++ )
+					{
+						if ( !postKeys.containsKey( userPostsReplied.get(i).getPostID() ) )
+						{
+							postList.add( userPostsReplied.get(i) );
+							postKeys.put( userPostsReplied.get(i).getPostID(), "exist" );
+						}
+					}
 
 					ImageView imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
 					imgProfile.setImageResource(R.drawable.no_image);

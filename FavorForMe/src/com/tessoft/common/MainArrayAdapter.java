@@ -87,7 +87,7 @@ public class MainArrayAdapter extends ArrayAdapter<ListItemModel> {
 			{
 				Post post = (Post) item;
 				txtUserID = (TextView) row.findViewById(R.id.txtDistance);
-				txtUserID.setText( Util.getDistance( post.getDistance()) );
+				txtUserID.setText( Util.getDistance( post.getFromDistance()) );
 				TextView txtMsg = (TextView) row.findViewById(R.id.txtMessage);
 				txtMsg.setText( post.getMessage() );
 				ImageView imageView = (ImageView) row.findViewById(R.id.imgProfile);

@@ -83,7 +83,8 @@
 
         <activity
             android:name=".UserProfileActivity"
-            android:label="@string/title_activity_user_profile" >
+            android:label="@string/title_activity_user_profile"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".RegisterUserActivity"
@@ -120,7 +121,8 @@
         <activity
             android:name=".SetDestinationActivity"
             android:label="@string/title_activity_set_destination"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:theme="@style/TutorialTheme">
         </activity>
         <activity
             android:name=".MessageBoxFragment"

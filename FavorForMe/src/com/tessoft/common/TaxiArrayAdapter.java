@@ -83,8 +83,23 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 			TextView txtDestination = (TextView) row.findViewById(R.id.txtDestination);
 			txtDestination.setText( item.getToAddress() );
 			
-			TextView txtDistance = (TextView) row.findViewById(R.id.txtDistance);
-			txtDistance.setText( Util.getDistance( item.getDistance()) );
+			TextView txtFromDistance = (TextView) row.findViewById(R.id.txtFromDistance);
+			if ( Util.isEmptyString( item.getFromDistance() ) == false )
+			{
+				txtFromDistance.setText( Util.getDistance( item.getFromDistance() ) );
+				txtFromDistance.setVisibility(ViewGroup.VISIBLE);
+			}
+			else
+				txtFromDistance.setVisibility(ViewGroup.INVISIBLE);
+			
+			TextView txtToDistance = (TextView) row.findViewById(R.id.txtToDistance);
+			if ( Util.isEmptyString( item.getToDistance() ) == false )
+			{
+				txtToDistance.setText( Util.getDistance( item.getToDistance() ) );
+				txtToDistance.setVisibility(ViewGroup.VISIBLE);
+			}
+			else
+				txtToDistance.setVisibility(ViewGroup.INVISIBLE);
 			
 			TextView txtCreatedDate = (TextView) row.findViewById(R.id.txtCreatedDate);
 			txtCreatedDate.setText( Util.getFormattedDateString(item.getCreatedDate(), "yyyy-MM-dd HH:mm"));	
@@ -101,6 +116,20 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 						item.getUser().getProfileImageURL() , imageView);	
 			}
 
+			TextView txtStatus = (TextView) row.findViewById(R.id.txtStatus);
+			txtStatus.setText( item.getStatus() );
+			
+			if ( "진행중".equals( item.getStatus() ) )
+			{
+				txtStatus.setBackgroundResource(R.color.progressing);
+//				txtStatus.setTextColor( getContext().getResources().getColor(R.color.progressing));
+			}
+			else
+			{
+				txtStatus.setBackgroundResource(R.color.finished);
+//				txtStatus.setTextColor( getContext().getResources().getColor(R.color.finished));
+			}
+			
 			row.setTag( item );
 		}
 		catch( Exception ex )

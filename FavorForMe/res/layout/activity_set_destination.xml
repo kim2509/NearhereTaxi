@@ -4,8 +4,39 @@
     android:layout_height="match_parent"
     tools:context="com.tessoft.nearhere.SetDestinationActivity" >
 
+    <RelativeLayout android:id="@+id/layoutTitleBar"
+        android:layout_width="match_parent"
+        android:background="#7BA2C8"
+        android:layout_height="48dp">
+        
+        <EditText android:id="@+id/edtSearchLocation" 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/btnSearch"
+            android:hint="검색할 지역을 입력하세요."
+            android:textColorHint="#ffffff"
+            android:imeActionLabel="검색"
+            android:imeOptions="actionSearch"
+            android:singleLine="true"
+            android:textColor="#ffffff"
+            android:layout_marginLeft="5dp"/>
+        
+        <Button android:id="@+id/btnSearch"
+            android:layout_width="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:onClick="searchOnMap"
+            style="@style/btn_style"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:text="검색"/>
+    </RelativeLayout>
+    
     <LinearLayout
         android:id="@+id/layoutHeader"
+        android:layout_below="@+id/layoutTitleBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
@@ -31,7 +62,11 @@
         android:id="@+id/layoutFooter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" >
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp">
 
         <TextView
             android:id="@+id/txtGuide2"
@@ -40,42 +75,19 @@
             android:singleLine="false"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
+            android:gravity="center_vertical"
             android:layout_toLeftOf="@+id/btnSetDestination"
-            android:padding="10dp"
             android:text="@string/set_destination_guide2" />
 
         <Button
             android:id="@+id/btnSetDestination"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:onClick="setDestination"
-            android:padding="10dp"
-            android:text="@string/select" />
+            android:text="@string/select"
+            style="@style/btn_style" />
         
     </RelativeLayout>
 
-    <RelativeLayout android:id="@+id/layoutInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_margin="10dp">
-        
-        <EditText android:id="@+id/edtMessage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/btnSubmit"
-            android:hint="내용을 입력해 주십시오."/>
-        
-        <Button android:id="@+id/btnSubmit"
-            android:layout_width="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="등록"
-            android:onClick="addPost"/>
-    </RelativeLayout>
 </RelativeLayout>

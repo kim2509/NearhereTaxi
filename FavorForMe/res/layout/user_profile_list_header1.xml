@@ -53,10 +53,12 @@
     
     <Button android:id="@+id/btnChangeProfileImage"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="이미지 변경"
         android:layout_toRightOf="@+id/imgProfile"
         android:layout_marginLeft="20dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        style="@style/btn_style"
         android:layout_alignBottom="@+id/imgProfile"/>
 
     <LinearLayout
@@ -76,7 +78,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="70"
-                android:gravity="left"
+                android:gravity="left|center_vertical"
+                android:layout_gravity="center_vertical"
                 android:text="생년월일" />
 
             <RelativeLayout
@@ -91,16 +94,16 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:gravity="left"
+                    android:layout_centerVertical="true"
                     android:text="미입력" />
 
-                <TextView
+                <Button
                     android:id="@+id/txtChangeBirthday"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
                     android:text="변경하기"
-                    android:textColor="#3B5D98"
-                    android:textStyle="bold" />
+                    style="@style/btn_style"/>
             </RelativeLayout>
         </LinearLayout>
 
@@ -116,20 +119,18 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="20dp"
                 android:calendarViewShown="false"
                 android:spinnersShown="true" />
 
-            <TextView
+            <Button
                 android:id="@+id/txtSetDatePicker"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="10dp"
                 android:text="업데이트"
-                android:textColor="#3B5D98"
-                android:textStyle="bold" />
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                style="@style/btn_style" />
         </RelativeLayout>
 
         <LinearLayout
@@ -162,6 +163,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="70"
                 android:gravity="left"
+                android:layout_gravity="center_vertical"
                 android:text="집 위치" />
 
             <RelativeLayout
@@ -175,16 +177,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
                     android:text="미입력" />
 
-                <TextView
+                <Button
                     android:id="@+id/txtPickHomeLocation"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
                     android:text="설정"
-                    android:textColor="#3B5D98"
-                    android:textStyle="bold" />
+                    style="@style/btn_style" />
             </RelativeLayout>
         </LinearLayout>
 
@@ -198,6 +200,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="70"
                 android:gravity="left"
+                android:layout_gravity="center_vertical"
                 android:text="직장위치" />
 
             <RelativeLayout
@@ -212,16 +215,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
                     android:text="미입력" />
 
-                <TextView
+                <Button
                     android:id="@+id/txtPickOfficeLocation"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
                     android:text="설정"
-                    android:textColor="#3B5D98"
-                    android:textStyle="bold" />
+                    style="@style/btn_style"/>
             </RelativeLayout>
         </LinearLayout>
 
@@ -235,6 +238,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="70"
                 android:gravity="left"
+                android:layout_gravity="center_vertical"
                 android:text="직업" />
 
             <RelativeLayout
@@ -251,17 +255,17 @@
                     android:layout_alignParentLeft="true"
                     android:layout_toLeftOf="@+id/btnJobTitle"
                     android:gravity="left"
+                    android:layout_centerVertical="true"
                     android:hint="입력" />
 
-                <TextView
+                <Button
                     android:id="@+id/txtUpdateJobTitle"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/edtJobTitle"
                     android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
                     android:text="업데이트"
-                    android:textColor="#3B5D98"
-                    android:textStyle="bold" />
+                    style="@style/btn_style" />
             </RelativeLayout>
         </LinearLayout>
 

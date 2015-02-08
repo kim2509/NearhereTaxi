@@ -62,7 +62,4 @@
         android:text="10m"
         android:textColor="@android:color/black" />
     
-    
-
-    
 </RelativeLayout>
