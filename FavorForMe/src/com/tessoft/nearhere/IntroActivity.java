@@ -39,6 +39,9 @@ public class IntroActivity extends BaseActivity {
 			} else {
 				afterIntro(savedInstanceState);
 			}
+			
+			setMetaInfo("userNo", "20");
+			setMetaInfo("userID", "user20");
 		}
 		catch( Exception ex )
 		{

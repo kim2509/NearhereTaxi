@@ -95,8 +95,12 @@ public class TaxiFragment extends BaseFragment
 
 					Intent intent = new Intent( getActivity(), TaxiPostDetailActivity.class);
 					intent.putExtra("postID", post.getPostID() );
-					intent.putExtra("fromLatitude", String.valueOf(departure.latitude) );
-					intent.putExtra("fromLongitude", String.valueOf(departure.longitude) );
+					
+					if ( departure != null )
+					{
+						intent.putExtra("fromLatitude", String.valueOf(departure.latitude) );
+						intent.putExtra("fromLongitude", String.valueOf(departure.longitude) );						
+					}
 					
 					if ( destination != null )
 					{

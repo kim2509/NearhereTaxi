@@ -567,8 +567,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 				{
 					setProgressBarIndeterminateVisibility(false);
 					
-					setMetaInfo("userNo", "");
-					setMetaInfo("registerUserFinished", "");
+//					setMetaInfo("userNo", "");
+//					setMetaInfo("registerUserFinished", "");
 					setMetaInfo("logout", "true");
 					setMetaInfo("userID", "");
 					setMetaInfo("userName", "");
