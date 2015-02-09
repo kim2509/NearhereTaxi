@@ -21,6 +21,7 @@ public class User extends ListItemModel{
 	private String jobTitle;
 	private String sex;
 	private String profilePoint;
+	private String mobileNo;
 
 	public String getUserNo() {
 		return userNo;
@@ -132,5 +133,13 @@ public class User extends ListItemModel{
 
 	public void setProfilePoint(String profilePoint) {
 		this.profilePoint = profilePoint;
+	}
+
+	public String getMobileNo() {
+		return mobileNo;
+	}
+
+	public void setMobileNo(String mobileNo) {
+		this.mobileNo = mobileNo;
 	}
 }

@@ -28,8 +28,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnShowListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
@@ -40,6 +43,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager.OnActivityResultListener;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -59,7 +63,7 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-public class MyInfoFragment extends BaseFragment {
+public class MyInfoFragment extends BaseFragment implements OnClickListener {
 
 	TaxiArrayAdapter adapter = null;
 	View rootView = null;
@@ -67,6 +71,8 @@ public class MyInfoFragment extends BaseFragment {
 	View header = null;
 	View footer = null;
 	ObjectMapper mapper = new ObjectMapper();
+	int UPDATE_USER_MOBILE_NO = 10;
+	User user = null;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -287,6 +293,9 @@ public class MyInfoFragment extends BaseFragment {
 		});
 		
 		mShortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
+		
+		Button btnChangeMobileNo = (Button) header.findViewById(R.id.btnChangeMobileNo);
+		btnChangeMobileNo.setOnClickListener(this);
 	}
 
 	private static final int PICK_IMAGE = 1;
@@ -325,7 +334,7 @@ public class MyInfoFragment extends BaseFragment {
 					String userPostString = mapper.writeValueAsString( hash.get("userPost") );
 					String postsUserRepliedString = mapper.writeValueAsString( hash.get("postsUserReplied") );
 
-					User user = mapper.readValue(userString, new TypeReference<User>(){});
+					user = mapper.readValue(userString, new TypeReference<User>(){});
 					List<UserLocation> locationList = mapper.readValue(locationListString, new TypeReference<List<UserLocation>>(){});
 					List<Post> userPosts = mapper.readValue(userPostString, new TypeReference<List<Post>>(){});
 					List<Post> userPostsReplied = mapper.readValue(postsUserRepliedString, new TypeReference<List<Post>>(){});
@@ -415,6 +424,12 @@ public class MyInfoFragment extends BaseFragment {
 						edtJobTitle.setText( user.getJobTitle() );
 					}
 
+					if ( !Util.isEmptyString( user.getMobileNo() ))
+					{
+						TextView txtMobileNo = (TextView) header.findViewById(R.id.txtMobileNo);
+						txtMobileNo.setText( user.getMobileNo() );
+					}
+					
 					adapter.clear();
 					adapter.addAll(postList);
 					adapter.notifyDataSetChanged();
@@ -735,4 +750,90 @@ public class MyInfoFragment extends BaseFragment {
             }
         });
     }
+
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		try
+		{
+			if ( v.getId() == R.id.btnChangeMobileNo )
+			{
+				openMobileInputDialog();
+			}
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
+	
+	AlertDialog mobileInputDialog = null;
+	
+	public void openMobileInputDialog() throws Exception
+	{
+		LayoutInflater li = LayoutInflater.from( getActivity() );
+		View promptsView = li.inflate(R.layout.fragment_user_mobile_input, null);
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder( getActivity() );
+		alertDialogBuilder.setView(promptsView);
+		
+		final EditText userInput = (EditText) promptsView
+				.findViewById(R.id.editTextDialogUserInput);
+		
+		// set dialog message
+		alertDialogBuilder
+			.setCancelable(false)
+			.setTitle("휴대폰 번호 입력")
+			.setPositiveButton("확인", null )
+			.setNegativeButton("취소",
+			  new DialogInterface.OnClickListener() {
+			    public void onClick(DialogInterface dialog,int id) {
+				dialog.cancel();
+			    }
+			  });
+
+		// create alert dialog
+		mobileInputDialog = alertDialogBuilder.create();
+
+		mobileInputDialog.setOnShowListener( new OnShowListener() {
+			
+			@Override
+			public void onShow(DialogInterface dialog) {
+				// TODO Auto-generated method stub
+				
+				Button b = mobileInputDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+				b.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						
+						if ( TextUtils.isEmpty( userInput.getText() ) )
+						{
+							userInput.setError("입력한 번호가 올바르지 않습니다.");
+							return;
+						}
+						
+						updateUserMobileNo( userInput.getText().toString() );
+						mobileInputDialog.dismiss();
+					}
+				});
+			}
+		});
+		// show it
+		mobileInputDialog.show();
+	}
+	
+	public void updateUserMobileNo( String mobileNo )
+	{
+		try
+		{
+			getActivity().setProgressBarIndeterminateVisibility(true);
+			user.setMobileNo(mobileNo);
+			sendHttp("/taxi/updateUserInfo.do", mapper.writeValueAsString( user ), UPDATE_USER_MOBILE_NO );
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
 }
