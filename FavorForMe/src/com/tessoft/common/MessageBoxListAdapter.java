@@ -68,7 +68,10 @@ public class MessageBoxListAdapter extends ArrayAdapter<UserMessage> {
 			{
 				ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
 						item.getUser().getProfileImageURL() , imgProfile);
-				
+			}
+			
+			if ( item.getUser() != null && Util.isEmptyString( item.getUser().getUserName() ) == false )
+			{
 				TextView txtUserName = (TextView) row.findViewById(R.id.txtUserName);
 				txtUserName.setText( item.getUser().getUserName() );
 			}
