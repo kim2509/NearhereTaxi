@@ -39,6 +39,7 @@ public class IntroActivity extends BaseActivity {
 			} else {
 				afterIntro(savedInstanceState);
 			}
+			
 		}
 		catch( Exception ex )
 		{
@@ -58,8 +59,6 @@ public class IntroActivity extends BaseActivity {
 				
 				if ( "".equals( getMetaInfoString("userID") ) || !"true".equals( getMetaInfoString("registerUserFinished")) || "true".equals( getMetaInfoString("logout")) )
 				{
-//					intent = new Intent( getApplicationContext(), IntroActivity.class);
-//					intent.putExtra("intro", false);
 					intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
 				}
 				else

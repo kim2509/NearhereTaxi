@@ -43,12 +43,6 @@ public class RegisterUserActivity extends BaseActivity {
 			setProgressBarIndeterminateVisibility(true);
 			User user = getLoginUser();
 			sendHttp("/taxi/getRandomID.do", mapper.writeValueAsString(user), 2);
-
-			//			Spinner spSex = (Spinner) findViewById(R.id.spSex);
-			//			ArrayAdapter<CharSequence> sexAdapter = ArrayAdapter.createFromResource( this,
-			//			        R.array.sex_list, android.R.layout.simple_spinner_item);
-			//			sexAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-			//			spSex.setAdapter(sexAdapter);
 		}
 		catch( Exception ex )
 		{
@@ -191,16 +185,16 @@ public class RegisterUserActivity extends BaseActivity {
 	{
 		try
 		{
-//			if ( "true".equals( getMetaInfoString("logout") ) )
-//			{
-//				setMetaInfo("logout", "false");
-//				goMainActivity();
-//				finish();
-//			}
-//			else
-//			{
+			if ( "true".equals( getMetaInfoString("logout") ) )
+			{
+				setMetaInfo("logout", "false");
+				goMainActivity();
+				finish();
+			}
+			else
+			{
 				goTermsAgreementActivity(null);
-//			}
+			}
 		}
 		catch( Exception ex )
 		{
