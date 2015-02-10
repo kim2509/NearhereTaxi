@@ -10,13 +10,13 @@
 
     <com.tessoft.common.CustomImageView
         android:id="@+id/imgProfile"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginTop="10dp" />
 
     <LinearLayout
         android:id="@+id/layoutUserInfo"
-        android:layout_width="70dp"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/imgProfile"
         android:gravity="center_horizontal"
@@ -34,14 +34,14 @@
             android:id="@+id/txtUserName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
+            android:paddingTop="5dp"
             android:text="..."
             android:textColor="#3B5D98" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/txtStatus"
-        android:layout_width="70dp"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:singleLine="false"
         android:layout_below="@+id/layoutUserInfo"
@@ -59,6 +59,15 @@
         android:text="제목"
         android:textSize="17sp"
         android:textColor="@android:color/black" />
+    
+    <LinearLayout android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        
+        <ImageView android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/comment"/>
+        
+    </LinearLayout>
 
     <TextView
         android:id="@+id/txtGuide1"
@@ -67,17 +76,20 @@
         android:layout_alignLeft="@+id/txtTitle"
         android:layout_below="@+id/txtTitle"
         android:layout_marginTop="10dp"
-        android:text="@string/departure"
+        android:text="출발"
         android:textColor="#ffffff"
-        android:background="#2E6DC3" 
-        android:padding="3dp"/>
+        android:background="@drawable/rounded_corner"
+        android:textSize="12sp"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp"
+        android:paddingBottom="2dp"/>
 
     <TextView
         android:id="@+id/txtDeparture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/txtGuide1"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="5dp"
         android:layout_toRightOf="@+id/txtGuide1"
         android:singleLine="false"
         android:text="..."
@@ -91,10 +103,13 @@
         android:layout_alignLeft="@+id/txtGuide1"
         android:layout_below="@+id/txtGuide1"
         android:layout_marginTop="5dp"
-        android:text="@string/destination"
+        android:text="도착"
         android:textColor="#ffffff"
-        android:background="#636363"
-        android:padding="3dp" />
+        android:background="@drawable/rounded_corner_gray"
+        android:textSize="12sp"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp"
+        android:paddingBottom="2dp"/>
 
     <TextView
         android:id="@+id/txtDestination"
@@ -128,14 +143,23 @@
         android:textColor="#3B5D98" />
 
     <TextView
-        android:id="@+id/txtCreatedDate"
+        android:id="@+id/txtCreatedDateLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/txtGuide3"
         android:layout_below="@+id/txtGuide3"
         android:layout_marginTop="5dp"
-        android:text="..."
-        android:textSize="12sp" />
+        android:text="등록시간"
+        android:textColor="@android:color/black"/>
+    
+    <TextView
+        android:id="@+id/txtCreatedDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/txtCreatedDateLabel"
+        android:layout_toRightOf="@+id/txtCreatedDateLabel"
+        android:layout_marginLeft="5dp"
+        android:textColor="@android:color/black"/>
 
     <TextView
         android:id="@+id/txtFromDistance"

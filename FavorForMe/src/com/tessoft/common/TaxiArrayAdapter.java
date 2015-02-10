@@ -102,7 +102,7 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 				txtToDistance.setVisibility(ViewGroup.INVISIBLE);
 			
 			TextView txtCreatedDate = (TextView) row.findViewById(R.id.txtCreatedDate);
-			txtCreatedDate.setText( Util.getFormattedDateString(item.getCreatedDate(), "yyyy-MM-dd HH:mm"));	
+			txtCreatedDate.setText( Util.getFormattedDateString(item.getCreatedDate(), "MM-dd HH:mm"));	
 			
 			if ( item.getDepartureDate() != null )
 			{
