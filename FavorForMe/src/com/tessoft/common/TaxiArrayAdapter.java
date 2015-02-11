@@ -7,15 +7,19 @@ import com.tessoft.nearhere.R;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListener{
+public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListener, OnTouchListener{
 
 	private AdapterDelegate delegate = null;
 
@@ -34,12 +38,23 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 		try
 		{
 			Post item = getItem(position);
-
+			ImageView imgStatus = null;
+			ImageView imageView = null;
+			
 			if (row == null) {
 				row = inflater.inflate(R.layout.list_taxi_post_item, parent, false);
-			}
+				imgStatus = (ImageView) row.findViewById(R.id.imgStatus);
+				imgStatus.setOnTouchListener( this );
 
-			ImageView imageView = (ImageView) row.findViewById(R.id.imgProfile);
+				imageView = (ImageView) row.findViewById(R.id.imgProfile);
+				imageView.setOnClickListener( this );
+			}
+			else
+			{
+				imageView = (ImageView) row.findViewById(R.id.imgProfile);
+				imgStatus = (ImageView) row.findViewById(R.id.imgStatus);
+			}
+			
 			imageView.invalidate();
 			imageView.setImageResource(R.drawable.no_image);
 			
@@ -71,8 +86,6 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 			}
 			else
 				txtUserName.setText( item.getUser().getUserName() );
-			
-			imageView.setOnClickListener( this );
 			
 			TextView txtTitle = (TextView) row.findViewById(R.id.txtTitle);
 			txtTitle.setText( item.getMessage() + titleDummy );
@@ -116,19 +129,22 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 						item.getUser().getProfileImageURL() , imageView);	
 			}
 
-			TextView txtStatus = (TextView) row.findViewById(R.id.txtStatus);
-			txtStatus.setText( item.getStatus() );
+			imgStatus.setVisibility(ViewGroup.VISIBLE);
 			
 			if ( "진행중".equals( item.getStatus() ) )
+				imgStatus.setImageResource(R.drawable.progressing);
+			else
+				imgStatus.setImageResource(R.drawable.finished);
+			
+			LinearLayout layoutComment = (LinearLayout) row.findViewById(R.id.layoutComment);
+			if ( item.getReplyCount() > 0 )
 			{
-				txtStatus.setBackgroundResource(R.color.progressing);
-//				txtStatus.setTextColor( getContext().getResources().getColor(R.color.progressing));
+				layoutComment.setVisibility(ViewGroup.VISIBLE);
+				TextView txtReplyCount = (TextView) row.findViewById(R.id.txtReplyCount);
+				txtReplyCount.setText( String.valueOf( item.getReplyCount() ) );
 			}
 			else
-			{
-				txtStatus.setBackgroundResource(R.color.finished);
-//				txtStatus.setTextColor( getContext().getResources().getColor(R.color.finished));
-			}
+				layoutComment.setVisibility(ViewGroup.GONE);
 			
 			row.setTag( item );
 		}
@@ -155,7 +171,7 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 		{
 			if ( v != null && v.getId() == R.id.imgProfile )
 			{
-				Post post = (Post) ( (View) v.getParent() ).getTag();
+				Post post = (Post) ( (View) v.getParent().getParent() ).getTag();
 				delegate.doAction("userProfile", post.getUser().getUserID() );	
 			}
 		}
@@ -163,5 +179,11 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 		{
 			delegate.doAction("logException", null);
 		}
+	}
+
+	@Override
+	public boolean onTouch(View v, MotionEvent event) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

@@ -1,5 +1,6 @@
 package com.tessoft.nearhere;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -65,6 +66,15 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 
 	    UUID deviceUuid = new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode());
 	    return deviceUuid.toString();
+	}
+	
+	public HashMap getDefaultRequest()
+	{
+		HashMap request = new HashMap();
+		request.put("OSVersion", getOSVersion());
+		request.put("AppVersion", getPackageVersion());
+		request.put("UUID", getUniqueDeviceID());
+		return request;
 	}
 	
 	public void showOKDialog( String message, final Object param )

@@ -115,6 +115,8 @@ public class TaxiFragment extends BaseFragment
 			
 			getActivity().setProgressBarIndeterminateVisibility(true);
 			inquiryPosts();
+			
+			updateMyLocation();
 		}
 		catch( Exception ex )
 		{
@@ -358,15 +360,17 @@ public class TaxiFragment extends BaseFragment
 	
 	public void updateMyLocation() throws Exception
 	{
-		User user = getLoginUser();
-		UserLocation userLocation = new UserLocation();
-		userLocation.setUser( user );
-		userLocation.setLocationName("현재위치");
-		userLocation.setLatitude( MainActivity.latitude );
-		userLocation.setLongitude( MainActivity.longitude );
-		userLocation.setAddress( MainActivity.address );
-		sendHttp("/taxi/updateUserLocation.do", mapper.writeValueAsString( userLocation ), UPDATE_LOCATION );
-		
+		if ( !Util.isEmptyString( MainActivity.latitude ) && !Util.isEmptyString( MainActivity.longitude ) )
+		{
+			User user = getLoginUser();
+			UserLocation userLocation = new UserLocation();
+			userLocation.setUser( user );
+			userLocation.setLocationName("현재위치");
+			userLocation.setLatitude( MainActivity.latitude );
+			userLocation.setLongitude( MainActivity.longitude );
+			userLocation.setAddress( MainActivity.address );
+			sendHttp("/taxi/updateUserLocation.do", mapper.writeValueAsString( userLocation ), UPDATE_LOCATION );			
+		}
 	}
 	
 	private void setDepartureAddressText( String address )
@@ -441,15 +445,6 @@ public class TaxiFragment extends BaseFragment
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		
-		try
-		{
-			updateMyLocation();
-		}
-		catch( Exception ex )
-		{
-			catchException(this, ex);
-		}
 	}
 
 	@Override

@@ -424,11 +424,13 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 						edtJobTitle.setText( user.getJobTitle() );
 					}
 
+					TextView txtMobileNo = (TextView) header.findViewById(R.id.txtMobileNo);
 					if ( !Util.isEmptyString( user.getMobileNo() ))
 					{
-						TextView txtMobileNo = (TextView) header.findViewById(R.id.txtMobileNo);
 						txtMobileNo.setText( user.getMobileNo() );
 					}
+					else
+						txtMobileNo.setText("");
 					
 					adapter.clear();
 					adapter.addAll(postList);

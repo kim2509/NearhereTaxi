@@ -33,6 +33,8 @@ public class Post extends ListItemModel {
 	protected List<PostLike> postLikes;
 	protected List<PostReply> postReplies;
 	
+	private int replyCount = 0;
+	
 	public Post()
 	{
 		setItemType("POST");
@@ -209,5 +211,13 @@ public class Post extends ListItemModel {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public int getReplyCount() {
+		return replyCount;
+	}
+
+	public void setReplyCount(int replyCount) {
+		this.replyCount = replyCount;
 	}
 }

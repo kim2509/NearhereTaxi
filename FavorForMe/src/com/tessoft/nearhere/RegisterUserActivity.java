@@ -155,6 +155,7 @@ public class RegisterUserActivity extends BaseActivity {
 
 				setMetaInfo("userNo", user.getUserNo());
 				setMetaInfo("userID", user.getUserID());
+				setMetaInfo("sex", user.getSex());
 				setMetaInfo("userName", user.getUserName());
 				setMetaInfo("profileImageURL", user.getProfileImageURL());
 

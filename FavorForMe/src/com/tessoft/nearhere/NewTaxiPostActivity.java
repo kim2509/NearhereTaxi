@@ -273,6 +273,14 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 				return;
 			}
 			
+			Spinner spSex = (Spinner)findViewById(R.id.spSex);
+			
+			if ( "여자만".equals( spSex.getSelectedItem() ) && "M".equals( getMetaInfoString("sex") ) )
+			{
+				showOKDialog("경고", "남성회원은 여자만 옵션을 선택할 수 없습니다.", null);
+				return;
+			}
+			
 			post.setMessage( edtMessage.getText().toString() );
 			post.setFromLatitude( String.valueOf( departure.latitude) );
 			post.setFromLongitude( String.valueOf( departure.longitude) );
@@ -283,7 +291,7 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 			post.setDepartureDate( txtDepartureDate.getText().toString() );
 			post.setDepartureTime( txtDepartureTime.getText().toString() );
 			
-			Spinner spSex = (Spinner)findViewById(R.id.spSex);
+			
 			post.setSexInfo( spSex.getSelectedItem().toString() );
 			
 			Spinner spNumOfUsers = (Spinner)findViewById(R.id.spNumOfUsers);

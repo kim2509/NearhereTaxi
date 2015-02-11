@@ -482,13 +482,14 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 						menu.findItem(R.id.action_delete).setVisible(false);
 					}
 					
-					TextView txtStatus = (TextView) header.findViewById(R.id.txtStatus);
-					txtStatus.setText( post.getStatus() );
+					ImageView imgStatus = (ImageView) header.findViewById(R.id.imgStatus);
+					imgStatus.setVisibility(ViewGroup.VISIBLE);
 					
 					if ( "진행중".equals( post.getStatus() ) )
-						txtStatus.setBackgroundResource(R.color.progressing);
+						imgStatus.setImageResource(R.drawable.progressing);
 					else
-						txtStatus.setBackgroundResource(R.color.finished);
+						imgStatus.setImageResource(R.drawable.finished);
+					
 				}
 				else if ( requestCode == INSERT_POST_REPLY )
 				{

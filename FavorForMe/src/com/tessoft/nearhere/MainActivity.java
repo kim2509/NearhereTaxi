@@ -159,18 +159,16 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			buildGoogleApiClient();
 			createLocationRequest();
 
+			// 푸시 토큰을 생성한다.
 			gcm = GoogleCloudMessaging.getInstance(this);
 			regid = getMetaInfoString("registrationID");
-			if ( regid.isEmpty() )
-			{
+			if ( Util.isEmptyString( regid ))
 				registerInBackground();
-			}
 			
-			if ( checkPlayServices() == false )
-			{
-//				showOKDialog("경고", "Google Play Service 를 업데이트 해 주십시오.\r\n그렇지 않으면 서비스가 원활하지 않을 수 있습니다.", null );
-				return;
-			}
+			// google play sdk 설치 여부를 검사한다.
+			checkPlayServices();
+			
+			getUnreadCount();
 		}
 		catch( Exception ex )
 		{
@@ -219,7 +217,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		super.onResume();
 		try
 		{
-			getUnreadCount();			
+						
 		}
 		catch( Exception ex )
 		{
@@ -229,8 +227,9 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 	public  void getUnreadCount() throws IOException,
 	JsonGenerationException, JsonMappingException {
-		HashMap hash = new HashMap();
+		HashMap hash = getDefaultRequest();
 		hash.put("userID", getLoginUser().getUserID() );
+		hash.put("lastNoticeID", getMetaInfoString("lastNoticeID"));
 		sendHttp("/taxi/getUnreadCount.do", mapper.writeValueAsString(hash), GET_UNREAD_COUNT );
 	}
 
@@ -601,7 +600,10 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 					}
 					
 					if ( pushCount + messageCount > 0 )
+					{
+						mDrawerLayout.openDrawer(mDrawerList);
 						getActionBar().setIcon(R.drawable.icon_new);
+					}
 					else
 						getActionBar().setIcon(R.color.transparent);
 					

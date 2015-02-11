@@ -39,7 +39,6 @@ public class IntroActivity extends BaseActivity {
 			} else {
 				afterIntro(savedInstanceState);
 			}
-			
 		}
 		catch( Exception ex )
 		{
