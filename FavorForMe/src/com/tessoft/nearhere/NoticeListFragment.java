@@ -87,6 +87,10 @@ public class NoticeListFragment extends BaseListFragment {
 			{
 				String noticeListString = mapper.writeValueAsString( response.getData() );
 				List<Notice> noticeList = mapper.readValue( noticeListString , new TypeReference<List<Notice>>(){});
+				
+				// 공지사항 읽음처리
+				updateLastNoticeID(noticeList);
+				
 				adapter.setItemList(noticeList);
 				adapter.notifyDataSetChanged();
 
@@ -110,6 +114,19 @@ public class NoticeListFragment extends BaseListFragment {
 		{
 			catchException(this, ex);
 		}
+	}
+
+	private void updateLastNoticeID(List<Notice> noticeList) {
+		int maxNoticeID = 0;
+		for ( int i = 0; i < noticeList.size(); i++ )
+		{
+			Notice noticeItem = noticeList.get(i);
+			if ( maxNoticeID < Integer.parseInt( noticeItem.getNoticeID() ) )
+				maxNoticeID = Integer.parseInt( noticeItem.getNoticeID() );
+		}
+		
+		setMetaInfo("lastNoticeID", String.valueOf(maxNoticeID));
+		getActivity().sendBroadcast( new Intent("updateUnreadCount") );
 	}
 
 	//This is the handler that will manager to process the broadcast intent

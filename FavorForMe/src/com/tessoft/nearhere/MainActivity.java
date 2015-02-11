@@ -34,11 +34,13 @@ import com.tessoft.domain.User;
 
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -47,6 +49,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -168,13 +171,12 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			// google play sdk 설치 여부를 검사한다.
 			checkPlayServices();
 			
-			getUnreadCount();
+			checkIfGPSEnabled();
 		}
 		catch( Exception ex )
 		{
 			catchException(this, ex);
 		}
-
 	}
 
 	@Override
@@ -217,7 +219,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		super.onResume();
 		try
 		{
-						
+			getUnreadCount();
 		}
 		catch( Exception ex )
 		{
@@ -590,6 +592,12 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 					int pushCount = hash.get("pushCount");
 					int messageCount = hash.get("messageCount");
 					
+					int noticeCount = 0;
+					if ( hash.containsKey("noticeCount") && hash.get("noticeCount") != null )
+					{
+						noticeCount = hash.get("noticeCount");
+					}
+					
 					for ( int i = 0; i < adapter.getCount(); i++ )
 					{
 						MainMenuItem item = adapter.getItem(i);
@@ -597,9 +605,11 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 							item.setNotiCount( pushCount );
 						else if ( "쪽지함".equals( item.getMenuName() ) )
 							item.setNotiCount( messageCount );
+						else if ( "공지사항".equals( item.getMenuName() ) )
+							item.setNotiCount( noticeCount );
 					}
 					
-					if ( pushCount + messageCount > 0 )
+					if ( pushCount + messageCount + noticeCount > 0 )
 					{
 						mDrawerLayout.openDrawer(mDrawerList);
 						getActionBar().setIcon(R.drawable.icon_new);
@@ -669,5 +679,33 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			return false;
 		}
 		return true;
+	}
+	
+	public void checkIfGPSEnabled()
+	{
+		final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+
+	    if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+	        buildAlertMessageNoGps();
+	    }
+	}
+	
+	private void buildAlertMessageNoGps() {
+	    final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	    builder.setTitle("경고")
+	    	   .setMessage("GPS 가 꺼져 있으면 원활한 서비스를 제공받을 수 없습니다.\n활성화시키겠습니까?")
+	           .setCancelable(false)
+	           .setPositiveButton("예", new DialogInterface.OnClickListener() {
+	               public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+	                   startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+	               }
+	           })
+	           .setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+	               public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+	                    dialog.cancel();
+	               }
+	           });
+	    final AlertDialog alert = builder.create();
+	    alert.show();
 	}
 }

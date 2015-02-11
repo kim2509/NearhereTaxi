@@ -41,8 +41,9 @@ public class RegisterUserActivity extends BaseActivity {
 			setContentView(R.layout.activity_register_user);
 
 			setProgressBarIndeterminateVisibility(true);
-			User user = getLoginUser();
-			sendHttp("/taxi/getRandomID.do", mapper.writeValueAsString(user), 2);
+			HashMap request = getDefaultRequest();
+			request.put("user", getLoginUser());
+			sendHttp("/taxi/getRandomIDV2.do", mapper.writeValueAsString(request), 2);
 		}
 		catch( Exception ex )
 		{
