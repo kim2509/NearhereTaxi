@@ -72,6 +72,7 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 	View footer = null;
 	ObjectMapper mapper = new ObjectMapper();
 	int UPDATE_USER_MOBILE_NO = 10;
+	protected static final int UPDATE_USER_NAME = 20;
 	User user = null;
 	
 	@Override
@@ -296,6 +297,9 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 		
 		Button btnChangeMobileNo = (Button) header.findViewById(R.id.btnChangeMobileNo);
 		btnChangeMobileNo.setOnClickListener(this);
+		
+		Button btnChangeName = (Button) header.findViewById(R.id.btnChangeName);
+		btnChangeName.setOnClickListener( this );
 	}
 
 	private static final int PICK_IMAGE = 1;
@@ -762,6 +766,10 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 			{
 				openMobileInputDialog();
 			}
+			else if ( v.getId() == R.id.btnChangeName )
+			{
+				openChangeNameDialog();
+			}
 		}
 		catch( Exception ex )
 		{
@@ -808,15 +816,25 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 					@Override
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
-						
-						if ( TextUtils.isEmpty( userInput.getText() ) )
+						try
 						{
-							userInput.setError("입력한 번호가 올바르지 않습니다.");
-							return;
+							if ( TextUtils.isEmpty( userInput.getText() ) )
+							{
+								userInput.setError("입력한 번호가 올바르지 않습니다.");
+								return;
+							}
+							
+							getActivity().setProgressBarIndeterminateVisibility(true);
+							user.setMobileNo(userInput.getText().toString());
+							sendHttp("/taxi/updateUserInfo.do", mapper.writeValueAsString( user ), UPDATE_USER_MOBILE_NO );
 						}
-						
-						updateUserMobileNo( userInput.getText().toString() );
-						mobileInputDialog.dismiss();
+						catch( Exception ex )
+						{
+							catchException(this, ex);
+						}
+						finally{
+							mobileInputDialog.dismiss();
+						}
 					}
 				});
 			}
@@ -825,17 +843,49 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 		mobileInputDialog.show();
 	}
 	
-	public void updateUserMobileNo( String mobileNo )
+	public void openChangeNameDialog()
 	{
-		try
-		{
-			getActivity().setProgressBarIndeterminateVisibility(true);
-			user.setMobileNo(mobileNo);
-			sendHttp("/taxi/updateUserInfo.do", mapper.writeValueAsString( user ), UPDATE_USER_MOBILE_NO );
-		}
-		catch( Exception ex )
-		{
-			catchException(this, ex);
-		}
+		showSimpleInputDialog("이름 입력", "이름을 입력해 주세요.", user.getUserName(), "변경하고자 하는 이름을 입력해 주십시오.", 
+				new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				
+				AlertDialog dialog = null;
+				
+				try
+				{
+					if ( v.getTag() instanceof AlertDialog )
+					{
+						dialog = (AlertDialog) v.getTag();
+						
+						EditText edtSimpleInput = (EditText) dialog.findViewById(R.id.edtSimpleInput);
+						if ( TextUtils.isEmpty( edtSimpleInput.getText() ) )
+						{
+							edtSimpleInput.setError("입력값이 올바르지 않습니다.");
+							return;
+						}
+						
+						if ( user == null )
+						{
+							showOKDialog("경고", "사용자 정보가 올바르지 않습니다.", null);
+							return;
+						}
+						
+						getActivity().setProgressBarIndeterminateVisibility(true);
+						user.setUserName(edtSimpleInput.getText().toString());
+						sendHttp("/taxi/updateUserInfo.do", mapper.writeValueAsString( user ), UPDATE_USER_NAME );
+					}
+				}
+				catch( Exception ex )
+				{
+					catchException(this, ex);
+				}
+
+				if (dialog != null )
+					dialog.dismiss();
+			}
+		});
 	}
 }

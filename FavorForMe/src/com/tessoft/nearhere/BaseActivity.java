@@ -193,6 +193,7 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		user.setUserID( getMetaInfoString("userID") );
 		user.setUserName( getMetaInfoString("userName") );
 		user.setProfileImageURL( getMetaInfoString("profileImageURL"));
+		user.setUuid( getUniqueDeviceID() );
 		return user;
 	}
 	

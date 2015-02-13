@@ -56,7 +56,8 @@ public class IntroActivity extends BaseActivity {
 			public void run() {
 				Intent intent = null;
 				
-				if ( "".equals( getMetaInfoString("userID") ) || !"true".equals( getMetaInfoString("registerUserFinished")) || "true".equals( getMetaInfoString("logout")) )
+				if ( "".equals( getLoginUser().getUserID() ) || !"true".equals( getMetaInfoString("registerUserFinished")) 
+						|| "true".equals( getMetaInfoString("logout")) )
 				{
 					intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
 				}

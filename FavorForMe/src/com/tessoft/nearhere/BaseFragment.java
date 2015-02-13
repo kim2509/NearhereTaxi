@@ -1,16 +1,30 @@
 package com.tessoft.nearhere;
 
+import java.util.UUID;
+
 import com.tessoft.common.AdapterDelegate;
 import com.tessoft.common.HttpTransactionReturningString;
 import com.tessoft.common.TransactionDelegate;
+import com.tessoft.common.Util;
 import com.tessoft.domain.User;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.DialogInterface.OnShowListener;
 import android.preference.PreferenceManager;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class BaseFragment extends Fragment implements AdapterDelegate, TransactionDelegate{
@@ -108,7 +122,21 @@ public class BaseFragment extends Fragment implements AdapterDelegate, Transacti
 		user.setUserID( getMetaInfoString("userID") );
 		user.setUserName( getMetaInfoString("userName") );
 		user.setProfileImageURL( getMetaInfoString("profileImageURL"));
+		user.setUuid( getUniqueDeviceID() );
 		return user;
+	}
+	
+	public String getUniqueDeviceID()
+	{
+		final TelephonyManager tm = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+
+	    final String tmDevice, tmSerial, androidId;
+	    tmDevice = "" + tm.getDeviceId();
+	    tmSerial = "" + tm.getSimSerialNumber();
+	    androidId = "" + android.provider.Settings.Secure.getString(getActivity().getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+
+	    UUID deviceUuid = new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode());
+	    return deviceUuid.toString();
 	}
 	
 	public void setMetaInfo( String key, String value )
@@ -125,6 +153,57 @@ public class BaseFragment extends Fragment implements AdapterDelegate, Transacti
 		if ( settings.contains(key) )
 			return settings.getString(key, "");
 		else return "";
+	}
+	
+	public void showSimpleInputDialog(String title, String subTitle, String defaultValue, 
+			String desc, final OnClickListener onClickListener )
+	{
+		LayoutInflater li = LayoutInflater.from( getActivity() );
+		final View promptsView = li.inflate(R.layout.fragment_simple_input, null);
+
+		EditText edtSimpleInput = (EditText) promptsView.findViewById(R.id.edtSimpleInput);
+		edtSimpleInput.setText( defaultValue );
+		edtSimpleInput.setHint(subTitle);
+		
+		if ( Util.isEmptyString( desc ) )
+			promptsView.findViewById(R.id.txtDesc).setVisibility(ViewGroup.INVISIBLE);
+		else
+		{
+			promptsView.findViewById(R.id.txtDesc).setVisibility(ViewGroup.VISIBLE);
+			TextView txtDesc = (TextView) promptsView.findViewById(R.id.txtDesc);
+			txtDesc.setText( desc );
+		}
+
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder( getActivity() );
+		alertDialogBuilder.setView(promptsView);
+		
+		alertDialogBuilder
+		.setCancelable(false)
+		.setTitle( title )
+		.setPositiveButton("확인", null )
+		.setNegativeButton("취소",
+		  new DialogInterface.OnClickListener() {
+		    public void onClick(DialogInterface dialog,int id) {
+			dialog.cancel();
+		    }
+		  });
+		
+		// create alert dialog
+		final AlertDialog simpleInputDialog = alertDialogBuilder.create();
+		
+		simpleInputDialog.setOnShowListener( new OnShowListener() {
+			
+			@Override
+			public void onShow(DialogInterface dialog) {
+				// TODO Auto-generated method stub
+				
+				Button b = simpleInputDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+				b.setTag( simpleInputDialog );
+				b.setOnClickListener( onClickListener );
+			}
+		});
+		// show it
+		simpleInputDialog.show();
 	}
 	
 	@Override

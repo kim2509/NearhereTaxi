@@ -34,6 +34,7 @@ import com.tessoft.domain.User;
 
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.telephony.SmsManager;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -81,11 +82,12 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	private static final String PROPERTY_APP_VERSION = "appVersion";
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 	protected static final int GET_UNREAD_COUNT = 3;
+	private static final int HTTP_LEAVE = 10;
 	String SENDER_ID = "30113798803";
 	GoogleCloudMessaging gcm;
 
 	MainMenuArrayAdapter adapter = null;
-	
+
 	public static String latitude = "";
 	public static String longitude = "";
 	public static String address = "";
@@ -167,11 +169,14 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			regid = getMetaInfoString("registrationID");
 			if ( Util.isEmptyString( regid ))
 				registerInBackground();
-			
+
 			// google play sdk 설치 여부를 검사한다.
 			checkPlayServices();
-			
+
 			checkIfGPSEnabled();
+
+//			SmsManager sms = SmsManager.getDefault();
+//			sms.sendTextMessage("01025124304", null, "test", null, null);
 		}
 		catch( Exception ex )
 		{
@@ -200,7 +205,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		try
 		{
 			super.onStop();
-			
+
 			if ( mGoogleApiClient != null && mGoogleApiClient.isConnected() )
 			{
 				stopLocationUpdates();
@@ -561,15 +566,15 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			super.doPostTransaction(requestCode, result);
 
 			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
-			
+
 			if ( "0000".equals( response.getResCode() ) )
 			{
 				if ( requestCode == 2 )
 				{
 					setProgressBarIndeterminateVisibility(false);
-					
-//					setMetaInfo("userNo", "");
-//					setMetaInfo("registerUserFinished", "");
+
+					//					setMetaInfo("userNo", "");
+					//					setMetaInfo("registerUserFinished", "");
 					setMetaInfo("logout", "true");
 					setMetaInfo("userID", "");
 					setMetaInfo("userName", "");
@@ -588,16 +593,16 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 				else if ( requestCode == GET_UNREAD_COUNT )
 				{
 					HashMap<String, Integer> hash = (HashMap<String,Integer>) response.getData();
-					
+
 					int pushCount = hash.get("pushCount");
 					int messageCount = hash.get("messageCount");
-					
+
 					int noticeCount = 0;
 					if ( hash.containsKey("noticeCount") && hash.get("noticeCount") != null )
 					{
 						noticeCount = hash.get("noticeCount");
 					}
-					
+
 					for ( int i = 0; i < adapter.getCount(); i++ )
 					{
 						MainMenuItem item = adapter.getItem(i);
@@ -608,7 +613,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 						else if ( "공지사항".equals( item.getMenuName() ) )
 							item.setNotiCount( noticeCount );
 					}
-					
+
 					if ( pushCount + messageCount + noticeCount > 0 )
 					{
 						mDrawerLayout.openDrawer(mDrawerList);
@@ -616,7 +621,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 					}
 					else
 						getActionBar().setIcon(R.color.transparent);
-					
+
 					adapter.notifyDataSetChanged();
 				}				
 			}
@@ -642,13 +647,13 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	boolean doubleBackToExitPressedOnce = false;
 	@Override
 	public void onBackPressed() {
-		
+
 		if ( mainFragment instanceof TaxiFragment == false )
 		{
 			selectItem(0);
 			return;
 		}
-		
+
 		if (doubleBackToExitPressedOnce) {
 			super.onBackPressed();
 			return;
@@ -665,7 +670,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			}
 		}, 2000);
 	}
-	
+
 	private boolean checkPlayServices() {
 		int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
 		if (resultCode != ConnectionResult.SUCCESS) {
@@ -680,32 +685,48 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		}
 		return true;
 	}
-	
+
 	public void checkIfGPSEnabled()
 	{
 		final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
 
-	    if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
-	        buildAlertMessageNoGps();
-	    }
+		if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+			buildAlertMessageNoGps();
+		}
 	}
-	
+
 	private void buildAlertMessageNoGps() {
-	    final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	    builder.setTitle("경고")
-	    	   .setMessage("GPS 가 꺼져 있으면 원활한 서비스를 제공받을 수 없습니다.\n활성화시키겠습니까?")
-	           .setCancelable(false)
-	           .setPositiveButton("예", new DialogInterface.OnClickListener() {
-	               public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-	                   startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-	               }
-	           })
-	           .setNegativeButton("아니오", new DialogInterface.OnClickListener() {
-	               public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-	                    dialog.cancel();
-	               }
-	           });
-	    final AlertDialog alert = builder.create();
-	    alert.show();
+		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("경고")
+		.setMessage("GPS 가 꺼져 있으면 원활한 서비스를 제공받을 수 없습니다.\n활성화시키겠습니까?")
+		.setCancelable(false)
+		.setPositiveButton("예", new DialogInterface.OnClickListener() {
+			public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+				startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+			}
+		})
+		.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+			public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+				dialog.cancel();
+			}
+		});
+		final AlertDialog alert = builder.create();
+		alert.show();
+	}
+
+	@Override
+	public void finish() {
+		// TODO Auto-generated method stub
+
+		try
+		{
+			sendHttp("/taxi/leave.do", mapper.writeValueAsString( getLoginUser() ), HTTP_LEAVE);			
+		}
+		catch( Exception ex )
+		{
+
+		}
+
+		super.finish();
 	}
 }
