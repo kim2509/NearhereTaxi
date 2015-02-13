@@ -41,9 +41,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class TaxiPostDetailActivity extends BaseListActivity 
@@ -54,6 +57,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 	private static final int INSERT_POST_REPLY = 2;
 	private static final int REQUEST_MODIFY_POST = 0;
 	private static final int DELETE_POST_REPLY = 4;
+	private static final int HTTP_UPDATE_POST_AS_FINISHED = 10;
 	TaxiPostReplyListAdapter adapter = null;
 	Post post = null;
 	View header2 = null;
@@ -132,6 +136,9 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 
 		txtUserName = (TextView) header.findViewById(R.id.txtUserName);
 		txtUserName.setOnClickListener( this );
+		
+		Button btnFinish = (Button) header.findViewById(R.id.btnFinish);
+		btnFinish.setOnClickListener(this);
 	}
 
 	private void makeMapScrollable() {
@@ -231,6 +238,15 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			{
 				setProgressBarIndeterminateVisibility(true);
 				sendHttp("/taxi/deletePostReply.do", mapper.writeValueAsString(param), DELETE_POST_REPLY );	
+			}
+			else if ( param instanceof String && "DIALOG_FINISH_POST".equals(param) )
+			{
+				setProgressBarIndeterminateVisibility(true);
+				post.setStatus("종료됨");
+				sendHttp("/taxi/modifyPost.do", mapper.writeValueAsString(post), HTTP_UPDATE_POST_AS_FINISHED );
+				Intent data = new Intent();
+				data.putExtra("reload", true);
+				setResult(RESULT_OK, data);
 			}
 		}
 		catch( Exception ex )
@@ -484,12 +500,19 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					
 					ImageView imgStatus = (ImageView) header.findViewById(R.id.imgStatus);
 					imgStatus.setVisibility(ViewGroup.VISIBLE);
+					RelativeLayout layoutMyOption = (RelativeLayout) header.findViewById(R.id.layoutMyOption);
 					
 					if ( "진행중".equals( post.getStatus() ) )
+					{
 						imgStatus.setImageResource(R.drawable.progressing);
+						if ( post.getUser().getUserID().equals( getLoginUser().getUserID() ))
+							layoutMyOption.setVisibility(ViewGroup.VISIBLE);	
+					}
 					else
+					{
 						imgStatus.setImageResource(R.drawable.finished);
-					
+						layoutMyOption.setVisibility(ViewGroup.GONE);
+					}
 				}
 				else if ( requestCode == INSERT_POST_REPLY )
 				{
@@ -503,7 +526,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					setResult(RESULT_OK, data);
 					finish();
 				}
-				else if ( requestCode == DELETE_POST_REPLY )
+				else if ( requestCode == DELETE_POST_REPLY || requestCode == HTTP_UPDATE_POST_AS_FINISHED )
 				{
 					inquiryPostDetail();
 				}
@@ -562,6 +585,11 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			if ( id == R.id.txtUserName || id == R.id.imgProfile )
 			{
 				goUserProfileActivity( post.getUser().getUserID() );
+			}
+			else if ( id == R.id.btnFinish )
+			{
+				showYesNoDialog("확인", "정말 종료하시겠습니까?", "DIALOG_FINISH_POST");
+				return;
 			}
 		}
 		catch( Exception ex )
@@ -634,5 +662,5 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		// TODO Auto-generated method stub
 		super.onStop();
 		unregisterReceiver(mMessageReceiver);
-	}
+	}	
 }
