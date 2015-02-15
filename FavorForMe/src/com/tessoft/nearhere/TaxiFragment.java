@@ -19,6 +19,9 @@ import com.tessoft.domain.Post;
 import com.tessoft.domain.User;
 import com.tessoft.domain.UserLocation;
 
+import android.app.DialogFragment;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -29,6 +32,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.webkit.WebView.FindListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -47,6 +51,7 @@ public class TaxiFragment extends BaseFragment
 	protected static final int REQUEST_SET_DESTINATION = 20;
 	protected static final int REQUEST_NEW_POST = 2;
 	private static final int UPDATE_LOCATION = 3;
+	private static final int HTTP_SAFETY_KEEPER_CLICKED = 30;
 	
 	View rootView = null;
 	ListView listMain = null;
@@ -56,9 +61,7 @@ public class TaxiFragment extends BaseFragment
 	
 	TaxiArrayAdapter adapter = null;
 	View header3 = null;
-	LatLng departure = null;
-	LatLng destination = null;
-
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -126,27 +129,21 @@ public class TaxiFragment extends BaseFragment
 		return rootView;
 	}
 
+	Spinner spSearchOrder = null;
+	Spinner spStatus = null;
+	ArrayAdapter<CharSequence> adapterSearchOrder = null;
+	
 	public void initializeComponents()
 	{
-		Spinner spDepartureDistance = (Spinner) header3.findViewById(R.id.spDepartureDistance);
+		spSearchOrder = (Spinner) rootView.findViewById(R.id.spSearchOrder);
+		adapterSearchOrder = ArrayAdapter.createFromResource( getActivity(),
+				R.array.search_order, android.R.layout.simple_spinner_item);
+		adapterSearchOrder.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spSearchOrder.setAdapter(adapterSearchOrder);
+		spSearchOrder.setSelection(0, false);
+		spSearchOrder.setOnItemSelectedListener( this );
 		
-		ArrayAdapter<CharSequence> adapterDeparture = ArrayAdapter.createFromResource( getActivity(),
-				R.array.distance_list, android.R.layout.simple_spinner_item);
-		adapterDeparture.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spDepartureDistance.setAdapter(adapterDeparture);
-		spDepartureDistance.setSelection(0, false);
-		spDepartureDistance.setOnItemSelectedListener( this );
-		
-		Spinner spDestinationDistance = (Spinner) header3.findViewById(R.id.spDestinationDistance);
-		ArrayAdapter<CharSequence> adapterDestination = ArrayAdapter.createFromResource( getActivity(),
-				R.array.distance_list, android.R.layout.simple_spinner_item);
-		adapterDestination.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spDestinationDistance.setAdapter(adapterDestination);
-
-		spDestinationDistance.setSelection(0, false);
-		spDestinationDistance.setOnItemSelectedListener( this );
-		
-		Spinner spStatus = (Spinner) rootView.findViewById(R.id.spStatus);
+		spStatus = (Spinner) rootView.findViewById(R.id.spStatus);
 		ArrayAdapter<CharSequence> adapterStatus = ArrayAdapter.createFromResource( getActivity(),
 				R.array.status_list, android.R.layout.simple_spinner_item);
 		adapterStatus.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -154,11 +151,6 @@ public class TaxiFragment extends BaseFragment
 		spStatus.setSelection(0, false);
 		spStatus.setOnItemSelectedListener( this );
 		
-		Button btnSelectDeparture = (Button) header3.findViewById(R.id.btnSelectDeparture);
-		btnSelectDeparture.setOnClickListener( this );
-		Button btnSelectDestination = (Button) header3.findViewById(R.id.btnSelectDestination);
-		btnSelectDestination.setOnClickListener( this );
-
 		Button btnAddPost = (Button) rootView.findViewById(R.id.btnAddPost);
 		btnAddPost.setOnClickListener(new OnClickListener() {
 
@@ -168,8 +160,7 @@ public class TaxiFragment extends BaseFragment
 				Intent intent = new Intent( getActivity(), NewTaxiPostActivity.class);
 				if ( departure != null )
 				{
-					TextView txtDeparture = (TextView) header3.findViewById(R.id.txtDeparture);
-					intent.putExtra("address", txtDeparture.getText().toString() );
+					intent.putExtra("address", departureAddress );
 					intent.putExtra("departure", departure);
 				}
 
@@ -177,6 +168,12 @@ public class TaxiFragment extends BaseFragment
 				getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
 			}
 		});
+		
+		Button btnSearchDetail = (Button) header3.findViewById(R.id.btnSearchDetail);
+		btnSearchDetail.setOnClickListener(this);
+		
+		Button btnKeeper = (Button) rootView.findViewById(R.id.btnKeeper);
+		btnKeeper.setOnClickListener(this);
 	}
 
 	@Override
@@ -188,22 +185,7 @@ public class TaxiFragment extends BaseFragment
 
 			if ( resultCode == getActivity().RESULT_OK )
 			{
-				if ( requestCode == REQUEST_SET_DEPARTURE || requestCode == REQUEST_SET_DESTINATION )
-				{
-					if ( requestCode == REQUEST_SET_DEPARTURE )
-					{
-						departure = (LatLng) data.getExtras().get("location");
-						setDepartureAddressText( data.getExtras().getString("address") );
-					}
-					else
-					{
-						destination = (LatLng) data.getExtras().get("location");
-						setDestinationAddressText( data.getExtras().getString("address") );
-					}
-					
-					inquiryPosts();
-				}
-				else if ( requestCode == REQUEST_NEW_POST || requestCode == REQUEST_POST_DETAIL )
+				if ( requestCode == REQUEST_NEW_POST || requestCode == REQUEST_POST_DETAIL )
 				{
 					if ( data.getExtras().getBoolean("reload") )
 						inquiryPosts();
@@ -303,19 +285,11 @@ public class TaxiFragment extends BaseFragment
 			hash.put("toLongitude", String.valueOf( destination.longitude ) );
 		}
 		
-		Spinner spDepartureDistance = (Spinner) header3.findViewById(R.id.spDepartureDistance);
-		String departureDistance = spDepartureDistance.getSelectedItem().toString();
-		departureDistance = Util.getDistanceDouble(departureDistance);
+		if ( !"전체".equals(departureDistance) && !Util.isEmptyString( departureDistance ) )
+			hash.put("fromDistance", Util.getDistanceDouble( departureDistance ));
 		
-		Spinner spDestinationDistance = (Spinner) header3.findViewById(R.id.spDestinationDistance);
-		String destinationDistance = spDestinationDistance.getSelectedItem().toString();
-		destinationDistance = Util.getDistanceDouble(destinationDistance);
-		
-		if ( !Util.isEmptyString( departureDistance ) )
-			hash.put("fromDistance", departureDistance );
-		
-		if ( !Util.isEmptyString( destinationDistance ) )
-			hash.put("toDistance", destinationDistance );
+		if ( !"전체".equals(destinationDistance) && !Util.isEmptyString( destinationDistance ) )
+			hash.put("toDistance", Util.getDistanceDouble( destinationDistance ) );
 		
 		hash.put("userID", getLoginUser().getUserID() );
 		
@@ -333,23 +307,34 @@ public class TaxiFragment extends BaseFragment
 	{
 		try
 		{
+			Location loc = new Location("taxiFragment");
+			loc.setLatitude(location.latitude);
+			loc.setLongitude(location.longitude);
+			Location[] locs = new Location[1];
+			locs[0] = loc;
+			
 			if ( bUpdatedOnce == false )
 			{
 				updateMyLocation();
-				
 				bUpdatedOnce = true;
+				currentLocation = new LatLng( location.latitude , location.longitude );
 				
-				departure = new LatLng( location.latitude , location.longitude );
+				for ( int i = 0; i < adapterSearchOrder.getCount(); i++ )
+				{
+					if ( "거리순".equals( adapterSearchOrder.getItem(i) ) )
+					{
+						spSearchOrder.setSelection(i);
+						break;
+					}
+				}
 				
-				Location loc = new Location("taxiFragment");
-				loc.setLatitude(departure.latitude);
-				loc.setLongitude(departure.longitude);
-
-				Location[] locs = new Location[1];
-				locs[0] = loc;
-				new GetAddressTask( getActivity(), this, 1 ).execute(locs);	
+				departure = currentLocation;
 				
-				inquiryPosts();
+				new GetAddressTask( getActivity(), this, 1 ).execute(locs);
+			}
+			else
+			{
+				new GetAddressTask( getActivity(), this, 2 ).execute(locs);	
 			}
 		}
 		catch( Exception ex )
@@ -373,34 +358,94 @@ public class TaxiFragment extends BaseFragment
 		}
 	}
 	
-	private void setDepartureAddressText( String address )
-	{
-		TextView txtDeparture = (TextView) header3.findViewById(R.id.txtDeparture);
-		txtDeparture.setText(address);
-	}
-	
-	private void setDestinationAddressText( String address )
-	{
-		TextView txtDestination = (TextView) header3.findViewById(R.id.txtDestination);
-		txtDestination.setText(address);
-	}
-
 	@Override
 	public void onAddressTaskPostExecute(int requestCode, Object result) {
 		// TODO Auto-generated method stub
-
 		String address = Util.getDongAddressString( result );
-		setDepartureAddressText( address );
+		TextView txtCurrentAddress = (TextView) header3.findViewById(R.id.txtCurrentAddress);
+		txtCurrentAddress.setText( address );
+		header3.findViewById(R.id.layoutCurLocation).setVisibility(ViewGroup.VISIBLE);
+		if ( requestCode == 1 )
+		{
+			currentAddress = address;
+			departureAddress = address;
+		}
+		else
+			currentAddress = address;
 	}
+	
+	LatLng departure = null;
+	LatLng destination = null;
+	LatLng currentLocation = null;
+	String currentAddress = "";
+	String departureDistance = "";
+	String departureAddress = "";
+	String destinationDistance = "";
+	String destinationAddress= "";
 	
 	@Override
 	public void doAction(String actionName, Object param) {
 		// TODO Auto-generated method stub
 		super.doAction(actionName, param);
 		
-		if ( "userProfile".equals( actionName ) )
+		try
 		{
-			goUserProfileActivity(param.toString());
+			if ( "userProfile".equals( actionName ) )
+			{
+				goUserProfileActivity(param.toString());
+			}
+			else if ( "searchResult".equals( actionName ) )
+			{
+				if ( param != null && param instanceof HashMap )
+				{
+					HashMap hash = (HashMap) param;
+					
+					if ( hash.containsKey("departure") && hash.get("departure") != null )
+						departure = (LatLng) hash.get("departure");
+					else
+						departure = null;
+					
+					if ( hash.containsKey("destination") && hash.get("destination") != null )
+						destination = (LatLng) hash.get("destination");
+					else
+						destination = null;
+					
+					if ( hash.containsKey("departureAddress") && hash.get("departureAddress") != null )
+						departureAddress = hash.get("departureAddress").toString();
+					else
+						departureAddress = null;
+					
+					if ( hash.containsKey("destinationAddress") && hash.get("destinationAddress") != null )
+						destinationAddress = hash.get("destinationAddress").toString();
+					else
+						destinationAddress = null;
+					
+					if ( hash.containsKey("departureDistance") && hash.get("departureDistance") != null )
+						departureDistance = hash.get("departureDistance").toString();
+					else
+						departureDistance = null;
+					
+					if ( hash.containsKey("destinationDistance") && hash.get("destinationDistance") != null )
+						destinationDistance = hash.get("destinationDistance").toString();
+					else
+						destinationDistance = null;
+				}
+				
+				if ( departure != null || destination != null )
+				{
+					if ( "최근순".equals( spSearchOrder.getSelectedItem() ) )
+						spSearchOrder.setSelection(1);//거리순
+					else
+						inquiryPosts();	
+				}
+				else if ( departure == null && destination == null )
+					spSearchOrder.setSelection(0);
+				
+			}			
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
 		}
 	}
 
@@ -447,7 +492,6 @@ public class TaxiFragment extends BaseFragment
 		super.onResume();
 	}
 
-	@Override
 	public void onItemSelected(AdapterView<?> spinner , View selectedView, int arg2,
 			long arg3) {
 		// TODO Auto-generated method stub
@@ -455,25 +499,26 @@ public class TaxiFragment extends BaseFragment
 		{
 			TextView txtView = (TextView) selectedView;
 			
-			if ( spinner.getId() == R.id.spDepartureDistance )
+			if ( spinner.getId() == R.id.spSearchOrder )
 			{
-				if ( departure == null || departure.latitude == 0 || departure.longitude == 0 )
+				if ("최근순".equals( txtView.getText().toString() ))
 				{
-					if ( !"전체".equals( txtView.getText() ) )
-					{
-						showOKDialog("경고", "출발지를 먼저 선택해 주십시오.", null);
-						return;	
-					}
+					departure = null;
+					departureAddress = null;
 				}
-			}
-			else if ( spinner.getId() == R.id.spDestinationDistance )
-			{
-				if ( destination == null || destination.latitude == 0 || destination.longitude == 0 )
+				else if ( "거리순".equals( txtView.getText().toString() ))
 				{
-					if ( !"전체".equals( txtView.getText() ) )
+					if ( departure == null )
 					{
-						showOKDialog("경고", "도착지를 먼저 선택해 주십시오.", null);
-						return;
+						if ( currentLocation == null )
+						{
+							showOKDialog("알림", "출발지를 설정해 주십시오.", null);
+							spSearchOrder.setSelection(0);
+							return;
+						}
+						
+						departure = currentLocation;
+						departureAddress = currentAddress;
 					}
 				}
 			}
@@ -497,31 +542,41 @@ public class TaxiFragment extends BaseFragment
 		// TODO Auto-generated method stub
 		try
 		{
-			if ( v.getId() == R.id.btnSelectDeparture || v.getId() == R.id.btnSelectDestination )
+			if ( v.getId() == R.id.btnSearchDetail )
+				showDialog();
+			else if ( v.getId() == R.id.btnKeeper )
 			{
-				Intent intent = new Intent( getActivity(), SetDestinationActivity.class);
-				intent.putExtra("anim1", R.anim.stay );
-				intent.putExtra("anim2", R.anim.slide_out_to_bottom );
-				
-				if ( v.getId() == R.id.btnSelectDeparture )
-				{
-					if ( departure != null )
-						intent.putExtra("initLocation", departure);
-					startActivityForResult(intent, REQUEST_SET_DEPARTURE );
-				}
-				else
-				{
-					if ( destination != null )
-						intent.putExtra("initLocation", destination);
-					startActivityForResult(intent, REQUEST_SET_DESTINATION );
-				}
-				
+				Intent intent = new Intent( getActivity(), SafetyKeeperActivity.class);
+				startActivity(intent);
 				getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
+				
+				sendHttp("/taxi/statistics.do?name=safetyKeeper", mapper.writeValueAsString( getLoginUser() ), HTTP_SAFETY_KEEPER_CLICKED );
 			}
 		}
 		catch( Exception ex )
 		{
 			catchException(this, ex);
 		}
+	}
+	
+	public void showDialog() {
+
+	    FragmentTransaction ft = getFragmentManager().beginTransaction();
+	    Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+	    if (prev != null) {
+	        ft.remove(prev);
+	    }
+	    ft.addToBackStack(null);
+
+	    HashMap hash = new HashMap();
+	    hash.put("departure", departure);
+	    hash.put("departureAddress", departureAddress );
+	    hash.put("departureDistance", departureDistance);
+	    hash.put("destination", destination);
+	    hash.put("destinationAddress", destinationAddress);
+	    hash.put("destinationDistance", destinationDistance);
+	    
+	    DialogFragment newFragment = new SearchDialogFragment( this, hash );
+	    newFragment.show(ft, "dialog");
 	}
 }

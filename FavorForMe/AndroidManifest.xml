@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.tessoft.nearhere"
-    android:versionCode="7"
-    android:versionName="1.32" >
+    android:versionCode="8"
+    android:versionName="1.33" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -22,7 +22,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.SEND_SMS" />
 
     <permission
         android:name="com.tessoft.nearhere.permission.C2D_MESSAGE"
@@ -47,6 +47,7 @@
             android:theme="@style/IntroTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -84,20 +85,23 @@
         <activity
             android:name=".UserProfileActivity"
             android:label="@string/title_activity_user_profile"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".RegisterUserActivity"
-            android:label="@string/title_activity_register_user" >
+            android:label="@string/title_activity_register_user"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".TaxiTutorialActivity"
             android:label="@string/title_activity_taxi_tutorial"
+            android:screenOrientation="portrait"
             android:theme="@style/TutorialTheme" >
         </activity>
         <activity
             android:name=".TermsAgreementActivity"
-            android:label="@string/title_activity_terms_agreement" >
+            android:label="@string/title_activity_terms_agreement"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".SelectHomeLocationActivity"
@@ -122,7 +126,7 @@
             android:name=".SetDestinationActivity"
             android:label="@string/title_activity_set_destination"
             android:screenOrientation="portrait"
-            android:theme="@style/TutorialTheme">
+            android:theme="@style/TutorialTheme" >
         </activity>
         <activity
             android:name=".MessageBoxFragment"
@@ -159,8 +163,23 @@
         </activity>
         <activity
             android:name=".MoreUserInfoActivity"
-            android:label="@string/title_activity_more_user_info" >
+            android:label="@string/title_activity_more_user_info"
+            android:screenOrientation="portrait">
         </activity>
+        <activity
+            android:name=".SafetyKeeperActivity"
+            android:launchMode="singleTask"
+            android:label="@string/title_activity_safety_keeper"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden">
+        </activity>
+
+        <service android:name=".SafetyKeeperService" >
+            <intent-filter>
+                <action android:name="com.tessoft.nearhere.safetyKeeperService" />
+            </intent-filter>
+        </service>
+        
     </application>
 
 </manifest>

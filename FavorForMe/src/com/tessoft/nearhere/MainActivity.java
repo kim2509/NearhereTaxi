@@ -91,6 +91,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	public static String latitude = "";
 	public static String longitude = "";
 	public static String address = "";
+	public static String fullAddress = "";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -174,9 +175,6 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			checkPlayServices();
 
 			checkIfGPSEnabled();
-
-//			SmsManager sms = SmsManager.getDefault();
-//			sms.sendTextMessage("01025124304", null, "test", null, null);
 		}
 		catch( Exception ex )
 		{
@@ -429,6 +427,13 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	public void onAddressTaskPostExecute(int requestCode, Object result) {
 		// TODO Auto-generated method stub
 		MainActivity.address = Util.getDongAddressString( result );
+		MainActivity.fullAddress = result.toString();
+		
+		Intent intent = new Intent("currentLocationChanged");
+		intent.putExtra("latitude", MainActivity.latitude );
+		intent.putExtra("longitude", MainActivity.longitude );
+		intent.putExtra("fullAddress", result.toString() );
+		sendBroadcast(intent);
 	}
 
 	@Override
@@ -454,7 +459,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	protected void createLocationRequest() {
 		mLocationRequest = new LocationRequest();
 		mLocationRequest.setInterval(10000);
-		mLocationRequest.setFastestInterval(5000);
+		mLocationRequest.setFastestInterval(10000);
 		mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 	}
 
@@ -720,7 +725,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 		try
 		{
-			sendHttp("/taxi/leave.do", mapper.writeValueAsString( getLoginUser() ), HTTP_LEAVE);			
+			sendHttp("/taxi/statistics.do?name=exit", mapper.writeValueAsString( getLoginUser() ), HTTP_LEAVE);			
 		}
 		catch( Exception ex )
 		{

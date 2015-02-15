@@ -1,73 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:padding="10dp" >
 
-    <RelativeLayout
-        android:id="@+id/layoutDeparture"
-        android:layout_width="match_parent"
+    <RelativeLayout android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/btnSelectDeparture"
+        
+        <Spinner
+            android:id="@+id/spSearchOrder" 
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
+            />
+        
+        <Spinner android:id="@+id/spStatus"
+            android:layout_width="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/spSearchOrder"
+            android:layout_height="wrap_content"/>
+        
+        <Button android:id="@+id/btnSearchDetail" 
+            android:layout_width="wrap_content"
             style="@style/btn_style"
-            android:text="출발지" />
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="상세조회"/>
+        
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/layoutCurLocation"
+        android:layout_width="match_parent"
+        android:layout_marginTop="15dp"
+        android:layout_height="wrap_content" 
+        android:visibility="gone">
 
+        <TextView android:id="@+id/txtLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="현재위치" 
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:textStyle="bold"
+            android:textColor="#3B5D98"/>
+        
         <TextView
-            android:id="@+id/txtDeparture"
+            android:id="@+id/txtCurrentAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@+id/btnSelectDeparture"
-            android:singleLine="false"
-            android:text="미지정"
-            android:layout_toLeftOf="@+id/spDepartureDistance"/>
+            android:layout_toRightOf="@+id/txtLabel"
+            android:singleLine="false"/>
 
-        <Spinner
-            android:id="@+id/spDepartureDistance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true" />
-    </RelativeLayout>
-    
-    <RelativeLayout
-        android:id="@+id/layoutDestination"
-        android:layout_width="match_parent"
-        android:layout_below="@+id/layoutDeparture"
-        android:layout_marginTop="5dp"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/btnSelectDestination"
-            android:layout_width="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            style="@style/btn_style"
-            android:text="도착지" />
-
-        <TextView
-            android:id="@+id/txtDestination"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@+id/btnSelectDestination"
-            android:singleLine="false"
-            android:text="미지정"
-            android:layout_toLeftOf="@+id/spDestinationDistance"/>
-
-        <Spinner
-            android:id="@+id/spDestinationDistance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true" />
     </RelativeLayout>
 
-</RelativeLayout>
+</LinearLayout>
