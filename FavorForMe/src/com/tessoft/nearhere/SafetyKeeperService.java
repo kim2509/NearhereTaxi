@@ -1,8 +1,11 @@
 package com.tessoft.nearhere;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import org.codehaus.jackson.map.ObjectMapper;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -14,6 +17,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.tessoft.common.AddressTaskDelegate;
 import com.tessoft.common.GetAddressTask;
+import com.tessoft.common.HttpTransactionReturningString;
+import com.tessoft.common.TransactionDelegate;
 import com.tessoft.common.Util;
 import com.tessoft.domain.Contact;
 
@@ -31,8 +36,10 @@ import android.telephony.SmsManager;
 import android.widget.Toast;
 
 public class SafetyKeeperService extends Service 
-	implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, AddressTaskDelegate{
+	implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, AddressTaskDelegate, TransactionDelegate{
 
+	protected static final int HTTP_SAFETY_KEEPER_STARTED = 10;
+	protected static final int HTTP_SAFETY_KEEPER_FINISHED = 20;
 	private NotificationManager mNM;
 	GoogleApiClient mGoogleApiClient = null;
 	TimerTask mTask = null;
@@ -49,6 +56,7 @@ public class SafetyKeeperService extends Service
 	public static int totalCount = 0;
 	public static int minutes = 0;
 	public static int sentCount = 0;
+	ObjectMapper mapper = null;
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -104,6 +112,8 @@ public class SafetyKeeperService extends Service
         
         Intent intent = new Intent("safetyKeeperStarted");
     	sendBroadcast(intent);
+    	
+    	mapper = new ObjectMapper();
 	}
 	
 	@Override
@@ -130,10 +140,22 @@ public class SafetyKeeperService extends Service
 					totalCount = Integer.parseInt(intent.getExtras().getString("totalCount"));
 					minutes = Integer.parseInt(intent.getExtras().getString("minutes"));
 				}
+				
+				if ( intent.getExtras().containsKey("contacts") && intent.getExtras().get("contacts") != null )
+				{
+					arContacts = (ArrayList<Contact>) intent.getExtras().get("contacts");
+				}
 			}
 			
 			//2시간 후 자동종료처리
 			exitTimer.schedule( exitTask , 1000 * 60 * 120 );
+			
+			HashMap hash = new HashMap();
+			hash.put("userID", intent.getExtras().get("userID"));
+			hash.put("totalCount", totalCount);
+			hash.put("minutes", minutes);
+			hash.put("contacts", arContacts.size());
+			sendHttp("/taxi/statistics.do?name=safetyKeeperStarted", mapper.writeValueAsString( hash ), HTTP_SAFETY_KEEPER_STARTED );
 		}
 		catch( Exception ex )
 		{
@@ -162,6 +184,13 @@ public class SafetyKeeperService extends Service
 			}
 			
 			mNM.cancel(1);
+			
+			HashMap hash = new HashMap();
+			hash.put("userID", intent.getExtras().get("userID"));
+			hash.put("totalCount", totalCount);
+			hash.put("minutes", minutes);
+			hash.put("contacts", arContacts.size());
+			sendHttp("/taxi/statistics.do?name=safetyKeeperFinished", mapper.writeValueAsString( hash ), HTTP_SAFETY_KEEPER_STARTED );
 			
 			Intent intent = new Intent("safetyKeeperFinished");
         	sendBroadcast(intent);
@@ -212,7 +241,6 @@ public class SafetyKeeperService extends Service
     			!intent.getExtras().containsKey("contacts") ||
     			!intent.getExtras().containsKey("message") ) return;
     	
-    	arContacts = (ArrayList<Contact>) intent.getExtras().get("contacts");
     	message = intent.getExtras().get("message").toString();
     	String userName = intent.getExtras().get("userName").toString();
     	
@@ -232,11 +260,12 @@ public class SafetyKeeperService extends Service
     		if ( Util.isEmptyString( contact.getNumber() ) ) continue;
     	
     		String number = contact.getNumber();
+//    		number = "01025124304";
     		number = number.replaceAll("\\-", "");
     		
     		if ( Util.isEmptyString(address) ) address = "[GPS 꺼져있음]";
     		
-    		String sendMessage = "[이근처 합승-" + userName + "님] " + message + " [" + address.replaceAll("\\|", " ") + "]";
+    		String sendMessage = "[이근처 합승-" + userName + "님] "+ message + " [" + address.replaceAll("\\|", " ") + "]";
     		
 			sms.sendTextMessage( number , null, sendMessage , null, null);
 			
@@ -365,5 +394,16 @@ public class SafetyKeeperService extends Service
 	public void showToastMessage( String msg )
 	{
 		Toast.makeText(this, msg , Toast.LENGTH_LONG).show();
+	}
+	
+	public void sendHttp( String url, Object request, int requestCode )
+	{
+		new HttpTransactionReturningString( this, url, requestCode ).execute( request );
+	}
+
+	@Override
+	public void doPostTransaction(int requestCode, Object result) {
+		// TODO Auto-generated method stub
+		
 	}
 }

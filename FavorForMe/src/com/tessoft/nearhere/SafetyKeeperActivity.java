@@ -1,6 +1,7 @@
 package com.tessoft.nearhere;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.tessoft.common.ReadContactArrayAdapter;
 import com.tessoft.domain.Contact;
@@ -216,6 +217,7 @@ public class SafetyKeeperActivity extends BaseActivity implements OnClickListene
 				intent.putExtra("totalCount", spTotalCount.getSelectedItem().toString() );
 				intent.putExtra("minutes", spMinutes.getSelectedItem().toString());
 				intent.putExtra("userName", getLoginUser().getUserName() );
+				intent.putExtra("userID", getLoginUser().getUserID() );
 
 				startService(intent);
 			}
@@ -304,20 +306,11 @@ public class SafetyKeeperActivity extends BaseActivity implements OnClickListene
 				}
 				else if ( "safetyKeeperStarted".equals( intent.getAction() ) )
 				{
-					spTotalCount.setEnabled(false);
-					spMinutes.setEnabled(false);
-					findViewById(R.id.edtMessage).setEnabled(false);
-					
-					txtStatus.setVisibility(ViewGroup.VISIBLE);
-					txtStatus.setText("현재 서비스가 진행중입니다. [" + SafetyKeeperService.sentCount + "회 전송완료]");
+					setControlStatusAsStarted();
 				}
 				else if ( "safetyKeeperFinished".equals( intent.getAction() ) )
 				{
-					spTotalCount.setEnabled(true);
-					spMinutes.setEnabled(true);
-					findViewById(R.id.edtMessage).setEnabled(true);
-					
-					txtStatus.setVisibility(ViewGroup.GONE);
+					setControlStatusAsFinished();
 				}
 				else if ( "sentSMS".equals( intent.getAction() ) )
 				{
@@ -328,6 +321,15 @@ public class SafetyKeeperActivity extends BaseActivity implements OnClickListene
 			{
 				catchException(this, ex);
 			}
+		}
+
+		private void setControlStatusAsStarted() {
+			spTotalCount.setEnabled(false);
+			spMinutes.setEnabled(false);
+			findViewById(R.id.edtMessage).setEnabled(false);
+			
+			txtStatus.setVisibility(ViewGroup.VISIBLE);
+			txtStatus.setText("현재 서비스가 진행중입니다. [" + SafetyKeeperService.sentCount + "회 전송완료]");
 		}
 	};
 	
@@ -392,6 +394,18 @@ public class SafetyKeeperActivity extends BaseActivity implements OnClickListene
 			edtMessage.setText(SafetyKeeperService.message);
 			address = SafetyKeeperService.address;
 		}
+		else
+		{
+			setControlStatusAsFinished();
+		}
+	}
+
+	private void setControlStatusAsFinished() {
+		spTotalCount.setEnabled(true);
+		spMinutes.setEnabled(true);
+		findViewById(R.id.edtMessage).setEnabled(true);
+		
+		txtStatus.setVisibility(ViewGroup.GONE);
 	}
 	
 	@Override
