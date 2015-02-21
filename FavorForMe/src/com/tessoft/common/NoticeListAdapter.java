@@ -7,63 +7,133 @@ import com.tessoft.domain.Notice;
 import com.tessoft.nearhere.R;
 
 import android.content.Context;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
+import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class NoticeListAdapter extends ArrayAdapter<Notice> {
+public class NoticeListAdapter extends BaseExpandableListAdapter {
 
-	private List<Notice> itemList = new ArrayList<Notice>();
 	private AdapterDelegate delegate = null;
 
 	LayoutInflater inflater = null;
+	
+	private List<Notice> groupList = null;
+	
+	public NoticeListAdapter( Context context )
+	{
+		super();
+		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.groupList = new ArrayList<Notice>();
+	}
+	
+	public AdapterDelegate getDelegate() {
+		return delegate;
+	}
+
+	public void setDelegate(AdapterDelegate delegate) {
+		this.delegate = delegate;
+	}
 
 	@Override
-	public void add(Notice object) {
-		itemList.add(object);
-		super.add(object);
+	public Object getChild(int groupPosition, int childPosition) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public NoticeListAdapter(Context context, int textViewResourceId) {
-		super(context, textViewResourceId);
-		inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	@Override
+	public long getChildId(int groupPosition, int childPosition) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
-	public int getCount() {
-		return this.itemList.size();
+	@Override
+	public View getChildView(int groupPosition, int childPosition,
+			boolean isLastChild, View convertView, ViewGroup parent) {
+		// TODO Auto-generated method stub
+		
+		View view = convertView;
+		
+		try
+		{
+			Notice item = (Notice) getGroup(groupPosition);
+			
+			if (view == null) {
+				view = inflater.inflate(R.layout.list_notice_child_item, parent, false);
+			}
+			
+			WebView webView = (WebView) view.findViewById(R.id.webView);
+			webView.clearView();
+			webView.setWebViewClient( webViewClient );
+			webView.loadUrl( Constants.serverURL + "/taxi/getNotice.do?noticeID=" + item.getNoticeID() );
+		}
+		catch( Exception ex )
+		{
+			
+		}
+		
+		return view;
+	}
+	
+	WebViewClient webViewClient = new WebViewClient() {
+		public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+		}
+	};
+
+	@Override
+	public int getChildrenCount(int groupPosition) {
+		// TODO Auto-generated method stub
+		return 1;
 	}
 
-	public Notice getItem(int index) {
-		return this.itemList.get(index);
+	@Override
+	public Object getGroup(int groupPosition) {
+		// TODO Auto-generated method stub
+		return groupList.get(groupPosition);
 	}
 
-	public void setItemList( List<Notice> itemList )
+	@Override
+	public int getGroupCount() {
+		// TODO Auto-generated method stub
+		return groupList.size();
+	}
+
+	@Override
+	public long getGroupId(int groupPosition) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	public void setGroupList( List<Notice> groupList )
 	{
-		this.itemList = itemList;
-		notifyDataSetChanged();
+		this.groupList = groupList;
 	}
 
-	public View getView(int position, View convertView, ViewGroup parent) {
-
+	@Override
+	public View getGroupView(int groupPosition, boolean isExpanded,
+			View convertView, ViewGroup parent) {
+		// TODO Auto-generated method stub
 		View row = convertView;
 
 		try
 		{
-			Notice item = getItem(position);
+			Notice item = (Notice) getGroup(groupPosition);
 
 			if (row == null) {
 				row = inflater.inflate(R.layout.list_notice_item, parent, false);
 			}
 
+			String title = "<font>" + item.getTitle() + "</font>&nbsp;&nbsp;<font color='#ff0000'>";
+			title += Util.getFormattedDateString(item.getCreatedDate(),"MM-dd") + "</font>";
 			TextView txtTitle = (TextView) row.findViewById(R.id.txtTitle);
-			txtTitle.setText( item.getTitle() );
-			TextView txtCreatedDate = (TextView) row.findViewById(R.id.txtCreatedDate);
-			txtCreatedDate.setText( Util.getFormattedDateString(item.getCreatedDate(),"yyyy-MM-dd") );
-			TextView txtContent = (TextView) row.findViewById(R.id.txtContent);
-			txtContent.setText( item.getContent() );
+			txtTitle.setText( Html.fromHtml(title) );
 			
 			row.setTag( item );
 		}
@@ -75,12 +145,16 @@ public class NoticeListAdapter extends ArrayAdapter<Notice> {
 		return row;
 	}
 
-	public AdapterDelegate getDelegate() {
-		return delegate;
+	@Override
+	public boolean hasStableIds() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
-	public void setDelegate(AdapterDelegate delegate) {
-		this.delegate = delegate;
+	@Override
+	public boolean isChildSelectable(int groupPosition, int childPosition) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

@@ -69,10 +69,27 @@ public class PushMessageListFragment extends BaseListFragment {
 								String fromUserID = message.getParam1();
 								goUserChatActivity( fromUserID );								
 							}
-							else
+							else if ( "postReply".equals( message.getType() ) || "newPostByDistance".equals( message.getType() ) )
 							{
 								Intent intent = new Intent( getActivity(), TaxiPostDetailActivity.class);
 								intent.putExtra("postID", message.getParam1() );
+								startActivity(intent);
+								getActivity().overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
+							}
+							else if ( "event".equals( message.getType() ) )
+							{
+								Intent intent = new Intent( getActivity(), EventViewerActivity.class);
+								intent.putExtra("eventSeq", message.getParam1() );
+								intent.putExtra("pushNo", message.getPushNo() );
+								startActivity(intent);
+								getActivity().overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
+							}
+							else if ( "eventssl".equals( message.getType() ) )
+							{
+								Intent intent = new Intent( getActivity(), EventViewerActivity.class);
+								intent.putExtra("eventSeq", message.getParam1() );
+								intent.putExtra("pushNo", message.getPushNo() );
+								intent.putExtra("ssl", "true" );
 								startActivity(intent);
 								getActivity().overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 							}

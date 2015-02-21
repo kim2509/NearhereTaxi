@@ -244,4 +244,12 @@ public class UserMessageActivity extends BaseActivity {
 			catchException(this, ex);
 		}
 	}
+	
+	@Override
+	public void onBackPressed() {
+
+		finish();
+		Intent intent = new Intent(this, MainActivity.class);
+		startActivity(intent);
+	}
 }

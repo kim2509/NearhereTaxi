@@ -90,7 +90,7 @@
         <activity
             android:name=".RegisterUserActivity"
             android:label="@string/title_activity_register_user"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".TaxiTutorialActivity"
@@ -101,7 +101,7 @@
         <activity
             android:name=".TermsAgreementActivity"
             android:label="@string/title_activity_terms_agreement"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".SelectHomeLocationActivity"
@@ -164,14 +164,14 @@
         <activity
             android:name=".MoreUserInfoActivity"
             android:label="@string/title_activity_more_user_info"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".SafetyKeeperActivity"
-            android:launchMode="singleTask"
             android:label="@string/title_activity_safety_keeper"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden" >
         </activity>
 
         <service android:name=".SafetyKeeperService" >
@@ -179,7 +179,11 @@
                 <action android:name="com.tessoft.nearhere.safetyKeeperService" />
             </intent-filter>
         </service>
-        
+
+        <activity
+            android:name=".EventViewerActivity"
+            android:label="@string/title_activity_event_viewer" >
+        </activity>
     </application>
 
 </manifest>

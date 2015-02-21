@@ -18,6 +18,7 @@ import com.tessoft.common.GoogleMapkiUtil;
 import com.tessoft.common.Util;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -267,6 +269,10 @@ implements OnMapReadyCallback, AddressTaskDelegate {
 			
 			if (progressDialog != null && progressDialog.isShowing())
 				return;
+			
+			InputMethodManager imm = (InputMethodManager)getSystemService(
+			      Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(edtSearchLocation.getWindowToken(), 0);
 			
 			progressDialog = ProgressDialog.show(
 					this, "확인", "검색 중입니다");

@@ -49,9 +49,11 @@ public class SafetyKeeperActivity extends BaseActivity implements OnClickListene
 	Spinner spMinutes = null;
 	ArrayAdapter<CharSequence> adapterTotalCount = null;
 	ArrayAdapter<CharSequence> adapterMinutes = null;
+	ArrayAdapter<CharSequence> adapterExitHour = null;
 	EditText edtMessage = null;
 	TextView txtStatus = null;
 	String address = MainActivity.fullAddress;
+	Spinner spExitHour = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -147,6 +149,13 @@ public class SafetyKeeperActivity extends BaseActivity implements OnClickListene
 
 			txtStatus = (TextView) findViewById(R.id.txtStatus);
 			
+			spExitHour = (Spinner) findViewById(R.id.spExitHour);
+			adapterExitHour = ArrayAdapter.createFromResource( this,
+					R.array.exit_hour, android.R.layout.simple_spinner_item);
+			adapterExitHour.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			spExitHour.setAdapter(adapterExitHour);
+			spExitHour.setSelection(1, false);
+			
 			checkIfGPSEnabled();
 		}
 		catch( Exception ex )
@@ -216,6 +225,7 @@ public class SafetyKeeperActivity extends BaseActivity implements OnClickListene
 
 				intent.putExtra("totalCount", spTotalCount.getSelectedItem().toString() );
 				intent.putExtra("minutes", spMinutes.getSelectedItem().toString());
+				intent.putExtra("exitHour", spExitHour.getSelectedItem().toString() );
 				intent.putExtra("userName", getLoginUser().getUserName() );
 				intent.putExtra("userID", getLoginUser().getUserID() );
 

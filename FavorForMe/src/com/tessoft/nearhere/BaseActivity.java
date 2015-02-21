@@ -6,6 +6,12 @@ import java.util.UUID;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
+import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.tessoft.common.AdapterDelegate;
 import com.tessoft.common.HttpTransactionReturningString;
 import com.tessoft.common.TransactionDelegate;
@@ -32,6 +38,8 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		initImageLoader();
 	}
 
 	public String getOSVersion()
@@ -216,5 +224,31 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		// TODO Auto-generated method stub
 		super.onStop();
 		MainActivity.active = false;
+	}
+	
+	public static boolean bInitImageLoader = false;
+	public void initImageLoader()
+	{
+		if ( BaseActivity.bInitImageLoader == false )
+		{
+			ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
+			.memoryCacheExtraOptions(100, 100) // default = device screen dimensions
+			.diskCacheExtraOptions(100, 100, null)
+			.threadPoolSize(3) // default
+			.threadPriority(Thread.NORM_PRIORITY - 2) // default
+			.tasksProcessingOrder(QueueProcessingType.FIFO) // default
+			.denyCacheImageMultipleSizesInMemory()
+			.memoryCache(new LruMemoryCache(2 * 1024 * 1024))
+			.memoryCacheSize(2 * 1024 * 1024)
+			.memoryCacheSizePercentage(13) // default
+			.diskCacheSize(50 * 1024 * 1024)
+			.diskCacheFileCount(100)
+			.diskCacheFileNameGenerator(new HashCodeFileNameGenerator()) // default
+			.defaultDisplayImageOptions(DisplayImageOptions.createSimple()) // default
+			.writeDebugLogs()
+			.build();
+			ImageLoader.getInstance().init(config);
+			BaseActivity.bInitImageLoader = true;
+		}
 	}
 }

@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
     
     <RelativeLayout
         android:id="@+id/map_layout"
         android:layout_width="match_parent"
-        android:layout_height="340dp"
-        android:layout_margin="10dp"
-        android:paddingBottom="40dp"
-        android:layout_above="@+id/txtGuide1">
+        android:layout_height="250dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_above="@+id/txtGuide1"
+        android:visibility="gone">
 
         <fragment
             android:id="@+id/map"
@@ -24,6 +28,15 @@
             android:src="@color/transparent" />
     </RelativeLayout>
     
+    <Button 
+        android:id="@+id/btnHideMap"
+        android:layout_width="match_parent"
+        style="@style/btn_style"
+        android:text="경로 보기"
+        android:onClick="toggleMapVisibility"
+        android:layout_margin="10dp"
+        android:layout_marginBottom="40dp"/>
+    
     <TextView android:id="@+id/txtGuide1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -34,4 +47,4 @@
         android:text="댓글"
         android:textColor="#3B5D98"/>
     
-</RelativeLayout>
+</LinearLayout>

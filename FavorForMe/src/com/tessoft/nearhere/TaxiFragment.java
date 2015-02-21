@@ -60,6 +60,7 @@ public class TaxiFragment extends BaseFragment
 	ObjectMapper mapper = new ObjectMapper();
 	
 	TaxiArrayAdapter adapter = null;
+	View header2 = null;
 	View header3 = null;
 	
 	@Override
@@ -74,13 +75,13 @@ public class TaxiFragment extends BaseFragment
 
 			//header = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header1, null);
 			header3 = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header3, null);
-//			header2 = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header2, null);
+			header2 = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header2, null);
 			footer = getActivity().getLayoutInflater().inflate(R.layout.list_footer_taxi_main, null);
 
 			listMain = (ListView) rootView.findViewById(R.id.listMain);
 			//listMain.addHeaderView(header);
 			listMain.addHeaderView(header3, null, true );
-//			listMain.addHeaderView(header2, null, false );
+			listMain.addHeaderView(header2, null, false );
 			listMain.addFooterView(footer, null, false );
 
 			adapter = new TaxiArrayAdapter( getActivity().getApplicationContext(), this, 0 );
@@ -245,6 +246,20 @@ public class TaxiFragment extends BaseFragment
 					else
 					{
 						listMain.removeFooterView(footer);
+					}
+					
+					listMain.removeHeaderView(header2);
+					
+					if ( userCount > 0 )
+					{
+						listMain.addHeaderView(header2, null, false );
+						rootView.findViewById(R.id.layoutUsers).setVisibility(ViewGroup.VISIBLE);
+						TextView txtNumOfUsers = (TextView) rootView.findViewById(R.id.txtNumOfUsers);
+						txtNumOfUsers.setText("근처에 " + userCount + " 명의 사용자가 있습니다.\n합승등록을 하면 이들에게 푸시메시지가 전송됩니다.");
+					}
+					else
+					{
+						rootView.findViewById(R.id.layoutUsers).setVisibility(ViewGroup.GONE);
 					}
 				}				
 			}

@@ -2,41 +2,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal" 
-    android:paddingTop="10dp"
+    android:orientation="horizontal"
+    android:paddingBottom="10dp"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
-    android:paddingBottom="10dp">
-    
+    android:paddingTop="10dp" >
+
     <TextView
         android:id="@+id/txtTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="80dp"
-        android:textColor="@android:color/black"
-        android:layout_alignParentLeft="true"
         android:singleLine="false"
-        android:text="add" />
-    
-    <TextView
-        android:id="@+id/txtCreatedDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:text="5,000"
-        android:textStyle="bold"
+        android:layout_marginLeft="30dp"
+        android:text="add"
         android:textColor="@android:color/black" />
 
-    <TextView
-        android:id="@+id/txtContent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_below="@+id/txtTitle"
-        android:textColor="@android:color/black"
-        android:background="#ffffff"
-        android:textIsSelectable="true"
-        android:padding="10dp"
-        android:singleLine="false"/>
-    
 </RelativeLayout>

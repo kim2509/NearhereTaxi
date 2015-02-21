@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
 import com.tessoft.common.Constants;
@@ -26,11 +27,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class NoticeListFragment extends BaseListFragment {
+public class NoticeListFragment extends BaseFragment {
 
+	View rootView = null;
+	ExpandableListView listMain = null;
+	View header = null;
+	View footer = null;
+	ObjectMapper mapper = new ObjectMapper();
 	NoticeListAdapter adapter = null;
 
 	@Override
@@ -41,13 +49,29 @@ public class NoticeListFragment extends BaseListFragment {
 		{
 			super.onCreateView(inflater, container, savedInstanceState);
 
+			rootView = inflater.inflate(R.layout.fragment_notice_list, container, false);
+
 			footer = getActivity().getLayoutInflater().inflate(R.layout.fragment_messagebox_footer, null);
 
-			listMain = (ListView) rootView.findViewById(R.id.listMain);
+			listMain = (ExpandableListView) rootView.findViewById(R.id.listMain);
+
 			listMain.setSelector(new ColorDrawable(0x0));
 			listMain.addFooterView(footer, null, false );
-			adapter = new NoticeListAdapter(getActivity(), 0);
+
+			adapter = new NoticeListAdapter( getActivity() );
+
 			listMain.setAdapter(adapter);
+
+			listMain.setOnGroupExpandListener(new OnGroupExpandListener() {
+				int previousGroup = -1;
+
+				@Override
+				public void onGroupExpand(int groupPosition) {
+					if(groupPosition != previousGroup)
+						listMain.collapseGroup(previousGroup);
+					previousGroup = groupPosition;
+				}
+			});
 
 			inquiryNotice();
 		}
@@ -87,11 +111,11 @@ public class NoticeListFragment extends BaseListFragment {
 			{
 				String noticeListString = mapper.writeValueAsString( response.getData() );
 				List<Notice> noticeList = mapper.readValue( noticeListString , new TypeReference<List<Notice>>(){});
-				
+
 				// 공지사항 읽음처리
 				updateLastNoticeID(noticeList);
-				
-				adapter.setItemList(noticeList);
+
+				adapter.setGroupList(noticeList);
 				adapter.notifyDataSetChanged();
 
 				if ( noticeList.size() == 0 )
@@ -103,6 +127,7 @@ public class NoticeListFragment extends BaseListFragment {
 				}
 				else
 					listMain.removeFooterView(footer);
+				
 			}
 			else
 			{
@@ -124,7 +149,7 @@ public class NoticeListFragment extends BaseListFragment {
 			if ( maxNoticeID < Integer.parseInt( noticeItem.getNoticeID() ) )
 				maxNoticeID = Integer.parseInt( noticeItem.getNoticeID() );
 		}
-		
+
 		setMetaInfo("lastNoticeID", String.valueOf(maxNoticeID));
 		getActivity().sendBroadcast( new Intent("updateUnreadCount") );
 	}

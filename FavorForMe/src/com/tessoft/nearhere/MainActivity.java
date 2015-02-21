@@ -106,8 +106,6 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 			setContentView(R.layout.activity_main);
 
-			initImageLoader();
-
 			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 			mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -372,27 +370,6 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		mDrawerToggle.onConfigurationChanged(newConfig);
 	}
 
-	public void initImageLoader()
-	{
-		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
-		.memoryCacheExtraOptions(100, 100) // default = device screen dimensions
-		.diskCacheExtraOptions(100, 100, null)
-		.threadPoolSize(3) // default
-		.threadPriority(Thread.NORM_PRIORITY - 2) // default
-		.tasksProcessingOrder(QueueProcessingType.FIFO) // default
-		.denyCacheImageMultipleSizesInMemory()
-		.memoryCache(new LruMemoryCache(2 * 1024 * 1024))
-		.memoryCacheSize(2 * 1024 * 1024)
-		.memoryCacheSizePercentage(13) // default
-		.diskCacheSize(50 * 1024 * 1024)
-		.diskCacheFileCount(100)
-		.diskCacheFileNameGenerator(new HashCodeFileNameGenerator()) // default
-		.defaultDisplayImageOptions(DisplayImageOptions.createSimple()) // default
-		.writeDebugLogs()
-		.build();
-		ImageLoader.getInstance().init(config);
-	}
-
 	protected synchronized void buildGoogleApiClient() {
 		mGoogleApiClient = new GoogleApiClient.Builder(this)
 		.addConnectionCallbacks(this)
@@ -416,6 +393,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 				TaxiFragment f = (TaxiFragment) mainFragment;
 				f.updateAddress( new LatLng( location.getLatitude(), location.getLongitude() ) );
 			}
+			
+			stopLocationUpdates();
 		}
 		catch( Exception ex )
 		{
@@ -458,8 +437,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	LocationRequest mLocationRequest = null;
 	protected void createLocationRequest() {
 		mLocationRequest = new LocationRequest();
-		mLocationRequest.setInterval(10000);
-		mLocationRequest.setFastestInterval(10000);
+		mLocationRequest.setInterval(1000);
+		mLocationRequest.setFastestInterval(1000);
 		mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 	}
 

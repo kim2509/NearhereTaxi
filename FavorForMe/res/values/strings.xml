@@ -79,7 +79,6 @@
         <item>2명</item>
         <item>3명</item>
     </string-array>
-
     <string-array name="sms_total_count">
         <item>3</item>
         <item>5</item>
@@ -88,7 +87,6 @@
         <item>30</item>
         <item>50</item>
     </string-array>
-    
     <string-array name="sms_minutes">
         <item>5</item>
         <item>10</item>
@@ -98,7 +96,17 @@
         <item>60</item>
         <item>100</item>
     </string-array>
-    
+    <string-array name="exit_hour">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>7</item>
+        <item>10</item>
+        <item>20</item>
+    </string-array>
+
     <string name="drawer_open">메뉴 선택</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="set_destination_guide1">출발지를 선택해 주십시오.</string>
@@ -115,5 +123,6 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_safety_keeper">안심 귀가 알리미</string>
+    <string name="title_activity_event_viewer">이벤트</string>
 
 </resources>

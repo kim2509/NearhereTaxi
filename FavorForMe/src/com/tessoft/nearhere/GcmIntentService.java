@@ -16,6 +16,7 @@
 
 package com.tessoft.nearhere;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -174,18 +175,56 @@ public class GcmIntentService extends IntentService {
         }
         else
         {
-        	intent = new Intent(this, MainActivity.class);
             if ( "message".equals( type ) )
             {
-            	intent.putExtra("fromUserID", extras.getString("fromUserID") );
+            	intent = new Intent(this, UserMessageActivity.class);
+            	HashMap hash = new HashMap();
+    			hash.put("fromUserID",  extras.getString("fromUserID") );
+    			hash.put("userID",  extras.getString("toUserID") );
+    			intent.putExtra("messageInfo", hash);
             	mBuilder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
                 mBuilder.setVibrate(new long[] { 1000, 1000 });
             }
             else if ( "postReply".equals( type ) )
             {
+            	intent = new Intent(this, TaxiPostDetailActivity.class);
             	intent.putExtra("postID", extras.getString("postID") );
             	mBuilder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
                 mBuilder.setVibrate(new long[] { 1000, 1000 });
+            }
+            else if ( "newPostByDistance".equals( type ))
+            {
+            	intent = new Intent(this, TaxiPostDetailActivity.class);
+            	intent.putExtra("postID", extras.getString("postID") );
+            }
+            else if ( "event".equals( type ))
+            {
+            	intent = new Intent(this, EventViewerActivity.class);
+            	intent.putExtra("eventSeq", extras.getString("eventSeq") );
+            	intent.putExtra("pushNo", extras.getString("pushNo") );
+            	
+            	if ( "on".equals( extras.getString("sound") ) )
+            		mBuilder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
+            	if ( "on".equals( extras.getString("vibrate") ) )
+            		mBuilder.setVibrate(new long[] { 1000, 1000 });
+            	
+            }
+            else if ( "eventssl".equals( type ))
+            {
+            	intent = new Intent(this, EventViewerActivity.class);
+            	intent.putExtra("eventSeq", extras.getString("eventSeq") );
+            	intent.putExtra("pushNo", extras.getString("pushNo") );
+            	intent.putExtra("ssl", "true" );
+            	
+            	if ( "on".equals( extras.getString("sound") ) )
+            		mBuilder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
+            	if ( "on".equals( extras.getString("vibrate") ) )
+            		mBuilder.setVibrate(new long[] { 1000, 1000 });
+            	
+            }
+            else
+            {
+            	intent = new Intent(this, MainActivity.class);
             }
             
             PendingIntent contentIntent = PendingIntent.getActivity(this, 0,

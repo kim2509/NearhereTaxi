@@ -56,6 +56,7 @@ public class SafetyKeeperService extends Service
 	public static int totalCount = 0;
 	public static int minutes = 0;
 	public static int sentCount = 0;
+	public static int exitHour = 0;
 	ObjectMapper mapper = null;
 
 	@Override
@@ -145,16 +146,23 @@ public class SafetyKeeperService extends Service
 				{
 					arContacts = (ArrayList<Contact>) intent.getExtras().get("contacts");
 				}
+				
+				if ( intent.getExtras().containsKey("exitHour") && intent.getExtras().get("exitHour") != null )
+				{
+					exitHour = Integer.parseInt(intent.getExtras().getString("exitHour"));
+				}
 			}
 			
-			//2시간 후 자동종료처리
-			exitTimer.schedule( exitTask , 1000 * 60 * 120 );
+			//자동종료처리
+			exitTimer.schedule( exitTask , 1000 * 60 * 60 * exitHour );
 			
 			HashMap hash = new HashMap();
 			hash.put("userID", intent.getExtras().get("userID"));
 			hash.put("totalCount", totalCount);
 			hash.put("minutes", minutes);
 			hash.put("contacts", arContacts.size());
+			hash.put("exitHour", exitHour);
+			hash.put("sentCount", sentCount);
 			sendHttp("/taxi/statistics.do?name=safetyKeeperStarted", mapper.writeValueAsString( hash ), HTTP_SAFETY_KEEPER_STARTED );
 		}
 		catch( Exception ex )
@@ -189,7 +197,9 @@ public class SafetyKeeperService extends Service
 			hash.put("userID", intent.getExtras().get("userID"));
 			hash.put("totalCount", totalCount);
 			hash.put("minutes", minutes);
+			hash.put("sentCount", sentCount);
 			hash.put("contacts", arContacts.size());
+			hash.put("exitHour", exitHour);
 			sendHttp("/taxi/statistics.do?name=safetyKeeperFinished", mapper.writeValueAsString( hash ), HTTP_SAFETY_KEEPER_STARTED );
 			
 			Intent intent = new Intent("safetyKeeperFinished");
@@ -260,14 +270,14 @@ public class SafetyKeeperService extends Service
     		if ( Util.isEmptyString( contact.getNumber() ) ) continue;
     	
     		String number = contact.getNumber();
-//    		number = "01025124304";
+    		number = "01025124304";
     		number = number.replaceAll("\\-", "");
     		
     		if ( Util.isEmptyString(address) ) address = "[GPS 꺼져있음]";
     		
     		String sendMessage = "[이근처 합승-" + userName + "님] "+ message + " [" + address.replaceAll("\\|", " ") + "]";
     		
-			sms.sendTextMessage( number , null, sendMessage , null, null);
+//			sms.sendTextMessage( number , null, sendMessage , null, null);
 			
 			resultMessage += contact.getName() + ",";
     	}

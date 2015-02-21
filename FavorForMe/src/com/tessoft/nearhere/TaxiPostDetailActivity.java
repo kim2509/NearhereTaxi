@@ -79,7 +79,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			listMain = (ListView) findViewById(R.id.listMain);
 			listMain.addHeaderView(header, null, false );
 			listMain.addHeaderView(header2 );
-			listMain.addFooterView(footer);
+			listMain.addFooterView(footer, null, false );
 
 			listMain.setSelector(android.R.color.transparent);
 
@@ -90,9 +90,6 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			initializeComponent();
 
 			inquiryPostDetail();
-
-			//			getActionBar().setHomeButtonEnabled(true);
-			//			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
 		catch(Exception ex )
 		{
@@ -139,6 +136,19 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		
 		Button btnFinish = (Button) header.findViewById(R.id.btnFinish);
 		btnFinish.setOnClickListener(this);
+		
+		if ( "true".equals( getMetaInfoString("hideMapOnPostDetail") ) )
+		{
+			findViewById(R.id.map_layout).setVisibility(ViewGroup.GONE);
+			Button btnHideMap = (Button)findViewById(R.id.btnHideMap);
+			btnHideMap.setText("경로 보기");
+		}
+		else
+		{
+			findViewById(R.id.map_layout).setVisibility(ViewGroup.VISIBLE);
+			Button btnHideMap = (Button)findViewById(R.id.btnHideMap);
+			btnHideMap.setText("경로 숨기기");
+		}
 	}
 
 	private void makeMapScrollable() {
@@ -279,6 +289,9 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		try
 		{
 			this.map = m;
+			
+			//강남역
+			moveMap(new LatLng(37.497916, 127.027546));
 		}
 		catch( Exception ex )
 		{
@@ -406,7 +419,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					post = mapper.readValue( postData, new TypeReference<Post>(){});
 
 					drawPostOnMap();
-
+					
 					if ( !Util.isEmptyString(post.getUser().getProfileImageURL()))
 					{
 						ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
@@ -422,7 +435,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 						txtUserName.setText( post.getUser().getUserID() + age );
 					else
 						txtUserName.setText( post.getUser().getUserName() + age );
-					
+
 					ImageView imgSex = (ImageView) header.findViewById(R.id.imgSex);
 					imgSex.setVisibility(ViewGroup.VISIBLE);
 					
@@ -662,5 +675,30 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		// TODO Auto-generated method stub
 		super.onStop();
 		unregisterReceiver(mMessageReceiver);
-	}	
+	}
+	
+	@Override
+	public void onBackPressed() {
+
+		finish();
+		Intent intent = new Intent(this, MainActivity.class);
+		startActivity(intent);
+	}
+	
+	public void toggleMapVisibility( View v )
+	{
+		Button btn = (Button) v;
+		if ( findViewById(R.id.map_layout).getVisibility() == ViewGroup.GONE )
+		{
+			findViewById(R.id.map_layout).setVisibility(ViewGroup.VISIBLE);
+			btn.setText("경로 숨기기");
+			setMetaInfo("hideMapOnPostDetail", "false");
+		}
+		else
+		{
+			findViewById(R.id.map_layout).setVisibility(ViewGroup.GONE);
+			btn.setText("경로 보기");
+			setMetaInfo("hideMapOnPostDetail", "true");
+		}
+	}
 }
