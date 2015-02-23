@@ -23,6 +23,8 @@ public class User extends ListItemModel{
 	private String profilePoint;
 	private String mobileNo;
 	private String uuid;
+	private String address;
+	private boolean moreFlag;
 
 	public String getUserNo() {
 		return userNo;
@@ -150,5 +152,21 @@ public class User extends ListItemModel{
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public boolean isMoreFlag() {
+		return moreFlag;
+	}
+
+	public void setMoreFlag(boolean moreFlag) {
+		this.moreFlag = moreFlag;
 	}
 }

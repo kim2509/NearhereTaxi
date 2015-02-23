@@ -7,6 +7,7 @@ public class APIResponse {
 	
 	private Object data = null;
 	private Object data2 = null;
+	private Object data3 = null;
 
 	public String getResCode() {
 		return resCode;
@@ -38,5 +39,13 @@ public class APIResponse {
 
 	public void setData2(Object data2) {
 		this.data2 = data2;
+	}
+
+	public Object getData3() {
+		return data3;
+	}
+
+	public void setData3(Object data3) {
+		this.data3 = data3;
 	}
 }

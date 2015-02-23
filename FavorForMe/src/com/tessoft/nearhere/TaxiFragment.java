@@ -83,6 +83,7 @@ public class TaxiFragment extends BaseFragment
 			listMain.addHeaderView(header3, null, true );
 			listMain.addHeaderView(header2, null, false );
 			listMain.addFooterView(footer, null, false );
+			listMain.setFooterDividersEnabled(false);
 
 			adapter = new TaxiArrayAdapter( getActivity().getApplicationContext(), this, 0 );
 			listMain.setAdapter(adapter);
@@ -175,6 +176,9 @@ public class TaxiFragment extends BaseFragment
 		
 		Button btnKeeper = (Button) rootView.findViewById(R.id.btnKeeper);
 		btnKeeper.setOnClickListener(this);
+		
+		TextView txtNumOfUsers = (TextView) rootView.findViewById(R.id.txtNumOfUsers);
+		txtNumOfUsers.setOnClickListener(this);
 	}
 
 	@Override
@@ -248,18 +252,15 @@ public class TaxiFragment extends BaseFragment
 						listMain.removeFooterView(footer);
 					}
 					
-					listMain.removeHeaderView(header2);
 					
+					TextView txtNumOfUsers = (TextView) rootView.findViewById(R.id.txtNumOfUsers);
 					if ( userCount > 0 )
 					{
-						listMain.addHeaderView(header2, null, false );
-						rootView.findViewById(R.id.layoutUsers).setVisibility(ViewGroup.VISIBLE);
-						TextView txtNumOfUsers = (TextView) rootView.findViewById(R.id.txtNumOfUsers);
 						txtNumOfUsers.setText("근처에 " + userCount + " 명의 사용자가 있습니다.\n합승등록을 하면 이들에게 푸시메시지가 전송됩니다.");
 					}
 					else
 					{
-						rootView.findViewById(R.id.layoutUsers).setVisibility(ViewGroup.GONE);
+						txtNumOfUsers.setText("근처에 " + userCount + " 명의 사용자가 있습니다.\n여기를 터치하면 전체사용자를 조회할 수 있습니다.");
 					}
 				}				
 			}
@@ -566,6 +567,14 @@ public class TaxiFragment extends BaseFragment
 				getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
 				
 				sendHttp("/taxi/statistics.do?name=safetyKeeper", mapper.writeValueAsString( getLoginUser() ), HTTP_SAFETY_KEEPER_CLICKED );
+			}
+			else if ( v.getId() == R.id.txtNumOfUsers )
+			{
+				Intent intent = new Intent( getActivity(), UserListActivity.class);
+				intent.putExtra("latitude", String.valueOf( departure.latitude ) );
+				intent.putExtra("longitude", String.valueOf( departure.longitude ) );
+				startActivity(intent);
+				getActivity().overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 			}
 		}
 		catch( Exception ex )

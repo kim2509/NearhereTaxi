@@ -80,6 +80,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			listMain.addHeaderView(header, null, false );
 			listMain.addHeaderView(header2 );
 			listMain.addFooterView(footer, null, false );
+			listMain.setFooterDividersEnabled(false);
 
 			listMain.setSelector(android.R.color.transparent);
 
@@ -681,8 +682,12 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 	public void onBackPressed() {
 
 		finish();
-		Intent intent = new Intent(this, MainActivity.class);
-		startActivity(intent);
+		
+		if ( MainActivity.active == false )
+		{
+			Intent intent = new Intent(this, MainActivity.class);
+			startActivity(intent);			
+		}
 	}
 	
 	public void toggleMapVisibility( View v )

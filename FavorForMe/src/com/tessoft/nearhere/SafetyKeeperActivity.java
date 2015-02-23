@@ -68,6 +68,7 @@ public class SafetyKeeperActivity extends BaseActivity implements OnClickListene
 			footer = getLayoutInflater().inflate(R.layout.list_footer_safety_keeper, null);
 
 			listMain = (ListView) findViewById(R.id.listMain);
+			listMain.setHeaderDividersEnabled(false);
 			listMain.addHeaderView(header, null, false );
 			listMain.addFooterView(footer, null, false );
 

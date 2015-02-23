@@ -30,7 +30,7 @@
 
                 <LinearLayout
                     android:id="@+id/layoutUserName"
-                    android:layout_width="wrap_content"
+                    android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
@@ -51,6 +51,7 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginLeft="5dp"
                         android:layout_marginTop="2dp"
+                        android:singleLine="false"
                         android:text="로딩중"
                         android:textColor="#3B5D98"
                         android:textSize="14sp" />

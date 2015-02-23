@@ -173,6 +173,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			checkPlayServices();
 
 			checkIfGPSEnabled();
+			
+			MainActivity.active = true;
 		}
 		catch( Exception ex )
 		{
@@ -600,7 +602,6 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 					if ( pushCount + messageCount + noticeCount > 0 )
 					{
-						mDrawerLayout.openDrawer(mDrawerList);
 						getActionBar().setIcon(R.drawable.icon_new);
 					}
 					else
@@ -626,6 +627,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		// TODO Auto-generated method stub
 		super.onDestroy();
 		getApplicationContext().unregisterReceiver(mMessageReceiver);
+		
+		MainActivity.active = false;
 	}
 
 	boolean doubleBackToExitPressedOnce = false;

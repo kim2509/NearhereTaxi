@@ -184,6 +184,10 @@
             android:name=".EventViewerActivity"
             android:label="@string/title_activity_event_viewer" >
         </activity>
+        <activity
+            android:name=".UserListActivity"
+            android:label="@string/title_activity_user_list" >
+        </activity>
     </application>
 
 </manifest>

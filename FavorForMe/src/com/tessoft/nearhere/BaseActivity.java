@@ -216,14 +216,12 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
-		MainActivity.active = true;
 	}
 	
 	@Override
 	protected void onStop() {
 		// TODO Auto-generated method stub
 		super.onStop();
-		MainActivity.active = false;
 	}
 	
 	public static boolean bInitImageLoader = false;

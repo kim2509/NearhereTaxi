@@ -270,14 +270,12 @@ public class SafetyKeeperService extends Service
     		if ( Util.isEmptyString( contact.getNumber() ) ) continue;
     	
     		String number = contact.getNumber();
-    		number = "01025124304";
     		number = number.replaceAll("\\-", "");
     		
     		if ( Util.isEmptyString(address) ) address = "[GPS 꺼져있음]";
     		
     		String sendMessage = "[이근처 합승-" + userName + "님] "+ message + " [" + address.replaceAll("\\|", " ") + "]";
-    		
-//			sms.sendTextMessage( number , null, sendMessage , null, null);
+			sms.sendTextMessage( number , null, sendMessage , null, null);
 			
 			resultMessage += contact.getName() + ",";
     	}

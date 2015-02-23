@@ -249,7 +249,11 @@ public class UserMessageActivity extends BaseActivity {
 	public void onBackPressed() {
 
 		finish();
-		Intent intent = new Intent(this, MainActivity.class);
-		startActivity(intent);
+
+		if ( MainActivity.active == false )
+		{
+			Intent intent = new Intent(this, MainActivity.class);
+			startActivity(intent);			
+		}
 	}
 }

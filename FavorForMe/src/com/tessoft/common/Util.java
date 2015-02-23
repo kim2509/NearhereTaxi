@@ -53,7 +53,7 @@ public class Util {
 	
 	public static String getFormattedDateString( String origin, String format ) throws Exception
 	{
-		Date d = getDateFromString(origin, "yyyy-MM-dd hh:mm:ss");
+		Date d = getDateFromString(origin, "yyyy-MM-dd HH:mm:ss");
 		return getDateStringFromDate(d, format);
 	}
 	
