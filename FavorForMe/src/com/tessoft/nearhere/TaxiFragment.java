@@ -50,7 +50,6 @@ public class TaxiFragment extends BaseFragment
 	protected static final int REQUEST_SET_DEPARTURE= 10;
 	protected static final int REQUEST_SET_DESTINATION = 20;
 	protected static final int REQUEST_NEW_POST = 2;
-	private static final int UPDATE_LOCATION = 3;
 	private static final int HTTP_SAFETY_KEEPER_CLICKED = 30;
 	
 	View rootView = null;
@@ -121,7 +120,7 @@ public class TaxiFragment extends BaseFragment
 			getActivity().setProgressBarIndeterminateVisibility(true);
 			inquiryPosts();
 			
-			updateMyLocation();
+			getActivity().sendBroadcast(new Intent("startLocationUpdate"));
 		}
 		catch( Exception ex )
 		{
@@ -252,16 +251,25 @@ public class TaxiFragment extends BaseFragment
 						listMain.removeFooterView(footer);
 					}
 					
+					listMain.removeHeaderView(header2);
 					
-					TextView txtNumOfUsers = (TextView) rootView.findViewById(R.id.txtNumOfUsers);
-					if ( userCount > 0 )
+					if ( departure != null )
 					{
-						txtNumOfUsers.setText("근처에 " + userCount + " 명의 사용자가 있습니다.\n합승등록을 하면 이들에게 푸시메시지가 전송됩니다.");
+						listMain.addHeaderView(header2, null, false);
+						rootView.findViewById(R.id.layoutUsers).setVisibility(ViewGroup.VISIBLE);
+						
+						TextView txtNumOfUsers = (TextView) rootView.findViewById(R.id.txtNumOfUsers);
+						if ( userCount > 0 )
+						{
+							txtNumOfUsers.setText("근처에 " + userCount + " 명의 사용자가 있습니다.\n합승등록을 하면 이들에게 푸시메시지가 전송됩니다.");
+						}
+						else
+						{
+							txtNumOfUsers.setText("근처에 사용자를 찾을 수 없습니다.\nGPS 가 활성화 되어 있는 지 확인해 주시기 바랍니다.");
+						}
 					}
 					else
-					{
-						txtNumOfUsers.setText("근처에 " + userCount + " 명의 사용자가 있습니다.\n여기를 터치하면 전체사용자를 조회할 수 있습니다.");
-					}
+						rootView.findViewById(R.id.layoutUsers).setVisibility(ViewGroup.GONE);
 				}				
 			}
 			else
@@ -331,7 +339,6 @@ public class TaxiFragment extends BaseFragment
 			
 			if ( bUpdatedOnce == false )
 			{
-				updateMyLocation();
 				bUpdatedOnce = true;
 				currentLocation = new LatLng( location.latitude , location.longitude );
 				
@@ -356,21 +363,6 @@ public class TaxiFragment extends BaseFragment
 		catch( Exception ex )
 		{
 			catchException(this, ex);
-		}
-	}
-	
-	public void updateMyLocation() throws Exception
-	{
-		if ( !Util.isEmptyString( MainActivity.latitude ) && !Util.isEmptyString( MainActivity.longitude ) )
-		{
-			User user = getLoginUser();
-			UserLocation userLocation = new UserLocation();
-			userLocation.setUser( user );
-			userLocation.setLocationName("현재위치");
-			userLocation.setLatitude( MainActivity.latitude );
-			userLocation.setLongitude( MainActivity.longitude );
-			userLocation.setAddress( MainActivity.address );
-			sendHttp("/taxi/updateUserLocation.do", mapper.writeValueAsString( userLocation ), UPDATE_LOCATION );			
 		}
 	}
 	

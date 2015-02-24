@@ -155,6 +155,14 @@ public class BaseFragment extends Fragment implements AdapterDelegate, Transacti
 		else return "";
 	}
 	
+	public int getMetaInfoInt( String key )
+	{
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences( getActivity() );
+		if ( settings.contains(key) )
+			return Util.getInt( settings.getString(key, "") );
+		return 0;
+	}
+	
 	public void showSimpleInputDialog(String title, String subTitle, String defaultValue, 
 			String desc, final OnClickListener onClickListener )
 	{

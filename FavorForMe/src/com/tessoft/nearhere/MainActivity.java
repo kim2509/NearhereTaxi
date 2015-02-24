@@ -31,6 +31,7 @@ import com.tessoft.common.Util;
 import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.MainMenuItem;
 import com.tessoft.domain.User;
+import com.tessoft.domain.UserLocation;
 
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -83,6 +84,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 	protected static final int GET_UNREAD_COUNT = 3;
 	private static final int HTTP_LEAVE = 10;
+	private static final int HTTP_UPDATE_LOCATION = 20;
+	
 	String SENDER_ID = "30113798803";
 	GoogleCloudMessaging gcm;
 
@@ -99,8 +102,6 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		try
 		{
 			super.onCreate(savedInstanceState);
-
-			getApplicationContext().registerReceiver(mMessageReceiver, new IntentFilter("updateUnreadCount"));
 
 			supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
@@ -189,7 +190,10 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		{
 			super.onStart();
 			if ( mGoogleApiClient != null && mGoogleApiClient.isConnected() == false )
-				mGoogleApiClient.connect();	
+				mGoogleApiClient.connect();
+			
+			registerReceiver(mMessageReceiver, new IntentFilter("updateUnreadCount"));
+			registerReceiver(mMessageReceiver, new IntentFilter("startLocationUpdate"));
 		}
 		catch( Exception ex )
 		{
@@ -209,6 +213,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 				stopLocationUpdates();
 				mGoogleApiClient.disconnect();
 			}
+			
+			unregisterReceiver(mMessageReceiver);
 		}
 		catch( Exception ex )
 		{
@@ -247,6 +253,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			{
 				if ( "updateUnreadCount".equals( intent.getAction() ) )
 					getUnreadCount();
+				else if ( "startLocationUpdate".equals( intent.getAction() ) )
+					startLocationUpdates();
 			}
 			catch( Exception ex )
 			{
@@ -254,7 +262,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			}
 		}
 	};
-
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -407,16 +415,44 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	@Override
 	public void onAddressTaskPostExecute(int requestCode, Object result) {
 		// TODO Auto-generated method stub
-		MainActivity.address = Util.getDongAddressString( result );
-		MainActivity.fullAddress = result.toString();
 		
-		Intent intent = new Intent("currentLocationChanged");
-		intent.putExtra("latitude", MainActivity.latitude );
-		intent.putExtra("longitude", MainActivity.longitude );
-		intent.putExtra("fullAddress", result.toString() );
-		sendBroadcast(intent);
+		try
+		{
+			MainActivity.address = Util.getDongAddressString( result );
+			MainActivity.fullAddress = result.toString();
+			
+			Intent intent = new Intent("currentLocationChanged");
+			intent.putExtra("latitude", MainActivity.latitude );
+			intent.putExtra("longitude", MainActivity.longitude );
+			intent.putExtra("fullAddress", result.toString() );
+			sendBroadcast(intent);
+			
+			if ( bMyLocationUpdated == false )
+				updateMyLocation();			
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
 	}
 
+	boolean bMyLocationUpdated = false;
+	
+	public void updateMyLocation() throws Exception
+	{
+		if ( !Util.isEmptyString( MainActivity.latitude ) && !Util.isEmptyString( MainActivity.longitude ) )
+		{
+			User user = getLoginUser();
+			UserLocation userLocation = new UserLocation();
+			userLocation.setUser( user );
+			userLocation.setLocationName("현재위치");
+			userLocation.setLatitude( MainActivity.latitude );
+			userLocation.setLongitude( MainActivity.longitude );
+			userLocation.setAddress( MainActivity.address );
+			sendHttp("/taxi/updateUserLocation.do", mapper.writeValueAsString( userLocation ), HTTP_UPDATE_LOCATION );			
+		}
+	}
+	
 	@Override
 	public void onConnectionFailed(ConnectionResult arg0) {
 		// TODO Auto-generated method stub
@@ -445,6 +481,10 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	}
 
 	protected void startLocationUpdates() {
+		
+		if ( mGoogleApiClient == null || mGoogleApiClient.isConnected() == false )
+			return;
+		
 		LocationServices.FusedLocationApi.requestLocationUpdates(
 				mGoogleApiClient, mLocationRequest, this);
 	}
@@ -608,7 +648,9 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 						getActionBar().setIcon(R.color.transparent);
 
 					adapter.notifyDataSetChanged();
-				}				
+				}
+				else if ( requestCode == HTTP_UPDATE_LOCATION )
+					bMyLocationUpdated = true;
 			}
 			else
 			{
@@ -625,10 +667,16 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
-		super.onDestroy();
-		getApplicationContext().unregisterReceiver(mMessageReceiver);
 		
-		MainActivity.active = false;
+		try
+		{
+			super.onDestroy();
+			MainActivity.active = false;	
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
 	}
 
 	boolean doubleBackToExitPressedOnce = false;

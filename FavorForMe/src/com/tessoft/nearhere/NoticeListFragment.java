@@ -12,6 +12,7 @@ import org.codehaus.jackson.type.TypeReference;
 import com.tessoft.common.Constants;
 import com.tessoft.common.MessageBoxListAdapter;
 import com.tessoft.common.NoticeListAdapter;
+import com.tessoft.common.Util;
 import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.Notice;
 import com.tessoft.domain.User;
@@ -70,6 +71,16 @@ public class NoticeListFragment extends BaseFragment {
 					if(groupPosition != previousGroup)
 						listMain.collapseGroup(previousGroup);
 					previousGroup = groupPosition;
+					
+					Notice item = (Notice) adapter.getGroup(groupPosition);
+					item.setRead(true);
+					adapter.notifyDataSetChanged();
+					
+					int noticeID = getMetaInfoInt("lastNoticeID");
+					if ( noticeID < Integer.parseInt( item.getNoticeID() ) )
+						setMetaInfo("lastNoticeID", item.getNoticeID() );
+					
+					getActivity().sendBroadcast( new Intent("updateUnreadCount") );
 				}
 			});
 
@@ -142,16 +153,18 @@ public class NoticeListFragment extends BaseFragment {
 	}
 
 	private void updateLastNoticeID(List<Notice> noticeList) {
-		int maxNoticeID = 0;
-		for ( int i = 0; i < noticeList.size(); i++ )
+		
+		if ( !Util.isEmptyString( getMetaInfoString("lastNoticeID") ) )
 		{
-			Notice noticeItem = noticeList.get(i);
-			if ( maxNoticeID < Integer.parseInt( noticeItem.getNoticeID() ) )
-				maxNoticeID = Integer.parseInt( noticeItem.getNoticeID() );
+			int noticeID = getMetaInfoInt("lastNoticeID");
+			
+			for ( int i = 0; i < noticeList.size(); i++ )
+			{
+				Notice noticeItem = noticeList.get(i);
+				if ( noticeID >= Integer.parseInt( noticeItem.getNoticeID() ) )
+					noticeItem.setRead(true);
+			}	
 		}
-
-		setMetaInfo("lastNoticeID", String.valueOf(maxNoticeID));
-		getActivity().sendBroadcast( new Intent("updateUnreadCount") );
 	}
 
 	//This is the handler that will manager to process the broadcast intent

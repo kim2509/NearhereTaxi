@@ -2,6 +2,8 @@ package com.tessoft.nearhere;
 
 import com.tessoft.common.Constants;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,6 +16,16 @@ import android.widget.Toast;
 public class EventViewerActivity extends BaseActivity {
 
 	WebView webView = null;
+	
+	WebViewClient webViewClient = new WebViewClient() {
+		public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+			Toast.makeText( getApplicationContext(), description, Toast.LENGTH_SHORT).show();
+		}
+		
+		public void onReceivedSslError(WebView view, android.webkit.SslErrorHandler handler, android.net.http.SslError error) {
+			handler.proceed();
+		}
+	};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +40,8 @@ public class EventViewerActivity extends BaseActivity {
 			
 			webView = (WebView) findViewById(R.id.webView);
 			webView.getSettings().setJavaScriptEnabled(true);
+			
+			webView.setWebViewClient(webViewClient);
 			webView.setWebChromeClient(new WebChromeClient());
 			
 			if ( getIntent().getExtras().containsKey("ssl") && "true".equals( getIntent().getExtras().getString("ssl") ) )

@@ -1,5 +1,8 @@
 package com.tessoft.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Notice {
 
 	private String noticeID = "";
@@ -7,6 +10,9 @@ public class Notice {
 	private String title = "";
 	private String content = "";
 	private String createdDate = "";
+	
+	private boolean isRead = false;
+	
 	public String getTitle() {
 		return title;
 	}
@@ -30,5 +36,11 @@ public class Notice {
 	}
 	public void setNoticeID(String noticeID) {
 		this.noticeID = noticeID;
+	}
+	public boolean isRead() {
+		return isRead;
+	}
+	public void setRead(boolean isRead) {
+		this.isRead = isRead;
 	}
 }

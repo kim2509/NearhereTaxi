@@ -1,5 +1,8 @@
 package com.tessoft.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserSetting {
 	private String userID;
 	private String messagePushReceiveYN;

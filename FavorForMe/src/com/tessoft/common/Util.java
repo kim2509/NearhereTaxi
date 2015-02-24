@@ -93,4 +93,12 @@ public class Util {
 		if ( isEmptyString(str) ) return "";
 		return str;
 	}
+	
+	public static int getInt( Object obj )
+	{
+		if ( obj == null || obj instanceof String == false ) return 0;
+		
+		if ( isEmptyString(obj.toString()) ) return 0;
+		return Integer.parseInt(obj.toString());
+	}
 }

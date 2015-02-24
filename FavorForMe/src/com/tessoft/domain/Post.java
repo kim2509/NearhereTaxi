@@ -2,6 +2,9 @@ package com.tessoft.domain;
 
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Post extends ListItemModel {
 
 	/**

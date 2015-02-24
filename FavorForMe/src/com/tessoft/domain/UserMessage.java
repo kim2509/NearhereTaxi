@@ -1,5 +1,8 @@
 package com.tessoft.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserMessage {
 
 	private String messageID;

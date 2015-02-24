@@ -117,7 +117,10 @@ public class UserListActivity extends BaseActivity implements OnItemClickListene
 					String postData = mapper.writeValueAsString( response.getData() );
 					List<User> userList = mapper.readValue( postData, new TypeReference<List<User>>(){});
 					
-					if ( "true".equals( response.getData2() ) )
+					String moreFlagString = response.getData2().toString().split("\\|")[0];
+					String totalCount = response.getData2().toString().split("\\|")[1];
+					
+					if ( "true".equals( moreFlagString ) )
 					{
 						userList.add( moreFlag );
 					}
@@ -126,7 +129,7 @@ public class UserListActivity extends BaseActivity implements OnItemClickListene
 					adapter.notifyDataSetChanged();
 					
 					TextView txtTitle = (TextView) findViewById(R.id.txtTitle);
-					txtTitle.setText( distance + "km 이내의 사용자(" + response.getData3() + "명)");
+					txtTitle.setText( distance + "km 이내의 사용자(" + totalCount + "명)");
 				}
 			}
 		}

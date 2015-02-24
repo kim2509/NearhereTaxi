@@ -85,6 +85,10 @@ public class NoticeListAdapter extends BaseExpandableListAdapter {
 	WebViewClient webViewClient = new WebViewClient() {
 		public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
 		}
+		
+		public void onReceivedSslError(WebView view, android.webkit.SslErrorHandler handler, android.net.http.SslError error) {
+			handler.proceed();
+		};
 	};
 
 	@Override
@@ -134,6 +138,11 @@ public class NoticeListAdapter extends BaseExpandableListAdapter {
 			title += Util.getFormattedDateString(item.getCreatedDate(),"MM-dd") + "</font>";
 			TextView txtTitle = (TextView) row.findViewById(R.id.txtTitle);
 			txtTitle.setText( Html.fromHtml(title) );
+			
+			if ( item.isRead() )
+				row.findViewById(R.id.txtNew).setVisibility(ViewGroup.GONE);
+			else
+				row.findViewById(R.id.txtNew).setVisibility(ViewGroup.VISIBLE);
 			
 			row.setTag( item );
 		}
