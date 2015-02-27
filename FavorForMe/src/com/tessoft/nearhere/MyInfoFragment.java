@@ -1,6 +1,8 @@
 package com.tessoft.nearhere;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,8 +40,10 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager.OnActivityResultListener;
@@ -73,8 +77,9 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 	ObjectMapper mapper = new ObjectMapper();
 	int UPDATE_USER_MOBILE_NO = 10;
 	protected static final int UPDATE_USER_NAME = 20;
+	private static final int REQUEST_IMAGE_CROP = 40;
 	User user = null;
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -272,7 +277,7 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 				}
 			}
 		});
-		
+
 		Button btnChangeProfileImage = (Button) header.findViewById(R.id.btnChangeProfileImage);
 		btnChangeProfileImage.setOnClickListener(new OnClickListener() {
 
@@ -292,12 +297,12 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 				}
 			}
 		});
-		
+
 		mShortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
-		
+
 		Button btnChangeMobileNo = (Button) header.findViewById(R.id.btnChangeMobileNo);
 		btnChangeMobileNo.setOnClickListener(this);
-		
+
 		Button btnChangeName = (Button) header.findViewById(R.id.btnChangeName);
 		btnChangeName.setOnClickListener( this );
 	}
@@ -342,10 +347,10 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 					List<UserLocation> locationList = mapper.readValue(locationListString, new TypeReference<List<UserLocation>>(){});
 					List<Post> userPosts = mapper.readValue(userPostString, new TypeReference<List<Post>>(){});
 					List<Post> userPostsReplied = mapper.readValue(postsUserRepliedString, new TypeReference<List<Post>>(){});
-					
+
 					ArrayList postList = new ArrayList();
 					HashMap postKeys = new HashMap();
-					
+
 					for ( int i = 0; i < userPosts.size(); i++ )
 					{
 						if ( !postKeys.containsKey( userPosts.get(i).getPostID() ) )
@@ -354,7 +359,7 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 							postKeys.put( userPosts.get(i).getPostID(), "exist" );
 						}
 					}
-					
+
 					for ( int i = 0; i < userPostsReplied.size(); i++ )
 					{
 						if ( !postKeys.containsKey( userPostsReplied.get(i).getPostID() ) )
@@ -435,7 +440,7 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 					}
 					else
 						txtMobileNo.setText("");
-					
+
 					adapter.clear();
 					adapter.addAll(postList);
 					adapter.notifyDataSetChanged();
@@ -516,18 +521,32 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 					Uri _uri = data.getData();
 
 					//User had pick an image.
-					Cursor cursor = getActivity().getContentResolver().query(_uri, 
-							new String[] { android.provider.MediaStore.Images.ImageColumns.DATA }, 
-							null, null, null);
-					cursor.moveToFirst();
+//					Cursor cursor = getActivity().getContentResolver().query(_uri, 
+//							new String[] { android.provider.MediaStore.Images.ImageColumns.DATA }, 
+//							null, null, null);
+//					cursor.moveToFirst();
 
 					//Link to the image
-					final String imageFilePath = cursor.getString(0);
-					cursor.close();
+//					final String imageFilePath = cursor.getString(0);
+//					cursor.close();
 
-					Bitmap myBitmap = BitmapFactory.decodeFile( imageFilePath );
-					myBitmap = resizeBitmapImageFn( myBitmap, 1024 );
-					sendPhoto( myBitmap );
+					String imageFilePath = _uri.getPath();
+					
+					ExifInterface exif = new ExifInterface(imageFilePath);
+
+					int exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);	    
+					int exifDegree = exifOrientationToDegrees(exifOrientation);
+					if(exifDegree != 0) {
+						Bitmap bitmap = getBitmap( imageFilePath );			    	
+						Bitmap rotatePhoto = rotate(bitmap, exifDegree);
+//						saveBitmap(rotatePhoto);			    			    
+					}	    			
+
+					cropImage( _uri );
+
+					//					Bitmap myBitmap = BitmapFactory.decodeFile( imageFilePath );
+					//					myBitmap = resizeBitmapImageFn( myBitmap, 1024 );
+					//					sendPhoto( myBitmap );
 				}
 
 			}
@@ -538,6 +557,105 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 		}
 	}
 
+	public int exifOrientationToDegrees(int exifOrientation)
+	{
+		if(exifOrientation == ExifInterface.ORIENTATION_ROTATE_90)
+		{
+			return 90;
+		}
+		else if(exifOrientation == ExifInterface.ORIENTATION_ROTATE_180)
+		{
+			return 180;
+		}
+		else if(exifOrientation == ExifInterface.ORIENTATION_ROTATE_270)
+		{
+			return 270;
+		}
+		return 0;
+	}
+
+	public Bitmap getBitmap( String imagePath ) {
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inInputShareable = true;
+		options.inDither=false;
+		options.inTempStorage=new byte[32 * 1024];
+		options.inPurgeable = true;
+		options.inJustDecodeBounds = false;
+
+		File f = new File(imagePath);
+
+		FileInputStream fs=null;
+		try {
+			fs = new FileInputStream(f);
+		} catch (FileNotFoundException e) {
+			//TODO do something intelligent
+			e.printStackTrace();
+		}
+
+		Bitmap bm = null;
+
+		try {
+			if(fs!=null) bm=BitmapFactory.decodeFileDescriptor(fs.getFD(), null, options);
+		} catch (IOException e) {
+			//TODO do something intelligent
+			e.printStackTrace();
+		} finally{ 
+			if(fs!=null) {
+				try {
+					fs.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}		
+		return bm;
+	}
+	
+	public static Bitmap rotate(Bitmap image, int degrees)
+	{
+		if(degrees != 0 && image != null)
+		{
+			Matrix m = new Matrix();
+			m.setRotate(degrees, (float)image.getWidth(), (float)image.getHeight());
+
+			try
+			{
+				Bitmap b = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), m, true);
+				
+				if(image != b)
+				{
+					image.recycle();
+					image = b;
+				}
+					
+				image = b;
+			} 
+			catch(OutOfMemoryError ex)
+			{
+				ex.printStackTrace();
+			}
+		}
+		return image;
+	}
+
+	private void cropImage(Uri contentUri) {
+		Intent cropIntent = new Intent("com.android.camera.action.CROP");
+	  //indicate image type and Uri of image
+	  cropIntent.setDataAndType(contentUri, "image/*");
+	  //set crop properties
+	  cropIntent.putExtra("crop", "true");
+	  //indicate aspect of desired crop
+	  cropIntent.putExtra("aspectX", 1);
+	  cropIntent.putExtra("aspectY", 1);
+	  //indicate output X and Y
+	  cropIntent.putExtra("outputX", 256);
+	  cropIntent.putExtra("outputY", 256);
+	  //retrieve data on return
+	  cropIntent.putExtra("return-data", true);
+	  startActivityForResult(cropIntent, REQUEST_IMAGE_CROP);		
+	}
+	
 	private void sendPhoto(Bitmap f) throws Exception {
 		User user = getLoginUser();
 		new UploadTask( getActivity(), this, user.getUserID() , PROFILE_IMAGE_UPLOAD ).execute(f);
@@ -571,7 +689,7 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 		super.onStop();
 		getActivity().unregisterReceiver(mMessageReceiver);
 	}
-	
+
 	/*
 	 * 비트맵(Bitmap) 이미지의 가로, 세로 이미지를 리사이징
 	 * @param bmpSource 원본 Bitmap 객체
@@ -579,183 +697,183 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 	 * @return 리사이즈된 이미지 Bitmap 객체
 	 */
 	public Bitmap resizeBitmapImageFn(
-	Bitmap bmpSource, int maxResolution){ 
-	        int iWidth = bmpSource.getWidth();      //비트맵이미지의 넓이
-	        int iHeight = bmpSource.getHeight();     //비트맵이미지의 높이
-	        int newWidth = iWidth ;
-	        int newHeight = iHeight ;
-	        float rate = 0.0f;
-	        
-	        //이미지의 가로 세로 비율에 맞게 조절
-	        if(iWidth > iHeight ){
-	                if(maxResolution < iWidth ){ 
-	                        rate = maxResolution / (float) iWidth ; 
-	                        newHeight = (int) (iHeight * rate); 
-	                        newWidth = maxResolution; 
-	                }
-	        }else{
-	                if(maxResolution < iHeight ){
-	                        rate = maxResolution / (float) iHeight ; 
-	                        newWidth = (int) (iWidth * rate);
-	                        newHeight = maxResolution;
-	                }
-	        }
-	 
-	        return Bitmap.createScaledBitmap(
-	bmpSource, newWidth, newHeight, true); 
+			Bitmap bmpSource, int maxResolution){ 
+		int iWidth = bmpSource.getWidth();      //비트맵이미지의 넓이
+		int iHeight = bmpSource.getHeight();     //비트맵이미지의 높이
+		int newWidth = iWidth ;
+		int newHeight = iHeight ;
+		float rate = 0.0f;
+
+		//이미지의 가로 세로 비율에 맞게 조절
+		if(iWidth > iHeight ){
+			if(maxResolution < iWidth ){ 
+				rate = maxResolution / (float) iWidth ; 
+				newHeight = (int) (iHeight * rate); 
+				newWidth = maxResolution; 
+			}
+		}else{
+			if(maxResolution < iHeight ){
+				rate = maxResolution / (float) iHeight ; 
+				newWidth = (int) (iWidth * rate);
+				newHeight = maxResolution;
+			}
+		}
+
+		return Bitmap.createScaledBitmap(
+				bmpSource, newWidth, newHeight, true); 
 	}
-	
+
 	/**
-     * "Zooms" in a thumbnail view by assigning the high resolution image to a hidden "zoomed-in"
-     * image view and animating its bounds to fit the entire activity content area. More
-     * specifically:
-     *
-     * <ol>
-     *   <li>Assign the high-res image to the hidden "zoomed-in" (expanded) image view.</li>
-     *   <li>Calculate the starting and ending bounds for the expanded view.</li>
-     *   <li>Animate each of four positioning/sizing properties (X, Y, SCALE_X, SCALE_Y)
-     *       simultaneously, from the starting bounds to the ending bounds.</li>
-     *   <li>Zoom back out by running the reverse animation on click.</li>
-     * </ol>
-     *
-     * @param thumbView  The thumbnail view to zoom in.
-     * @param imageResId The high-resolution version of the image represented by the thumbnail.
-     */
-	
+	 * "Zooms" in a thumbnail view by assigning the high resolution image to a hidden "zoomed-in"
+	 * image view and animating its bounds to fit the entire activity content area. More
+	 * specifically:
+	 *
+	 * <ol>
+	 *   <li>Assign the high-res image to the hidden "zoomed-in" (expanded) image view.</li>
+	 *   <li>Calculate the starting and ending bounds for the expanded view.</li>
+	 *   <li>Animate each of four positioning/sizing properties (X, Y, SCALE_X, SCALE_Y)
+	 *       simultaneously, from the starting bounds to the ending bounds.</li>
+	 *   <li>Zoom back out by running the reverse animation on click.</li>
+	 * </ol>
+	 *
+	 * @param thumbView  The thumbnail view to zoom in.
+	 * @param imageResId The high-resolution version of the image represented by the thumbnail.
+	 */
+
 	private Animator mCurrentAnimator;
 	private int mShortAnimationDuration;
-	
-    private void zoomImageFromThumb(final View thumbView ) {
-        // If there's an animation in progress, cancel it immediately and proceed with this one.
-        if (mCurrentAnimator != null) {
-            mCurrentAnimator.cancel();
-        }
-        
-        String imageURL = "";
-        if ( thumbView.getTag() == null || thumbView.getTag() instanceof String == false ) return;
-        
-        imageURL = thumbView.getTag().toString();
-        if ( Util.isEmptyString( imageURL ) ) return;
 
-        // Load the high-resolution "zoomed-in" image.
-        final ImageView expandedImageView = (ImageView) rootView.findViewById(R.id.expanded_image);
-        ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
-        		imageURL, expandedImageView);
+	private void zoomImageFromThumb(final View thumbView ) {
+		// If there's an animation in progress, cancel it immediately and proceed with this one.
+		if (mCurrentAnimator != null) {
+			mCurrentAnimator.cancel();
+		}
 
-        // Calculate the starting and ending bounds for the zoomed-in image. This step
-        // involves lots of math. Yay, math.
-        final Rect startBounds = new Rect();
-        final Rect finalBounds = new Rect();
-        final Point globalOffset = new Point();
+		String imageURL = "";
+		if ( thumbView.getTag() == null || thumbView.getTag() instanceof String == false ) return;
 
-        // The start bounds are the global visible rectangle of the thumbnail, and the
-        // final bounds are the global visible rectangle of the container view. Also
-        // set the container view's offset as the origin for the bounds, since that's
-        // the origin for the positioning animation properties (X, Y).
-        thumbView.getGlobalVisibleRect(startBounds);
-        rootView.findViewById(R.id.container).getGlobalVisibleRect(finalBounds, globalOffset);
-        startBounds.offset(-globalOffset.x, -globalOffset.y);
-        finalBounds.offset(-globalOffset.x, -globalOffset.y);
+		imageURL = thumbView.getTag().toString();
+		if ( Util.isEmptyString( imageURL ) ) return;
 
-        // Adjust the start bounds to be the same aspect ratio as the final bounds using the
-        // "center crop" technique. This prevents undesirable stretching during the animation.
-        // Also calculate the start scaling factor (the end scaling factor is always 1.0).
-        float startScale;
-        if ((float) finalBounds.width() / finalBounds.height()
-                > (float) startBounds.width() / startBounds.height()) {
-            // Extend start bounds horizontally
-            startScale = (float) startBounds.height() / finalBounds.height();
-            float startWidth = startScale * finalBounds.width();
-            float deltaWidth = (startWidth - startBounds.width()) / 2;
-            startBounds.left -= deltaWidth;
-            startBounds.right += deltaWidth;
-        } else {
-            // Extend start bounds vertically
-            startScale = (float) startBounds.width() / finalBounds.width();
-            float startHeight = startScale * finalBounds.height();
-            float deltaHeight = (startHeight - startBounds.height()) / 2;
-            startBounds.top -= deltaHeight;
-            startBounds.bottom += deltaHeight;
-        }
+		// Load the high-resolution "zoomed-in" image.
+		final ImageView expandedImageView = (ImageView) rootView.findViewById(R.id.expanded_image);
+		ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
+				imageURL, expandedImageView);
 
-        // Hide the thumbnail and show the zoomed-in view. When the animation begins,
-        // it will position the zoomed-in view in the place of the thumbnail.
-        thumbView.setAlpha(0f);
-        expandedImageView.setVisibility(View.VISIBLE);
+		// Calculate the starting and ending bounds for the zoomed-in image. This step
+		// involves lots of math. Yay, math.
+		final Rect startBounds = new Rect();
+		final Rect finalBounds = new Rect();
+		final Point globalOffset = new Point();
 
-        // Set the pivot point for SCALE_X and SCALE_Y transformations to the top-left corner of
-        // the zoomed-in view (the default is the center of the view).
-        expandedImageView.setPivotX(0f);
-        expandedImageView.setPivotY(0f);
+		// The start bounds are the global visible rectangle of the thumbnail, and the
+		// final bounds are the global visible rectangle of the container view. Also
+		// set the container view's offset as the origin for the bounds, since that's
+		// the origin for the positioning animation properties (X, Y).
+		thumbView.getGlobalVisibleRect(startBounds);
+		rootView.findViewById(R.id.container).getGlobalVisibleRect(finalBounds, globalOffset);
+		startBounds.offset(-globalOffset.x, -globalOffset.y);
+		finalBounds.offset(-globalOffset.x, -globalOffset.y);
 
-        // Construct and run the parallel animation of the four translation and scale properties
-        // (X, Y, SCALE_X, and SCALE_Y).
-        AnimatorSet set = new AnimatorSet();
-        set
-                .play(ObjectAnimator.ofFloat(expandedImageView, View.X, startBounds.left,
-                        finalBounds.left))
-                .with(ObjectAnimator.ofFloat(expandedImageView, View.Y, startBounds.top,
-                        finalBounds.top))
-                .with(ObjectAnimator.ofFloat(expandedImageView, View.SCALE_X, startScale, 1f))
-                .with(ObjectAnimator.ofFloat(expandedImageView, View.SCALE_Y, startScale, 1f));
-        set.setDuration(mShortAnimationDuration);
-        set.setInterpolator(new DecelerateInterpolator());
-        set.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mCurrentAnimator = null;
-            }
+		// Adjust the start bounds to be the same aspect ratio as the final bounds using the
+		// "center crop" technique. This prevents undesirable stretching during the animation.
+		// Also calculate the start scaling factor (the end scaling factor is always 1.0).
+		float startScale;
+		if ((float) finalBounds.width() / finalBounds.height()
+				> (float) startBounds.width() / startBounds.height()) {
+			// Extend start bounds horizontally
+			startScale = (float) startBounds.height() / finalBounds.height();
+			float startWidth = startScale * finalBounds.width();
+			float deltaWidth = (startWidth - startBounds.width()) / 2;
+			startBounds.left -= deltaWidth;
+			startBounds.right += deltaWidth;
+		} else {
+			// Extend start bounds vertically
+			startScale = (float) startBounds.width() / finalBounds.width();
+			float startHeight = startScale * finalBounds.height();
+			float deltaHeight = (startHeight - startBounds.height()) / 2;
+			startBounds.top -= deltaHeight;
+			startBounds.bottom += deltaHeight;
+		}
 
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                mCurrentAnimator = null;
-            }
-        });
-        set.start();
-        mCurrentAnimator = set;
+		// Hide the thumbnail and show the zoomed-in view. When the animation begins,
+		// it will position the zoomed-in view in the place of the thumbnail.
+		thumbView.setAlpha(0f);
+		expandedImageView.setVisibility(View.VISIBLE);
 
-        // Upon clicking the zoomed-in image, it should zoom back down to the original bounds
-        // and show the thumbnail instead of the expanded image.
-        final float startScaleFinal = startScale;
-        expandedImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mCurrentAnimator != null) {
-                    mCurrentAnimator.cancel();
-                }
+		// Set the pivot point for SCALE_X and SCALE_Y transformations to the top-left corner of
+		// the zoomed-in view (the default is the center of the view).
+		expandedImageView.setPivotX(0f);
+		expandedImageView.setPivotY(0f);
 
-                // Animate the four positioning/sizing properties in parallel, back to their
-                // original values.
-                AnimatorSet set = new AnimatorSet();
-                set
-                        .play(ObjectAnimator.ofFloat(expandedImageView, View.X, startBounds.left))
-                        .with(ObjectAnimator.ofFloat(expandedImageView, View.Y, startBounds.top))
-                        .with(ObjectAnimator
-                                .ofFloat(expandedImageView, View.SCALE_X, startScaleFinal))
-                        .with(ObjectAnimator
-                                .ofFloat(expandedImageView, View.SCALE_Y, startScaleFinal));
-                set.setDuration(mShortAnimationDuration);
-                set.setInterpolator(new DecelerateInterpolator());
-                set.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        thumbView.setAlpha(1f);
-                        expandedImageView.setVisibility(View.GONE);
-                        mCurrentAnimator = null;
-                    }
+		// Construct and run the parallel animation of the four translation and scale properties
+		// (X, Y, SCALE_X, and SCALE_Y).
+		AnimatorSet set = new AnimatorSet();
+		set
+		.play(ObjectAnimator.ofFloat(expandedImageView, View.X, startBounds.left,
+				finalBounds.left))
+				.with(ObjectAnimator.ofFloat(expandedImageView, View.Y, startBounds.top,
+						finalBounds.top))
+						.with(ObjectAnimator.ofFloat(expandedImageView, View.SCALE_X, startScale, 1f))
+						.with(ObjectAnimator.ofFloat(expandedImageView, View.SCALE_Y, startScale, 1f));
+		set.setDuration(mShortAnimationDuration);
+		set.setInterpolator(new DecelerateInterpolator());
+		set.addListener(new AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				mCurrentAnimator = null;
+			}
 
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-                        thumbView.setAlpha(1f);
-                        expandedImageView.setVisibility(View.GONE);
-                        mCurrentAnimator = null;
-                    }
-                });
-                set.start();
-                mCurrentAnimator = set;
-            }
-        });
-    }
+			@Override
+			public void onAnimationCancel(Animator animation) {
+				mCurrentAnimator = null;
+			}
+		});
+		set.start();
+		mCurrentAnimator = set;
+
+		// Upon clicking the zoomed-in image, it should zoom back down to the original bounds
+		// and show the thumbnail instead of the expanded image.
+		final float startScaleFinal = startScale;
+		expandedImageView.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				if (mCurrentAnimator != null) {
+					mCurrentAnimator.cancel();
+				}
+
+				// Animate the four positioning/sizing properties in parallel, back to their
+				// original values.
+				AnimatorSet set = new AnimatorSet();
+				set
+				.play(ObjectAnimator.ofFloat(expandedImageView, View.X, startBounds.left))
+				.with(ObjectAnimator.ofFloat(expandedImageView, View.Y, startBounds.top))
+				.with(ObjectAnimator
+						.ofFloat(expandedImageView, View.SCALE_X, startScaleFinal))
+						.with(ObjectAnimator
+								.ofFloat(expandedImageView, View.SCALE_Y, startScaleFinal));
+				set.setDuration(mShortAnimationDuration);
+				set.setInterpolator(new DecelerateInterpolator());
+				set.addListener(new AnimatorListenerAdapter() {
+					@Override
+					public void onAnimationEnd(Animator animation) {
+						thumbView.setAlpha(1f);
+						expandedImageView.setVisibility(View.GONE);
+						mCurrentAnimator = null;
+					}
+
+					@Override
+					public void onAnimationCancel(Animator animation) {
+						thumbView.setAlpha(1f);
+						expandedImageView.setVisibility(View.GONE);
+						mCurrentAnimator = null;
+					}
+				});
+				set.start();
+				mCurrentAnimator = set;
+			}
+		});
+	}
 
 	@Override
 	public void onClick(View v) {
@@ -776,43 +894,43 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 			catchException(this, ex);
 		}
 	}
-	
+
 	AlertDialog mobileInputDialog = null;
-	
+
 	public void openMobileInputDialog() throws Exception
 	{
 		LayoutInflater li = LayoutInflater.from( getActivity() );
 		View promptsView = li.inflate(R.layout.fragment_user_mobile_input, null);
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder( getActivity() );
 		alertDialogBuilder.setView(promptsView);
-		
+
 		final EditText userInput = (EditText) promptsView
 				.findViewById(R.id.editTextDialogUserInput);
-		
+
 		// set dialog message
 		alertDialogBuilder
-			.setCancelable(false)
-			.setTitle("휴대폰 번호 입력")
-			.setPositiveButton("확인", null )
-			.setNegativeButton("취소",
-			  new DialogInterface.OnClickListener() {
-			    public void onClick(DialogInterface dialog,int id) {
+		.setCancelable(false)
+		.setTitle("휴대폰 번호 입력")
+		.setPositiveButton("확인", null )
+		.setNegativeButton("취소",
+				new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
 				dialog.cancel();
-			    }
-			  });
+			}
+		});
 
 		// create alert dialog
 		mobileInputDialog = alertDialogBuilder.create();
 
 		mobileInputDialog.setOnShowListener( new OnShowListener() {
-			
+
 			@Override
 			public void onShow(DialogInterface dialog) {
 				// TODO Auto-generated method stub
-				
+
 				Button b = mobileInputDialog.getButton(AlertDialog.BUTTON_POSITIVE);
 				b.setOnClickListener(new OnClickListener() {
-					
+
 					@Override
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
@@ -823,7 +941,7 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 								userInput.setError("입력한 번호가 올바르지 않습니다.");
 								return;
 							}
-							
+
 							getActivity().setProgressBarIndeterminateVisibility(true);
 							user.setMobileNo(userInput.getText().toString());
 							sendHttp("/taxi/updateUserInfo.do", mapper.writeValueAsString( user ), UPDATE_USER_MOBILE_NO );
@@ -842,37 +960,37 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 		// show it
 		mobileInputDialog.show();
 	}
-	
+
 	public void openChangeNameDialog()
 	{
 		showSimpleInputDialog("이름 입력", "이름을 입력해 주세요.", user.getUserName(), "변경하고자 하는 이름을 입력해 주십시오.", 
 				new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				
+
 				AlertDialog dialog = null;
-				
+
 				try
 				{
 					if ( v.getTag() instanceof AlertDialog )
 					{
 						dialog = (AlertDialog) v.getTag();
-						
+
 						EditText edtSimpleInput = (EditText) dialog.findViewById(R.id.edtSimpleInput);
 						if ( TextUtils.isEmpty( edtSimpleInput.getText() ) )
 						{
 							edtSimpleInput.setError("입력값이 올바르지 않습니다.");
 							return;
 						}
-						
+
 						if ( user == null )
 						{
 							showOKDialog("경고", "사용자 정보가 올바르지 않습니다.", null);
 							return;
 						}
-						
+
 						getActivity().setProgressBarIndeterminateVisibility(true);
 						user.setUserName(edtSimpleInput.getText().toString());
 						sendHttp("/taxi/updateUserInfo.do", mapper.writeValueAsString( user ), UPDATE_USER_NAME );
