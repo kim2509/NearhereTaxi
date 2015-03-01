@@ -81,7 +81,7 @@ public class PostDetailActivity extends BaseActivity implements OnMapReadyCallba
 			String profileImageURL = getMetaInfoString("profileImageURL");
 			
 			ImageView imageProfile = (ImageView) footer.findViewById(R.id.imgProfile);
-			ImageLoader.getInstance().displayImage(Constants.imageServerURL + profileImageURL, imageProfile);
+			ImageLoader.getInstance().displayImage(Constants.thumbnailImageURL + profileImageURL, imageProfile);
 		}
 		catch( Exception ex )
 		{
@@ -184,7 +184,7 @@ public class PostDetailActivity extends BaseActivity implements OnMapReadyCallba
 
 				ImageView imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
 				ImageLoader.getInstance().displayImage(
-						Constants.imageServerURL + post.getUser().getProfileImageURL(), imgProfile);
+						Constants.thumbnailImageURL + post.getUser().getProfileImageURL(), imgProfile);
 				
 				TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
 				txtUserName.setOnClickListener( new OnClickListener() {

@@ -56,6 +56,11 @@ public class UploadTask extends AsyncTask<Bitmap, Void, String> {
 			HttpResponse response = null;
 			response = httpclient.execute(httppost);
 			responseString = EntityUtils.toString(response.getEntity());
+			
+			if ( response.getStatusLine().getStatusCode() != 200 )
+			{
+				throw new Exception("업로드중 오류");
+			}
 		} 
 		catch (Exception e) {
 			// TODO Auto-generated catch block

@@ -90,7 +90,7 @@ public class UserArrayAdapter extends ArrayAdapter<User>{
 			if ( !Util.isEmptyString( user.getProfileImageURL() ))
 			{
 				ImageLoader.getInstance().displayImage( 
-						Constants.imageServerURL + user.getProfileImageURL() , imageView);	
+						Constants.thumbnailImageURL + user.getProfileImageURL() , imageView);	
 			}
 			
 			txtUserName.setText( user.getUserName() );

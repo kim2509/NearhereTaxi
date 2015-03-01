@@ -96,7 +96,7 @@
             android:name=".TaxiTutorialActivity"
             android:label="@string/title_activity_taxi_tutorial"
             android:screenOrientation="portrait"
-            android:theme="@style/TutorialTheme" >
+            android:theme="@style/NoTitleBarTheme" >
         </activity>
         <activity
             android:name=".TermsAgreementActivity"
@@ -126,7 +126,7 @@
             android:name=".SetDestinationActivity"
             android:label="@string/title_activity_set_destination"
             android:screenOrientation="portrait"
-            android:theme="@style/TutorialTheme" >
+            android:theme="@style/NoTitleBarTheme" >
         </activity>
         <activity
             android:name=".MessageBoxFragment"
@@ -149,12 +149,6 @@
             android:label="@string/title_activity_main"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name=".FullscreenActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_fullscreen"
-            android:theme="@style/FullscreenTheme" >
         </activity>
         <activity
             android:name=".NewTaxiPostActivity"
@@ -187,6 +181,11 @@
         <activity
             android:name=".UserListActivity"
             android:label="@string/title_activity_user_list" >
+        </activity>
+        <activity
+            android:name=".PhotoViewer"
+            android:label="@string/title_activity_photo_viewer"
+            android:theme="@style/NoTitleBarTheme">
         </activity>
     </application>
 

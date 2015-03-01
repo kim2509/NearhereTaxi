@@ -91,7 +91,7 @@ public class MainArrayAdapter extends ArrayAdapter<ListItemModel> {
 				TextView txtMsg = (TextView) row.findViewById(R.id.txtMessage);
 				txtMsg.setText( post.getMessage() );
 				ImageView imageView = (ImageView) row.findViewById(R.id.imgProfile);
-				ImageLoader.getInstance().displayImage( Constants.imageServerURL + post.getUser().getProfileImageURL() , imageView);
+				ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + post.getUser().getProfileImageURL() , imageView);
 
 				TextView txtUserName = (TextView) row.findViewById(R.id.txtUserName);
 				txtUserName.setText( post.getUser().getUserName() );
@@ -144,7 +144,7 @@ public class MainArrayAdapter extends ArrayAdapter<ListItemModel> {
 				txtUserName.setTag( postReply.getUser() );
 				txtUserName.setText( postReply.getUser().getUserName() );
 				ImageView imageProfile = (ImageView) row.findViewById(R.id.imgProfile);
-				ImageLoader.getInstance().displayImage(Constants.imageServerURL + postReply.getUser().getProfileImageURL(), imageProfile);
+				ImageLoader.getInstance().displayImage(Constants.thumbnailImageURL + postReply.getUser().getProfileImageURL(), imageProfile);
 
 				TextView txtDistance = (TextView) row.findViewById(R.id.txtDistance);
 				txtDistance.setText( Util.getDistance( postReply.getDistance() ) );

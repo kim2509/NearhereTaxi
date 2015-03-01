@@ -135,5 +135,6 @@
     <string name="title_activity_safety_keeper">안심 귀가 알리미</string>
     <string name="title_activity_event_viewer">이벤트</string>
     <string name="title_activity_user_list">사용자 목록</string>
+    <string name="title_activity_photo_viewer">PhotoViewer</string>
 
 </resources>

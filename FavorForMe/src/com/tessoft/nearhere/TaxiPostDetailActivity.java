@@ -423,7 +423,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					
 					if ( !Util.isEmptyString(post.getUser().getProfileImageURL()))
 					{
-						ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
+						ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
 								post.getUser().getProfileImageURL() , imgProfile);			
 					}
 

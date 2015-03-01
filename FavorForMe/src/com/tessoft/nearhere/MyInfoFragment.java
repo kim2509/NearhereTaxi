@@ -3,7 +3,9 @@ package com.tessoft.nearhere;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,6 +45,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.Bitmap.CompressFormat;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -374,7 +377,7 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 
 					if ( user != null && user.getProfileImageURL() != null && user.getProfileImageURL().isEmpty() == false )
 					{
-						ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
+						ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
 								user.getProfileImageURL() , imgProfile);
 						imgProfile.setTag( user.getProfileImageURL() );
 					}
@@ -520,18 +523,8 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 				if( data != null && data.getData() != null) {
 					Uri _uri = data.getData();
 
-					//User had pick an image.
-//					Cursor cursor = getActivity().getContentResolver().query(_uri, 
-//							new String[] { android.provider.MediaStore.Images.ImageColumns.DATA }, 
-//							null, null, null);
-//					cursor.moveToFirst();
-
-					//Link to the image
-//					final String imageFilePath = cursor.getString(0);
-//					cursor.close();
-
 					String imageFilePath = _uri.getPath();
-					
+
 					ExifInterface exif = new ExifInterface(imageFilePath);
 
 					int exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);	    
@@ -539,16 +532,21 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 					if(exifDegree != 0) {
 						Bitmap bitmap = getBitmap( imageFilePath );			    	
 						Bitmap rotatePhoto = rotate(bitmap, exifDegree);
-//						saveBitmap(rotatePhoto);			    			    
+						saveBitmap(rotatePhoto, imageFilePath );			    			    
 					}	    			
 
 					cropImage( _uri );
-
-					//					Bitmap myBitmap = BitmapFactory.decodeFile( imageFilePath );
-					//					myBitmap = resizeBitmapImageFn( myBitmap, 1024 );
-					//					sendPhoto( myBitmap );
 				}
 
+			}
+			else if ( requestCode == REQUEST_IMAGE_CROP )
+			{
+				Bundle extras = data.getExtras();
+				if(extras != null) {
+					Bitmap bitmap = (Bitmap)extras.get("data");
+					bitmap = resizeBitmapImageFn( bitmap, 1024 );
+					sendPhoto( bitmap );
+				}
 			}
 		}
 		catch( Exception ex )
@@ -611,7 +609,7 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 		}		
 		return bm;
 	}
-	
+
 	public static Bitmap rotate(Bitmap image, int degrees)
 	{
 		if(degrees != 0 && image != null)
@@ -622,13 +620,13 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 			try
 			{
 				Bitmap b = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), m, true);
-				
+
 				if(image != b)
 				{
 					image.recycle();
 					image = b;
 				}
-					
+
 				image = b;
 			} 
 			catch(OutOfMemoryError ex)
@@ -639,23 +637,43 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 		return image;
 	}
 
+	public void saveBitmap(Bitmap bitmap, String mCurrentPhotoPath ) {
+		File file = new File( mCurrentPhotoPath );
+		OutputStream out = null;
+		try {
+			out = new FileOutputStream(file);
+		}
+		catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		bitmap.compress(CompressFormat.JPEG, 100, out) ;
+		try {
+			out.close();
+		}
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+	}
+
 	private void cropImage(Uri contentUri) {
 		Intent cropIntent = new Intent("com.android.camera.action.CROP");
-	  //indicate image type and Uri of image
-	  cropIntent.setDataAndType(contentUri, "image/*");
-	  //set crop properties
-	  cropIntent.putExtra("crop", "true");
-	  //indicate aspect of desired crop
-	  cropIntent.putExtra("aspectX", 1);
-	  cropIntent.putExtra("aspectY", 1);
-	  //indicate output X and Y
-	  cropIntent.putExtra("outputX", 256);
-	  cropIntent.putExtra("outputY", 256);
-	  //retrieve data on return
-	  cropIntent.putExtra("return-data", true);
-	  startActivityForResult(cropIntent, REQUEST_IMAGE_CROP);		
+		//indicate image type and Uri of image
+		cropIntent.setDataAndType(contentUri, "image/*");
+		//set crop properties
+		cropIntent.putExtra("crop", "true");
+		//indicate aspect of desired crop
+		cropIntent.putExtra("aspectX", 1);
+		cropIntent.putExtra("aspectY", 1);
+		//indicate output X and Y
+		cropIntent.putExtra("outputX", 256);
+		cropIntent.putExtra("outputY", 256);
+		//retrieve data on return
+		cropIntent.putExtra("return-data", true);
+		startActivityForResult(cropIntent, REQUEST_IMAGE_CROP);		
 	}
-	
+
 	private void sendPhoto(Bitmap f) throws Exception {
 		User user = getLoginUser();
 		new UploadTask( getActivity(), this, user.getUserID() , PROFILE_IMAGE_UPLOAD ).execute(f);
@@ -757,7 +775,7 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 
 		// Load the high-resolution "zoomed-in" image.
 		final ImageView expandedImageView = (ImageView) rootView.findViewById(R.id.expanded_image);
-		ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
+		ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
 				imageURL, expandedImageView);
 
 		// Calculate the starting and ending bounds for the zoomed-in image. This step

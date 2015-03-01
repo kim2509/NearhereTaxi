@@ -99,7 +99,12 @@ public class UserProfileActivity extends BaseActivity {
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
-					zoomImageFromThumb( v );
+//					zoomImageFromThumb( v );
+					
+					Intent intent = new Intent( getApplicationContext(), PhotoViewer.class);
+					intent.putExtra("imageURL", v.getTag().toString());
+					startActivity(intent);
+					overridePendingTransition(R.anim.fade_in, R.anim.stay);
 				}
 			});
 		}
@@ -209,7 +214,7 @@ public class UserProfileActivity extends BaseActivity {
 
 					if ( user != null && user.getProfileImageURL() != null && user.getProfileImageURL().isEmpty() == false )
 					{
-						ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
+						ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
 								user.getProfileImageURL() , imgProfile);
 						imgProfile.setTag(user.getProfileImageURL());
 					}
@@ -325,7 +330,7 @@ public class UserProfileActivity extends BaseActivity {
 		// Load the high-resolution "zoomed-in" image.
 		final ImageView expandedImageView = (ImageView) findViewById(R.id.expanded_image);
 		expandedImageView.setImageResource(0);
-		ImageLoader.getInstance().displayImage( Constants.imageServerURL + 
+		ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
 				imageURL, expandedImageView);
 
 		// Calculate the starting and ending bounds for the zoomed-in image. This step
