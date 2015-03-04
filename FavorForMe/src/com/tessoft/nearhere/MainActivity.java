@@ -1,6 +1,8 @@
 package com.tessoft.nearhere;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.codehaus.jackson.JsonGenerationException;
@@ -120,6 +122,10 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			.commit();
 
 			buildGoogleApiClient();
+			
+			// 마지막 위치업데이트 시간 clear
+			setMetaInfo("lastLocationUpdatedDt", "");
+			
 			createLocationRequest();
 
 			// 푸시 토큰을 생성한다.
@@ -501,9 +507,35 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		
 		if ( mGoogleApiClient == null || mGoogleApiClient.isConnected() == false )
 			return;
+
+		// 2분마다 갱신하기 위해 추가한 로직.
+		// 너무 자주 갱신하는 문제 수정
+		Date now = new Date();
+		Date lastLocationUpdatedDt = new Date();
 		
-		LocationServices.FusedLocationApi.requestLocationUpdates(
-				mGoogleApiClient, mLocationRequest, this);
+		boolean bShouldUpdate = false;
+		if ( Util.isEmptyString( getMetaInfoString("lastLocationUpdatedDt")))
+			bShouldUpdate = true;
+		else
+		{
+			lastLocationUpdatedDt.setTime( Long.parseLong( getMetaInfoString("lastLocationUpdatedDt") ) );
+			
+			Calendar c = Calendar.getInstance(); 
+			c.setTime(lastLocationUpdatedDt); 
+			c.add(Calendar.MINUTE, 2);
+			lastLocationUpdatedDt = c.getTime();
+			
+			if(lastLocationUpdatedDt.before(now))
+				bShouldUpdate = true;
+		}
+		
+		if ( bShouldUpdate )
+		{
+			LocationServices.FusedLocationApi.requestLocationUpdates(
+					mGoogleApiClient, mLocationRequest, this);
+			
+			setMetaInfo("lastLocationUpdatedDt", String.valueOf( now.getTime() ));			
+		}
 	}
 
 	protected void stopLocationUpdates() {
@@ -601,7 +633,6 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		{
 			if ( Constants.FAIL.equals(result) )
 			{
-				setProgressBarIndeterminateVisibility(false);
 				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
 				return;
 			}
@@ -614,8 +645,6 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			{
 				if ( requestCode == 2 )
 				{
-					setProgressBarIndeterminateVisibility(false);
-
 					//					setMetaInfo("userNo", "");
 					//					setMetaInfo("registerUserFinished", "");
 					setMetaInfo("logout", "true");

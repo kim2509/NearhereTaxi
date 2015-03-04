@@ -7,6 +7,8 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.type.TypeReference;
 
+import uk.co.senab.photoview.PhotoViewAttacher;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
@@ -20,7 +22,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.tessoft.common.Constants;
 import com.tessoft.common.TaxiPostReplyListAdapter;
 import com.tessoft.common.Util;
@@ -32,6 +39,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -48,6 +56,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.ImageView.ScaleType;
 
 public class TaxiPostDetailActivity extends BaseListActivity 
 implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, OnClickListener{
@@ -170,8 +179,20 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 				}
 			}
 		});
+		
+		options = new DisplayImageOptions.Builder()
+		.resetViewBeforeLoading(true)
+		.cacheInMemory(true)
+		.showImageOnLoading(R.drawable.no_image)
+		.showImageForEmptyUri(R.drawable.no_image)
+		.showImageOnFail(R.drawable.no_image)
+		.displayer(new RoundedBitmapDisplayer(20))
+		.delayBeforeLoading(100)
+		.build();
 	}
 
+	DisplayImageOptions options = null;
+	
 	private void makeMapScrollable() {
 
 		ImageView transparentImageView = (ImageView) header2.findViewById(R.id.transparent_image);
@@ -443,7 +464,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					if ( !Util.isEmptyString(post.getUser().getProfileImageURL()))
 					{
 						ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
-								post.getUser().getProfileImageURL() , imgProfile);			
+								post.getUser().getProfileImageURL() , imgProfile, options );
 					}
 
 					String age = "";
@@ -461,11 +482,11 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					
 					if ( "M".equals( post.getUser().getSex() ))
 					{
-						imgSex.setImageResource(R.drawable.male);
+						imgSex.setImageResource(R.drawable.ic_male);
 					}
 					else if ( "F".equals( post.getUser().getSex() ))
 					{
-						imgSex.setImageResource(R.drawable.female);
+						imgSex.setImageResource(R.drawable.ic_female);
 					}
 					else
 						imgSex.setVisibility(ViewGroup.GONE);
@@ -489,24 +510,24 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 
 					TextView txtDestination = (TextView) header.findViewById(R.id.txtDestination);
 					txtDestination.setText( post.getToAddress() );
-
-					TextView txtFromDistance = (TextView) header.findViewById(R.id.txtFromDistance);
-					if ( Util.isEmptyString( post.getFromDistance() ) == false )
-					{
-						txtFromDistance.setText( Util.getDistance( post.getFromDistance() ) );
-						txtFromDistance.setVisibility(ViewGroup.VISIBLE);
-					}
-					else
-						txtFromDistance.setVisibility(ViewGroup.INVISIBLE);
+//
+//					TextView txtFromDistance = (TextView) header.findViewById(R.id.txtFromDistance);
+//					if ( Util.isEmptyString( post.getFromDistance() ) == false )
+//					{
+//						txtFromDistance.setText( Util.getDistance( post.getFromDistance() ) );
+//						txtFromDistance.setVisibility(ViewGroup.VISIBLE);
+//					}
+//					else
+//						txtFromDistance.setVisibility(ViewGroup.INVISIBLE);
 					
-					TextView txtToDistance = (TextView) header.findViewById(R.id.txtToDistance);
-					if ( Util.isEmptyString( post.getToDistance() ) == false )
-					{
-						txtToDistance.setText( Util.getDistance( post.getToDistance() ) );
-						txtToDistance.setVisibility(ViewGroup.VISIBLE);
-					}
-					else
-						txtToDistance.setVisibility(ViewGroup.INVISIBLE);
+//					TextView txtToDistance = (TextView) header.findViewById(R.id.txtToDistance);
+//					if ( Util.isEmptyString( post.getToDistance() ) == false )
+//					{
+//						txtToDistance.setText( Util.getDistance( post.getToDistance() ) );
+//						txtToDistance.setVisibility(ViewGroup.VISIBLE);
+//					}
+//					else
+//						txtToDistance.setVisibility(ViewGroup.INVISIBLE);
 
 					if ( post.getDepartureDate() != null )
 					{
@@ -515,7 +536,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					}
 
 					TextView txtCreatedDate = (TextView) header.findViewById(R.id.txtCreatedDate);
-					txtCreatedDate.setText( Util.getFormattedDateString(post.getCreatedDate(), "yyyy-MM-dd HH:mm") );
+					txtCreatedDate.setText( Util.getFormattedDateString(post.getCreatedDate(), "MM-dd HH:mm") );
 
 					adapter.setItemList( post.getPostReplies() );
 					adapter.notifyDataSetChanged();

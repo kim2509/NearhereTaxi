@@ -1,6 +1,15 @@
 package com.tessoft.common;
 
+import java.io.File;
+import java.util.List;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.utils.DiskCacheUtils;
+import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 import com.tessoft.domain.Post;
 import com.tessoft.nearhere.R;
 
@@ -24,11 +33,21 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 	private AdapterDelegate delegate = null;
 
 	LayoutInflater inflater = null;
+	DisplayImageOptions options = null;
 	
 	public TaxiArrayAdapter(Context context, AdapterDelegate delegate, int textViewResourceId) {
 		super(context, textViewResourceId);
 		inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.delegate = delegate;
+		options = new DisplayImageOptions.Builder()
+		.resetViewBeforeLoading(true)
+		.cacheInMemory(true)
+		.showImageOnLoading(R.drawable.no_image)
+		.showImageForEmptyUri(R.drawable.no_image)
+		.showImageOnFail(R.drawable.no_image)
+		.displayer(new RoundedBitmapDisplayer(20))
+		.delayBeforeLoading(100)
+		.build();
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -73,9 +92,9 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 			imgSex.setVisibility(ViewGroup.VISIBLE);
 			
 			if("M".equals( item.getUser().getSex() ) )
-				imgSex.setImageResource(R.drawable.male);
+				imgSex.setImageResource(R.drawable.ic_male);
 			else if("F".equals( item.getUser().getSex() ) )
-				imgSex.setImageResource(R.drawable.female);
+				imgSex.setImageResource(R.drawable.ic_female);
 			else
 				imgSex.setVisibility(ViewGroup.GONE);
 			
@@ -125,8 +144,7 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 			
 			if ( item.getUser() != null && !Util.isEmptyString( item.getUser().getProfileImageURL() ) )
 			{
-				ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
-						item.getUser().getProfileImageURL() , imageView);	
+				displayImage( imageView, item.getUser().getProfileImageURL(), item );
 			}
 
 			imgStatus.setVisibility(ViewGroup.VISIBLE);
@@ -185,5 +203,11 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 	public boolean onTouch(View v, MotionEvent event) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	public void displayImage( ImageView imageView, String url, Post item )
+	{
+		ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
+				item.getUser().getProfileImageURL() , imageView, options );
 	}
 }

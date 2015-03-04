@@ -13,7 +13,7 @@ public class Constants {
 			"https://www.hereby.co.kr/nearhere" : "http://tessoft.synology.me:8080/nearhere";
 	
 	public static String thumbnailImageURL = bReal ? 
-			"http://www.hereby.co.kr/image/" : "http://tessoft.synology.me:8090/thumbnail/";
+			"http://www.hereby.co.kr/thumbnail/" : "http://tessoft.synology.me:8090/thumbnail/";
 	
 	public static String imageURL = bReal ? 
 			"http://www.hereby.co.kr/image/" : "http://tessoft.synology.me:8090/image/";

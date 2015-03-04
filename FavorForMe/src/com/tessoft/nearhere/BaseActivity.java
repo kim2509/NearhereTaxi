@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
+import com.nostra13.universalimageloader.cache.memory.impl.LimitedAgeMemoryCache;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -229,6 +230,12 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 	{
 		if ( BaseActivity.bInitImageLoader == false )
 		{
+			DisplayImageOptions options = new DisplayImageOptions.Builder()
+			.resetViewBeforeLoading(true)
+			.cacheInMemory(true)
+			.delayBeforeLoading(100)
+			.build();
+			
 			ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
 			.memoryCacheExtraOptions(100, 100) // default = device screen dimensions
 			.diskCacheExtraOptions(100, 100, null)
@@ -236,13 +243,14 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 			.threadPriority(Thread.NORM_PRIORITY - 2) // default
 			.tasksProcessingOrder(QueueProcessingType.FIFO) // default
 			.denyCacheImageMultipleSizesInMemory()
-			.memoryCache(new LruMemoryCache(2 * 1024 * 1024))
+//			.memoryCache(new LruMemoryCache(2 * 1024 * 1024))
+			.memoryCache(new LimitedAgeMemoryCache(new LruMemoryCache(2 * 1024 * 1024), 60 ))
 			.memoryCacheSize(2 * 1024 * 1024)
 			.memoryCacheSizePercentage(13) // default
 			.diskCacheSize(50 * 1024 * 1024)
 			.diskCacheFileCount(100)
 			.diskCacheFileNameGenerator(new HashCodeFileNameGenerator()) // default
-			.defaultDisplayImageOptions(DisplayImageOptions.createSimple()) // default
+			.defaultDisplayImageOptions(options) // default
 			.writeDebugLogs()
 			.build();
 			ImageLoader.getInstance().init(config);

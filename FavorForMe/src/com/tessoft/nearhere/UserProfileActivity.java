@@ -28,7 +28,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.tessoft.common.Constants;
 import com.tessoft.common.NoticeListAdapter;
 import com.tessoft.common.TaxiArrayAdapter;
@@ -45,6 +47,7 @@ public class UserProfileActivity extends BaseActivity {
 	View header = null;
 	View footer = null;
 	TaxiArrayAdapter adapter = null;
+	DisplayImageOptions options = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +110,16 @@ public class UserProfileActivity extends BaseActivity {
 
 				}
 			});
+			
+			options = new DisplayImageOptions.Builder()
+			.resetViewBeforeLoading(true)
+			.cacheInMemory(true)
+			.showImageOnLoading(R.drawable.no_image)
+			.showImageForEmptyUri(R.drawable.no_image)
+			.showImageOnFail(R.drawable.no_image)
+			.displayer(new RoundedBitmapDisplayer(20))
+			.delayBeforeLoading(100)
+			.build();
 		}
 		catch( Exception ex )
 		{
@@ -215,7 +228,7 @@ public class UserProfileActivity extends BaseActivity {
 					if ( user != null && user.getProfileImageURL() != null && user.getProfileImageURL().isEmpty() == false )
 					{
 						ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
-								user.getProfileImageURL() , imgProfile);
+								user.getProfileImageURL() , imgProfile, options);
 						imgProfile.setTag(user.getProfileImageURL());
 					}
 
