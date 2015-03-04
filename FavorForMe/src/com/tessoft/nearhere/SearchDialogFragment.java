@@ -41,7 +41,9 @@ public class SearchDialogFragment extends DialogFragment implements OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState) 
     {
-    	return super.onCreateView(inflater, container, savedInstanceState);
+    	View v = super.onCreateView(inflater, container, savedInstanceState);
+    	
+    	return v;
     }
 
     AlertDialog searchDialog = null;
@@ -64,7 +66,6 @@ public class SearchDialogFragment extends DialogFragment implements OnClickListe
             
             builder
     		.setCancelable(false)
-    		.setTitle("상세조회")
     		.setPositiveButton("조회", null )
     		.setNeutralButton("초기화", null)
     		.setNegativeButton("취소",

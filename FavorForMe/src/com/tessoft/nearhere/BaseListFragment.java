@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class BaseListFragment extends BaseFragment{
 
@@ -33,8 +34,15 @@ public class BaseListFragment extends BaseFragment{
 			Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		
-		rootView = inflater.inflate(R.layout.activity_base_list, container, false);
+		rootView = inflater.inflate(R.layout.fragment_base_list, container, false);
 		
 		return rootView;
+	}
+	
+	protected void setTitle( String title ) {
+		TextView txtTitle = (TextView) rootView.findViewById(R.id.txtTitle);
+		txtTitle.setVisibility(ViewGroup.VISIBLE);
+		rootView.findViewById(R.id.imgTitle).setVisibility(ViewGroup.GONE);
+		txtTitle.setText( title );
 	}
 }

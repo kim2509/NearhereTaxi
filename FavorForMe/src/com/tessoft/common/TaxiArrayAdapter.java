@@ -96,23 +96,23 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 			TextView txtDestination = (TextView) row.findViewById(R.id.txtDestination);
 			txtDestination.setText( item.getToAddress() );
 			
-			TextView txtFromDistance = (TextView) row.findViewById(R.id.txtFromDistance);
-			if ( Util.isEmptyString( item.getFromDistance() ) == false )
-			{
-				txtFromDistance.setText( Util.getDistance( item.getFromDistance() ) );
-				txtFromDistance.setVisibility(ViewGroup.VISIBLE);
-			}
-			else
-				txtFromDistance.setVisibility(ViewGroup.INVISIBLE);
-			
-			TextView txtToDistance = (TextView) row.findViewById(R.id.txtToDistance);
-			if ( Util.isEmptyString( item.getToDistance() ) == false )
-			{
-				txtToDistance.setText( Util.getDistance( item.getToDistance() ) );
-				txtToDistance.setVisibility(ViewGroup.VISIBLE);
-			}
-			else
-				txtToDistance.setVisibility(ViewGroup.INVISIBLE);
+//			TextView txtFromDistance = (TextView) row.findViewById(R.id.txtFromDistance);
+//			if ( Util.isEmptyString( item.getFromDistance() ) == false )
+//			{
+//				txtFromDistance.setText( Util.getDistance( item.getFromDistance() ) );
+//				txtFromDistance.setVisibility(ViewGroup.VISIBLE);
+//			}
+//			else
+//				txtFromDistance.setVisibility(ViewGroup.INVISIBLE);
+//			
+//			TextView txtToDistance = (TextView) row.findViewById(R.id.txtToDistance);
+//			if ( Util.isEmptyString( item.getToDistance() ) == false )
+//			{
+//				txtToDistance.setText( Util.getDistance( item.getToDistance() ) );
+//				txtToDistance.setVisibility(ViewGroup.VISIBLE);
+//			}
+//			else
+//				txtToDistance.setVisibility(ViewGroup.INVISIBLE);
 			
 			TextView txtCreatedDate = (TextView) row.findViewById(R.id.txtCreatedDate);
 			txtCreatedDate.setText( Util.getFormattedDateString(item.getCreatedDate(), "MM-dd HH:mm"));	

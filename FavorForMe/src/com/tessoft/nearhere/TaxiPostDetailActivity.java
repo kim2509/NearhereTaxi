@@ -79,6 +79,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			listMain = (ListView) findViewById(R.id.listMain);
 			listMain.addHeaderView(header, null, false );
 			listMain.addHeaderView(header2 );
+			listMain.setHeaderDividersEnabled( false );
 			listMain.addFooterView(footer, null, false );
 			listMain.setFooterDividersEnabled(false);
 
@@ -91,6 +92,8 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			initializeComponent();
 
 			inquiryPostDetail();
+			
+			setTitle("합승상세");
 		}
 		catch(Exception ex )
 		{
@@ -101,6 +104,9 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 	private void inquiryPostDetail() throws IOException,
 	JsonGenerationException, JsonMappingException {
 		HashMap hash = new HashMap();
+		
+		findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
+		listMain.setVisibility(ViewGroup.GONE);
 		
 		if ( getIntent().getExtras() != null )
 		{
@@ -117,7 +123,6 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		
 		hash.put("userID", getLoginUser().getUserID() );
 
-		setProgressBarIndeterminateVisibility(true);
 		sendHttp("/taxi/getPostDetail.do", mapper.writeValueAsString(hash), POST_DETAIL );
 	}
 
@@ -150,6 +155,21 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			Button btnHideMap = (Button)findViewById(R.id.btnHideMap);
 			btnHideMap.setText("경로 숨기기");
 		}
+		
+		Button btnRefresh = (Button) findViewById(R.id.btnRefresh);
+		btnRefresh.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				try {
+					inquiryPostDetail();
+				} catch ( Exception ex ) {
+					// TODO Auto-generated catch block
+					catchException(this, ex);
+				}
+			}
+		});
 	}
 
 	private void makeMapScrollable() {
@@ -242,17 +262,14 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		{
 			if ( param instanceof String && "postDelete".equals( param ) )
 			{
-				setProgressBarIndeterminateVisibility(true);
 				sendHttp("/taxi/deletePost.do", mapper.writeValueAsString(post), DELETE_POST );				
 			}
 			else if ( param instanceof PostReply )
 			{
-				setProgressBarIndeterminateVisibility(true);
 				sendHttp("/taxi/deletePostReply.do", mapper.writeValueAsString(param), DELETE_POST_REPLY );	
 			}
 			else if ( param instanceof String && "DIALOG_FINISH_POST".equals(param) )
 			{
-				setProgressBarIndeterminateVisibility(true);
 				post.setStatus("종료됨");
 				sendHttp("/taxi/modifyPost.do", mapper.writeValueAsString(post), HTTP_UPDATE_POST_AS_FINISHED );
 				Intent data = new Intent();
@@ -376,8 +393,6 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 				return;
 			}
 
-			setProgressBarIndeterminateVisibility(true);
-
 			PostReply postReply = new PostReply();
 			postReply.setPostID( post.getPostID() );
 			postReply.setUser( getLoginUser() );
@@ -387,6 +402,9 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			edtPostReply.setText("");
 
 			sendHttp("/taxi/insertPostReply.do", mapper.writeValueAsString(postReply), INSERT_POST_REPLY );
+			
+			findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
+			listMain.setVisibility(ViewGroup.GONE);
 		}
 		catch( Exception ex )
 		{
@@ -399,15 +417,16 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		// TODO Auto-generated method stub
 		try
 		{
+			findViewById(R.id.marker_progress).setVisibility(ViewGroup.GONE);
+			
 			if ( Constants.FAIL.equals(result) )
 			{
-				setProgressBarIndeterminateVisibility(false);
 				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
 				return;
 			}
 
-			setProgressBarIndeterminateVisibility(false);
-
+			listMain.setVisibility(ViewGroup.VISIBLE);
+			
 			super.doPostTransaction(requestCode, result);
 
 			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
@@ -501,16 +520,16 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					adapter.setItemList( post.getPostReplies() );
 					adapter.notifyDataSetChanged();
 
-					if ( "true".equals( getMetaInfoString("admin") ) || post.getUser().getUserID().equals( getLoginUser().getUserID() ))
-					{
-						menu.findItem(R.id.action_edit).setVisible(true);
-						menu.findItem(R.id.action_delete).setVisible(true);	
-					}
-					else
-					{
-						menu.findItem(R.id.action_edit).setVisible(false);
-						menu.findItem(R.id.action_delete).setVisible(false);
-					}
+//					if ( "true".equals( getMetaInfoString("admin") ) || post.getUser().getUserID().equals( getLoginUser().getUserID() ))
+//					{
+//						menu.findItem(R.id.action_edit).setVisible(true);
+//						menu.findItem(R.id.action_delete).setVisible(true);	
+//					}
+//					else
+//					{
+//						menu.findItem(R.id.action_edit).setVisible(false);
+//						menu.findItem(R.id.action_delete).setVisible(false);
+//					}
 					
 					ImageView imgStatus = (ImageView) header.findViewById(R.id.imgStatus);
 					imgStatus.setVisibility(ViewGroup.VISIBLE);
@@ -530,7 +549,6 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 				}
 				else if ( requestCode == INSERT_POST_REPLY )
 				{
-					setProgressBarIndeterminateVisibility(true);
 					sendHttp("/taxi/getPostDetail.do", mapper.writeValueAsString(post), POST_DETAIL );
 				}
 				else if ( requestCode == DELETE_POST )
@@ -575,7 +593,6 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		{
 			if ( responseCode == RESULT_OK )
 			{
-				setProgressBarIndeterminateVisibility(true);
 				sendHttp("/taxi/getPostDetail.do", mapper.writeValueAsString(post), POST_DETAIL );
 
 				Intent result = new Intent();

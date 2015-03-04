@@ -10,6 +10,7 @@ import com.tessoft.common.Constants;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.view.View;
@@ -48,11 +49,10 @@ public class PhotoViewer extends BaseActivity {
 				    	PhotoViewAttacher mAttacher = new PhotoViewAttacher(imgPhoto);
 				        mAttacher.setScaleType(ScaleType.FIT_CENTER);
 				        
+				        findViewById(R.id.marker_progress).setVisibility(ViewGroup.GONE);
 				    }
 				});
 			}
-			
-			
 		}
 		catch( Exception ex )
 		{

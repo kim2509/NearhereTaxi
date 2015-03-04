@@ -79,9 +79,10 @@ public class TaxiFragment extends BaseFragment
 
 			listMain = (ListView) rootView.findViewById(R.id.listMain);
 			//listMain.addHeaderView(header);
-			listMain.addHeaderView(header3, null, true );
+			listMain.addHeaderView(header3, null, false );
 			listMain.addHeaderView(header2, null, false );
 			listMain.addFooterView(footer, null, false );
+			listMain.setHeaderDividersEnabled(true);
 			listMain.setFooterDividersEnabled(false);
 
 			adapter = new TaxiArrayAdapter( getActivity().getApplicationContext(), this, 0 );
@@ -117,7 +118,6 @@ public class TaxiFragment extends BaseFragment
 				}
 			});
 			
-			getActivity().setProgressBarIndeterminateVisibility(true);
 			inquiryPosts();
 			
 			getActivity().sendBroadcast(new Intent("startLocationUpdate"));
@@ -178,6 +178,9 @@ public class TaxiFragment extends BaseFragment
 		
 		TextView txtNumOfUsers = (TextView) rootView.findViewById(R.id.txtNumOfUsers);
 		txtNumOfUsers.setOnClickListener(this);
+		
+		Button btnRefresh = (Button) rootView.findViewById(R.id.btnRefresh);
+		btnRefresh.setOnClickListener(this);
 	}
 
 	@Override
@@ -222,7 +225,8 @@ public class TaxiFragment extends BaseFragment
 			{
 				if ( requestCode == GET_POSTS )
 				{
-					getActivity().setProgressBarIndeterminateVisibility(false);
+					rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.GONE);
+					listMain.setVisibility(ViewGroup.VISIBLE);
 					
 					String postData = mapper.writeValueAsString( response.getData() );
 					List<Post> postList = mapper.readValue( postData, new TypeReference<List<Post>>(){});
@@ -290,6 +294,9 @@ public class TaxiFragment extends BaseFragment
 
 		String fromLatitude = "";
 		String fromLongitude = "";
+		
+		listMain.setVisibility(ViewGroup.GONE);
+		rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
 		
 		if ( departure != null )
 		{
@@ -567,6 +574,14 @@ public class TaxiFragment extends BaseFragment
 				intent.putExtra("longitude", String.valueOf( departure.longitude ) );
 				startActivity(intent);
 				getActivity().overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
+			}
+			else if ( v.getId() == R.id.btnLeftMenu )
+			{
+				getActivity().sendBroadcast(new Intent("openDrawer"));
+			}
+			else if ( v.getId() == R.id.btnRefresh )
+			{
+				inquiryPosts();
 			}
 		}
 		catch( Exception ex )

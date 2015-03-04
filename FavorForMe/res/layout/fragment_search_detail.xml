@@ -3,10 +3,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:paddingBottom="20dp">
+    
+    <TextView android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="상세조회"
+        android:textColor="#FFFFFF"
+        android:gravity="center_vertical|center_horizontal"
+        android:textStyle="bold"
+        android:textSize="17sp"
+        android:background="#F66C3C"/>
     
     <RelativeLayout android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content" 
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:layout_marginTop="20dp">
         
         <Button android:id="@+id/btnSelectDeparture" 
             android:layout_width="match_parent"
@@ -15,6 +27,7 @@
             android:singleLine="false"
             android:layout_alignParentLeft="true"
             android:layout_toLeftOf="@+id/spDepartureDistance"
+            android:layout_centerVertical="true"
             android:padding="2dp"
             android:text="출발지 설정"/>
         
@@ -24,12 +37,15 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_centerVertical="true"
+            android:background="@drawable/spinner_bg"
             android:layout_alignParentRight="true"/>
         
     </RelativeLayout>
     
     <RelativeLayout android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
         android:layout_marginTop="10dp">
         
         <Button 
@@ -48,6 +64,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
+            android:background="@drawable/spinner_bg"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"/>
         

@@ -28,6 +28,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 
 public class SettingsFragment extends BaseListFragment {
@@ -63,6 +65,21 @@ public class SettingsFragment extends BaseListFragment {
 			listMain.setAdapter(adapter);
 
 			inquirySettingInfo();
+			
+			Button btnRefresh = (Button) rootView.findViewById(R.id.btnRefresh);
+			btnRefresh.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					try {
+						inquirySettingInfo();
+					} catch ( Exception ex ) {
+						// TODO Auto-generated catch block
+						catchException(this, ex);
+					}
+				}
+			});
 		}
 		catch( Exception ex )
 		{
@@ -76,7 +93,9 @@ public class SettingsFragment extends BaseListFragment {
 			JsonGenerationException, JsonMappingException {
 		User user = getLoginUser();
 
-		getActivity().setProgressBarIndeterminateVisibility(true);
+		rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
+		listMain.setVisibility(ViewGroup.GONE);
+		
 		sendHttp("/taxi/getUserSetting.do", mapper.writeValueAsString(user), 1 );
 	}
 
@@ -85,14 +104,15 @@ public class SettingsFragment extends BaseListFragment {
 		// TODO Auto-generated method stub
 		try
 		{
+			rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.GONE);
+			
 			if ( Constants.FAIL.equals(result) )
 			{
-				getActivity().setProgressBarIndeterminateVisibility(false);
 				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
 				return;
 			}
 
-			getActivity().setProgressBarIndeterminateVisibility(false);
+			listMain.setVisibility(ViewGroup.VISIBLE);
 
 			super.doPostTransaction(requestCode, result);
 

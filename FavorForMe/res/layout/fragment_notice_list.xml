@@ -2,12 +2,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.tessoft.nearhere.BaseListActivity"
-    android:background="#EEEEEE">
+    android:background="#EEEEEE"
+    tools:context="com.tessoft.nearhere.BaseListActivity" >
 
-    <ExpandableListView
-        android:id="@+id/listMain"
+    <include layout="@layout/titlebar" />
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@+id/titleBar" >
+
+        <ExpandableListView
+            android:id="@+id/listMain"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+        
+        <ProgressBar
+            android:id="@+id/marker_progress"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:indeterminate="true" />
+        
+    </FrameLayout>
 
 </RelativeLayout>

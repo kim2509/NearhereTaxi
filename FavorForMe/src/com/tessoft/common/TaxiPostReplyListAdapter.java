@@ -88,7 +88,14 @@ public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> implements
 			txtMessage.setText( item.getMessage() );
 			
 			TextView txtDistance = (TextView) row.findViewById(R.id.txtDistance);
-			txtDistance.setText( Util.getDistance( item.getDistance()) );
+			if ( !Util.isEmptyString( item.getLatitude() ) && !Util.isEmptyString( item.getLongitude() ) )
+			{
+				txtDistance.setText( Util.getDistance( item.getDistance()) );
+				txtDistance.setVisibility(ViewGroup.VISIBLE);
+			}
+			else
+				txtDistance.setVisibility(ViewGroup.GONE);
+			
 			
 			imageView.setImageResource(R.drawable.no_image);
 			
@@ -109,7 +116,7 @@ public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> implements
 			if ( item.getUser().getUserID().equals( loginUser.getUserID() ) )
 				txtDeleteReply.setVisibility(ViewGroup.VISIBLE);
 			else
-				txtDeleteReply.setVisibility(ViewGroup.GONE);
+				txtDeleteReply.setVisibility(ViewGroup.INVISIBLE);
 			
 			row.setTag( item );
 		}

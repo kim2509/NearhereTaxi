@@ -64,7 +64,9 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends BaseActivity 
@@ -107,51 +109,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 			setContentView(R.layout.activity_main);
 
-			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-			mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-			// Set the adapter for the list view
-			adapter = new MainMenuArrayAdapter( getApplicationContext(), 0);
-			adapter.add(new MainMenuItem("홈"));
-			adapter.add(new MainMenuItem("내 정보"));
-			adapter.add(new MainMenuItem("알림메시지"));
-			adapter.add(new MainMenuItem("쪽지함"));
-			adapter.add(new MainMenuItem("공지사항"));
-			adapter.add(new MainMenuItem("설정"));
-			adapter.add(new MainMenuItem("로그아웃"));
-
-			mDrawerList.setAdapter( adapter );
-
-			// Set the list's click listener
-			mDrawerList.setOnItemClickListener( new OnItemClickListener() {
-
-				@Override
-				public void onItemClick(AdapterView parent, View view, int position, long id) {
-					selectItem(position);
-				}
-			});
-
-			mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-					R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
-
-				/** Called when a drawer has settled in a completely closed state. */
-				public void onDrawerClosed(View view) {
-					super.onDrawerClosed(view);
-					invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-				}
-
-				/** Called when a drawer has settled in a completely open state. */
-				public void onDrawerOpened(View drawerView) {
-					super.onDrawerOpened(drawerView);
-					invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-				}
-			};
-
-			// Set the drawer toggle as the DrawerListener
-			mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-			getActionBar().setDisplayHomeAsUpEnabled(true);
-			getActionBar().setHomeButtonEnabled(true);
+			initLeftMenu();
 
 			mainFragment = new TaxiFragment();
 
@@ -181,6 +139,65 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		{
 			catchException(this, ex);
 		}
+	}
+
+	private void initLeftMenu() {
+		
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		mDrawerList = (ListView) findViewById(R.id.left_drawer);
+		
+		View header = getLayoutInflater().inflate(R.layout.list_my_info_header, null);
+		header.setTag(new MainMenuItem("header"));
+		mDrawerList.addHeaderView(header);
+
+		ImageView imageView = (ImageView) header.findViewById(R.id.imgProfile);
+		ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
+				getLoginUser().getProfileImageURL() , imageView);
+		
+		TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
+		txtUserName.setText( getLoginUser().getUserName() );
+		
+		// Set the adapter for the list view
+		adapter = new MainMenuArrayAdapter( getApplicationContext(), 0);
+		adapter.add(new MainMenuItem("홈"));
+		adapter.add(new MainMenuItem("내 정보"));
+		adapter.add(new MainMenuItem("알림메시지"));
+		adapter.add(new MainMenuItem("쪽지함"));
+		adapter.add(new MainMenuItem("공지사항"));
+		adapter.add(new MainMenuItem("설정"));
+		adapter.add(new MainMenuItem("로그아웃"));
+
+		mDrawerList.setAdapter( adapter );
+
+		// Set the list's click listener
+		mDrawerList.setOnItemClickListener( new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView parent, View view, int position, long id) {
+				
+				MainMenuItem item = (MainMenuItem) view.getTag();
+				selectItem( item );
+			}
+		});
+
+		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+				R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
+
+			/** Called when a drawer has settled in a completely closed state. */
+			public void onDrawerClosed(View view) {
+				super.onDrawerClosed(view);
+				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+			}
+
+			/** Called when a drawer has settled in a completely open state. */
+			public void onDrawerOpened(View drawerView) {
+				super.onDrawerOpened(drawerView);
+				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+			}
+		};
+
+		// Set the drawer toggle as the DrawerListener
+		mDrawerLayout.setDrawerListener(mDrawerToggle);
 	}
 
 	@Override
@@ -291,16 +308,16 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	}
 
 	/** Swaps fragments in the main content view */
-	private void selectItem(int position) {
+	private void selectItem( MainMenuItem item ) {
 		// Create a new fragment and specify the planet to show based on position
 
 		boolean bFragment = true;
-
-		MainMenuItem item = adapter.getItem( position );
+		
+		int position = adapter.getPosition(item);
 
 		if ( "홈".equals( item.getMenuName() ) )
 			mainFragment = new TaxiFragment();
-		else if ( "내 정보".equals( item.getMenuName() ) )
+		else if ( "header".equals( item.getMenuName() ) || "내 정보".equals( item.getMenuName() ) )
 			mainFragment = new MyInfoFragment();
 		else if ( "알림메시지".equals( item.getMenuName() ) )
 			mainFragment = new PushMessageListFragment();
@@ -363,7 +380,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	@Override
 	public void setTitle(CharSequence title) {
 		mTitle = title.toString();
-		getActionBar().setTitle(mTitle);
+//		getActionBar().setTitle(mTitle);
 	}
 
 
@@ -642,10 +659,10 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 					if ( pushCount + messageCount + noticeCount > 0 )
 					{
-						getActionBar().setIcon(R.drawable.icon_new);
+						findViewById(R.id.btnLeftMenu).setBackgroundResource(R.drawable.top_ic_new);
 					}
 					else
-						getActionBar().setIcon(R.color.transparent);
+						findViewById(R.id.btnLeftMenu).setBackgroundResource(R.drawable.top_ic_menu_off);
 
 					adapter.notifyDataSetChanged();
 				}
@@ -678,6 +695,11 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			catchException(this, ex);
 		}
 	}
+	
+	public void openDrawerMenu( View v )
+	{
+		mDrawerLayout.openDrawer(mDrawerList);
+	}
 
 	boolean doubleBackToExitPressedOnce = false;
 	@Override
@@ -685,7 +707,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 		if ( mainFragment instanceof TaxiFragment == false )
 		{
-			selectItem(0);
+			selectItem(new MainMenuItem("홈"));
 			return;
 		}
 

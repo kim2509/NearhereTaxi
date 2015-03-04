@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tessoft.domain.MainMenuItem;
@@ -35,6 +36,21 @@ public class MainMenuArrayAdapter extends ArrayAdapter<MainMenuItem>{
 				row = inflater.inflate(R.layout.list_main_menu_item, parent, false);
 			}
 
+			ImageView icon_menu = (ImageView) row.findViewById(R.id.icon_menu);
+			
+			if ( "내 정보".equals( item.getMenuName() ) )
+				icon_menu.setImageResource(R.drawable.ic_myinfo_off);
+			else if ( "알림메시지".equals( item.getMenuName() ) )
+				icon_menu.setImageResource(R.drawable.ic_push_off);
+			else if ( "쪽지함".equals( item.getMenuName() ) )
+				icon_menu.setImageResource(R.drawable.ic_message_off);
+			else if ( "공지사항".equals( item.getMenuName() ) )
+				icon_menu.setImageResource(R.drawable.ic_notice_off);
+			else if ( "설정".equals( item.getMenuName() ) )
+				icon_menu.setImageResource(R.drawable.ic_setting_off);
+			else if ( "로그아웃".equals( item.getMenuName() ) )
+				icon_menu.setImageResource(R.drawable.ic_logout_off);
+			
 			TextView txtTitle = (TextView) row.findViewById(R.id.txtTitle);
 			txtTitle.setText( item.getMenuName() );
 			

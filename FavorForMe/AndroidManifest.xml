@@ -85,7 +85,8 @@
         <activity
             android:name=".UserProfileActivity"
             android:label="@string/title_activity_user_profile"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait" 
+            android:theme="@style/NoTitleBarTheme">
         </activity>
         <activity
             android:name=".RegisterUserActivity"
@@ -114,7 +115,8 @@
         <activity
             android:name=".TaxiPostDetailActivity"
             android:label="@string/title_activity_taxi_post_detail"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait" 
+            android:theme="@style/NoTitleBarTheme">
         </activity>
         <activity
             android:name=".UserMessageActivity"
@@ -148,7 +150,8 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:theme="@style/NoTitleBarTheme">
         </activity>
         <activity
             android:name=".NewTaxiPostActivity"
@@ -164,7 +167,6 @@
             android:name=".SafetyKeeperActivity"
             android:label="@string/title_activity_safety_keeper"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" >
         </activity>
 

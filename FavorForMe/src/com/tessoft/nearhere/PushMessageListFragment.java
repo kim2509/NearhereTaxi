@@ -23,8 +23,10 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -41,6 +43,8 @@ public class PushMessageListFragment extends BaseListFragment {
 		try
 		{
 			super.onCreateView(inflater, container, savedInstanceState);
+			
+			setTitle("알림메시지");
 
 			footer = getActivity().getLayoutInflater().inflate(R.layout.fragment_messagebox_footer, null);
 			
@@ -104,6 +108,21 @@ public class PushMessageListFragment extends BaseListFragment {
 					}
 				}
 			});
+			
+			Button btnRefresh = (Button) rootView.findViewById(R.id.btnRefresh);
+			btnRefresh.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					try {
+						inquiryPushMesage();
+					} catch ( Exception ex ) {
+						// TODO Auto-generated catch block
+						catchException(this, ex);
+					}
+				}
+			});
 		}
 		catch( Exception ex )
 		{
@@ -115,7 +134,10 @@ public class PushMessageListFragment extends BaseListFragment {
 
 	private void inquiryPushMesage() throws IOException,
 	JsonGenerationException, JsonMappingException {
-		getActivity().setProgressBarIndeterminateVisibility(true);
+		
+		rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
+		listMain.setVisibility(ViewGroup.GONE);
+		
 		User user = getLoginUser();
 		sendHttp("/taxi/getUserPushMessage.do", mapper.writeValueAsString(user), 1);
 	}
@@ -125,15 +147,16 @@ public class PushMessageListFragment extends BaseListFragment {
 		// TODO Auto-generated method stub
 		try
 		{
+			rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.GONE);
+			
 			if ( Constants.FAIL.equals(result) )
 			{
-				getActivity().setProgressBarIndeterminateVisibility(false);
 				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
 				return;
 			}
 
-			getActivity().setProgressBarIndeterminateVisibility(false);
-
+			listMain.setVisibility(ViewGroup.VISIBLE);
+			
 			super.doPostTransaction(requestCode, result);
 
 			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
