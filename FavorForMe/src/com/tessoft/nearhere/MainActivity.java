@@ -68,6 +68,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -147,7 +148,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		}
 	}
 
-	private void initLeftMenu() {
+	private void initLeftMenu() throws Exception 
+	{
 		
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -198,12 +200,20 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			/** Called when a drawer has settled in a completely open state. */
 			public void onDrawerOpened(View drawerView) {
 				super.onDrawerOpened(drawerView);
+
+				mDrawerList.setAdapter( adapter );
+
 				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
 			}
 		};
 
 		// Set the drawer toggle as the DrawerListener
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
+		
+		TextView txtCreditValue = (TextView) findViewById(R.id.txtCreditValue);
+		txtCreditValue.setText( getLoginUser().getProfilePoint() + "%");
+		ProgressBar progressCreditValue = (ProgressBar) findViewById(R.id.progressCreditValue);
+		progressCreditValue.setProgress( Integer.parseInt( getLoginUser().getProfilePoint() ) );
 	}
 
 	@Override
@@ -259,8 +269,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		}
 	}
 
-	public  void getUnreadCount() throws IOException,
-	JsonGenerationException, JsonMappingException {
+	public  void getUnreadCount() throws Exception 
+	{
 		HashMap hash = getDefaultRequest();
 		hash.put("userID", getLoginUser().getUserID() );
 		hash.put("lastNoticeID", getMetaInfoString("lastNoticeID"));

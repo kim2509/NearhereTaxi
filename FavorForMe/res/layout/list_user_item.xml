@@ -26,8 +26,7 @@
             android:layout_width="15dp"
             android:layout_height="15dp"
             android:layout_marginTop="10dp"
-            android:paddingBottom="2dp"
-            android:src="@drawable/male" />
+            android:paddingBottom="2dp" />
 
         <TextView
             android:id="@+id/txtUserName"
@@ -55,13 +54,15 @@
                 android:id="@+id/txtAgeLabel"
                 android:layout_width="90dp"
                 android:layout_height="wrap_content"
-                android:text="나이" />
+                android:text="나이"
+                android:textSize="14sp" />
             
             <TextView
                 android:id="@+id/txtAge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp" />
+                android:layout_marginLeft="10dp"
+                android:textStyle="bold" />
         </LinearLayout>
         
         <LinearLayout
@@ -74,13 +75,15 @@
                 android:id="@+id/txtJobTitleLabel"
                 android:layout_width="90dp"
                 android:layout_height="wrap_content"
-                android:text="직업" />
+                android:text="직업" 
+                android:textSize="14sp" />
             
             <TextView
                 android:id="@+id/txtJobTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp" />
+                android:layout_marginLeft="10dp"
+                android:textStyle="bold" />
         </LinearLayout>
         
         <LinearLayout
@@ -94,13 +97,15 @@
                 android:id="@+id/txtCurrLabel"
                 android:layout_width="90dp"
                 android:layout_height="wrap_content"
-                android:text="현재위치" />
+                android:text="현재위치"
+                android:textSize="14sp" />
             
             <TextView
                 android:id="@+id/txtCurrLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp" />
+                android:layout_marginLeft="10dp"
+                android:textStyle="bold" />
         </LinearLayout>
         
         <LinearLayout
@@ -114,13 +119,16 @@
                 android:id="@+id/txtProfilePointLabel"
                 android:layout_width="90dp"
                 android:layout_height="wrap_content"
-                android:text="프로필 완성도" />
+                android:text="프로필 완성도"
+                android:textSize="14sp" />
             
             <TextView
                 android:id="@+id/txtProfilePoint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp" />
+                android:layout_marginLeft="10dp"
+                android:textColor="#F66C3C"
+                android:textStyle="bold" />
         </LinearLayout>
         
     </LinearLayout>

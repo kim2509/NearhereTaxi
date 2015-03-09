@@ -8,6 +8,7 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.type.TypeReference;
 
+import com.tessoft.common.Constants;
 import com.tessoft.common.UserArrayAdapter;
 import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.Post;
@@ -16,10 +17,13 @@ import com.tessoft.domain.User;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -43,8 +47,6 @@ public class UserListActivity extends BaseActivity implements OnItemClickListene
 		{
 			super.onCreate(savedInstanceState);
 			
-			supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-			
 			setContentView(R.layout.activity_user_list);
 			
 			adapter = new UserArrayAdapter(this, this, 0);
@@ -53,9 +55,13 @@ public class UserListActivity extends BaseActivity implements OnItemClickListene
 			
 			listMain = (ListView) findViewById(R.id.listMain);
 			listMain.addHeaderView(header, null, false );
+			listMain.setHeaderDividersEnabled(true);
 			listMain.setAdapter(adapter);
 
 			listMain.setOnItemClickListener(this);
+			
+			findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
+			listMain.setVisibility(ViewGroup.GONE);
 			
 			inquiryList();
 			
@@ -70,6 +76,25 @@ public class UserListActivity extends BaseActivity implements OnItemClickListene
 			txtTitle.setText("5km 이내의 사용자");
 			
 			moreFlag.setMoreFlag(true);
+			
+			setTitle("사용자 목록");
+			
+			Button btnRefresh = (Button) findViewById(R.id.btnRefresh);
+			btnRefresh.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					try {
+						findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
+						listMain.setVisibility(ViewGroup.GONE);
+						inquiryList();
+					} catch ( Exception ex ) {
+						// TODO Auto-generated catch block
+						catchException(this, ex);
+					}
+				}
+			});
 		}
 		catch( Exception ex )
 		{
@@ -77,6 +102,11 @@ public class UserListActivity extends BaseActivity implements OnItemClickListene
 		}
 	}
 
+	protected void setTitle( String title ) {
+		TextView txtTitle = (TextView) findViewById(R.id.txtTitle);
+		txtTitle.setText( title );
+	}
+	
 	private void inquiryList() throws IOException, JsonGenerationException,
 			JsonMappingException {
 		HashMap hash = getDefaultRequest();
@@ -86,7 +116,6 @@ public class UserListActivity extends BaseActivity implements OnItemClickListene
 		hash.put("pageNo", pageNo );
 		hash.put("distance", distance );
 		
-		setProgressBarIndeterminateVisibility(true);
 		sendHttp("/taxi/getUsersNearHere.do", mapper.writeValueAsString( hash ), HTTP_GET_USERS_NEAR_HERE );
 	}
 	
@@ -101,8 +130,17 @@ public class UserListActivity extends BaseActivity implements OnItemClickListene
 	public void doPostTransaction(int requestCode, Object result) {
 		// TODO Auto-generated method stub
 		
-		setProgressBarIndeterminateVisibility(false);
+		findViewById(R.id.marker_progress).setVisibility(ViewGroup.GONE);
+		
+		if ( Constants.FAIL.equals(result) )
+		{
+			showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
+			return;
+		}
+		
 		super.doPostTransaction(requestCode, result);
+		
+		listMain.setVisibility(ViewGroup.VISIBLE);
 		
 		try
 		{
@@ -128,8 +166,8 @@ public class UserListActivity extends BaseActivity implements OnItemClickListene
 					adapter.addAll(userList);
 					adapter.notifyDataSetChanged();
 					
-					TextView txtTitle = (TextView) findViewById(R.id.txtTitle);
-					txtTitle.setText( distance + "km 이내의 사용자(" + totalCount + "명)");
+					TextView txtSubTitle = (TextView) findViewById(R.id.txtSubTitle);
+					txtSubTitle.setText( distance + "km 이내의 사용자(" + totalCount + "명)");
 				}
 			}
 		}
@@ -166,13 +204,16 @@ public class UserListActivity extends BaseActivity implements OnItemClickListene
 		{
 			TextView txtView = (TextView) arg1;
 			
-			TextView txtTitle = (TextView) findViewById(R.id.txtTitle);
-			txtTitle.setText( txtView.getText().toString() + " 이내의 사용자");
+			TextView txtSubTitle = (TextView) findViewById(R.id.txtSubTitle);
+			txtSubTitle.setText( txtView.getText().toString() + " 이내의 사용자");
 			
 			distance = txtView.getText().toString().replaceAll("km", "");
 			
 			pageNo = 1;
 			adapter.clear();
+			
+			findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
+			listMain.setVisibility(ViewGroup.GONE);
 			
 			inquiryList();
 		}

@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.tessoft.common.Constants;
+import com.tessoft.common.Util;
 import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.Post;
 import com.tessoft.domain.User;
@@ -26,6 +27,7 @@ import com.tessoft.nearhere.R;
 
 public class IntroActivity extends BaseActivity {
 
+	private static final int HTTP_LOGIN_BACKGROUND = 2;
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		
@@ -33,12 +35,41 @@ public class IntroActivity extends BaseActivity {
 		{
 			super.onCreate(savedInstanceState);
 
-			boolean isRunIntro = getIntent().getBooleanExtra("intro", true);
-			if(isRunIntro) {
-				beforeIntro();
-			} else {
-				afterIntro(savedInstanceState);
-			}
+			// 약 2초간 인트로 화면을 출력.
+			getWindow().getDecorView().postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					
+					try
+					{
+
+						if ( "".equals( getLoginUser().getUserID() ) || !"true".equals( getMetaInfoString("registerUserFinished")) 
+								|| "true".equals( getMetaInfoString("logout")) )
+						{
+							Intent intent = null;
+							intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
+							intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+							startActivity(intent);
+							finish();
+							// 액티비티 이동시 페이드인/아웃 효과를 보여준다. 즉, 인트로
+							//    화면에 부드럽게 사라진다.
+							overridePendingTransition(android.R.anim.fade_in, 
+									android.R.anim.fade_out);
+						}
+						else
+						{
+							HashMap request = getDefaultRequest();
+							request.put("user", getLoginUser());
+							sendHttp("/taxi/getRandomIDV2.do", mapper.writeValueAsString(request), HTTP_LOGIN_BACKGROUND);
+						}
+						
+					}
+					catch( Exception ex )
+					{
+						catchException(this, ex);
+					}
+				}
+			}, 1000);
 		}
 		catch( Exception ex )
 		{
@@ -46,68 +77,6 @@ public class IntroActivity extends BaseActivity {
 			Log.e("error", ex.getMessage());
 		}
 		
-	}
-
-	// 인트로 화면 
-	private void beforeIntro() {
-		// 약 2초간 인트로 화면을 출력.
-		getWindow().getDecorView().postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				Intent intent = null;
-				
-				if ( "".equals( getLoginUser().getUserID() ) || !"true".equals( getMetaInfoString("registerUserFinished")) 
-						|| "true".equals( getMetaInfoString("logout")) )
-				{
-					intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
-				}
-				else
-				{
-					intent = new Intent( getApplicationContext(), MainActivity.class);
-				}
-				
-				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				startActivity(intent);
-				finish();
-				// 액티비티 이동시 페이드인/아웃 효과를 보여준다. 즉, 인트로
-				//    화면에 부드럽게 사라진다.
-				overridePendingTransition(android.R.anim.fade_in, 
-						android.R.anim.fade_out);
-			}
-		}, 1000);
-	}
-
-	// 인트로 화면 이후.
-	private void afterIntro(Bundle savedInstanceState) {
-		// 기본 테마를 지정한다.
-
-		setTheme(R.style.AppBaseTheme);
-
-		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-		getActionBar().hide();
-
-		setContentView(R.layout.activity_intro);
-
-		getWindow().setBackgroundDrawableResource(R.drawable.intro);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.intro, menu);
-		return false;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
 	}
 	
 	public void login( View v )
@@ -158,10 +127,10 @@ public class IntroActivity extends BaseActivity {
 			
 			super.doPostTransaction(requestCode, result);
 			
+			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
+			
 			if ( requestCode == 1 )
 			{
-				APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
-				
 				if ( "0000".equals( response.getResCode() ) )
 				{
 					String postData = mapper.writeValueAsString( response.getData() );
@@ -181,6 +150,14 @@ public class IntroActivity extends BaseActivity {
 					showOKDialog("오류", response.getResMsg(), null);
 					return;
 				}
+			}
+			else if ( requestCode == HTTP_LOGIN_BACKGROUND )
+			{
+				setMetaInfo("loginUserInfo", Util.encodeBase64( mapper.writeValueAsString( response.getData() ) ));
+				Intent intent = new Intent( getApplicationContext(), MainActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intent);
+				finish();
 			}
 		}
 		catch( Exception ex )

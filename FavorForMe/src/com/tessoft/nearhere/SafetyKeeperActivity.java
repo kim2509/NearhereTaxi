@@ -107,6 +107,7 @@ public class SafetyKeeperActivity extends BaseActivity implements OnClickListene
 				@Override
 				public void onTextChanged(CharSequence s, int start, int before, int count) {
 					// TODO Auto-generated method stub
+					
 					String msg = "[이근처 합승-" + getLoginUser().getUserName() + "님] " + s + " [" + address.replaceAll("\\|", " ") + "]";
 
 					txtPreview.setText( msg );

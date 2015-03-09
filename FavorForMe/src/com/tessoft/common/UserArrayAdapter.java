@@ -1,6 +1,8 @@
 package com.tessoft.common;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.tessoft.domain.User;
 import com.tessoft.nearhere.R;
 
@@ -16,11 +18,21 @@ public class UserArrayAdapter extends ArrayAdapter<User>{
 
 	private AdapterDelegate delegate = null;
 	LayoutInflater inflater = null;
+	DisplayImageOptions options = null;
 	
 	public UserArrayAdapter(Context context, AdapterDelegate delegate, int textViewResourceId) {
 		super(context, textViewResourceId);
 		inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.delegate = delegate;
+		options = new DisplayImageOptions.Builder()
+		.resetViewBeforeLoading(true)
+		.cacheInMemory(true)
+		.showImageOnLoading(R.drawable.no_image)
+		.showImageForEmptyUri(R.drawable.no_image)
+		.showImageOnFail(R.drawable.no_image)
+		.displayer(new RoundedBitmapDisplayer(20))
+		.delayBeforeLoading(100)
+		.build();
 	}
 
 	public static class ViewHolder
@@ -28,6 +40,7 @@ public class UserArrayAdapter extends ArrayAdapter<User>{
 		public User user = null;
 		public ImageView imgProfile = null;
 		public TextView txtUserName = null;
+		public ImageView imgSex = null;
 		public TextView txtCurrLocation = null;
 		public TextView txtAge = null;
 		public TextView txtProfilePoint = null;
@@ -50,6 +63,7 @@ public class UserArrayAdapter extends ArrayAdapter<User>{
 			}
 			
 			ImageView imageView = null;
+			ImageView imgSex = null;
 			ViewHolder viewHolder = null;
 			TextView txtUserName = null;
 			TextView txtCurrLocation = null;
@@ -64,6 +78,7 @@ public class UserArrayAdapter extends ArrayAdapter<User>{
 				
 				viewHolder.imgProfile = (ImageView) row.findViewById(R.id.imgProfile);
 				viewHolder.txtUserName = (TextView) row.findViewById(R.id.txtUserName);
+				viewHolder.imgSex = (ImageView) row.findViewById(R.id.imgSex);
 				viewHolder.txtCurrLocation = (TextView) row.findViewById(R.id.txtCurrLocation);
 				viewHolder.txtAge = (TextView) row.findViewById(R.id.txtAge);
 				viewHolder.txtProfilePoint = (TextView) row.findViewById(R.id.txtProfilePoint);
@@ -81,6 +96,7 @@ public class UserArrayAdapter extends ArrayAdapter<User>{
 			txtAge = viewHolder.txtAge;
 			txtProfilePoint = viewHolder.txtProfilePoint;
 			txtJobTitle = viewHolder.txtJobTitle;
+			imgSex = viewHolder.imgSex;
 
 			viewHolder.user = user;
 			
@@ -90,10 +106,15 @@ public class UserArrayAdapter extends ArrayAdapter<User>{
 			if ( !Util.isEmptyString( user.getProfileImageURL() ))
 			{
 				ImageLoader.getInstance().displayImage( 
-						Constants.thumbnailImageURL + user.getProfileImageURL() , imageView);	
+						Constants.thumbnailImageURL + user.getProfileImageURL() , imageView, options );	
 			}
 			
 			txtUserName.setText( user.getUserName() );
+			
+			if ( "M".equals( user.getSex() ) )
+				imgSex.setImageResource(R.drawable.ic_male);
+			else
+				imgSex.setImageResource(R.drawable.ic_female);
 			
 			if ( Util.isEmptyString( user.getAddress() ) )
 				row.findViewById(R.id.layoutCurrLocation).setVisibility(ViewGroup.GONE);

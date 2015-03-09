@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.codehaus.jackson.type.TypeReference;
 
 import com.tessoft.common.Constants;
+import com.tessoft.common.Util;
 import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.User;
 
@@ -152,13 +153,8 @@ public class RegisterUserActivity extends BaseActivity {
 			if ( "0000".equals( response.getResCode() ) )
 			{
 				String temp = mapper.writeValueAsString( response.getData() );
-				User user = mapper.readValue( temp, new TypeReference<User>(){});
 
-				setMetaInfo("userNo", user.getUserNo());
-				setMetaInfo("userID", user.getUserID());
-				setMetaInfo("sex", user.getSex());
-				setMetaInfo("userName", user.getUserName());
-				setMetaInfo("profileImageURL", user.getProfileImageURL());
+				setMetaInfo("loginUserInfo", Util.encodeBase64( temp ) );
 
 				if ( requestCode == 1 )
 				{
@@ -167,7 +163,7 @@ public class RegisterUserActivity extends BaseActivity {
 				else if ( requestCode == 2 )
 				{
 					Button btnRandomID = (Button) findViewById(R.id.btnRandomID);
-					btnRandomID.setText("임시아이디 " + user.getUserID() + "로 시작하기");
+					btnRandomID.setText("임시아이디 " + getLoginUser().getUserID() + "로 시작하기");
 					btnRandomID.setEnabled(true);
 				}
 			}

@@ -2,6 +2,8 @@ package com.tessoft.domain;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
+import com.tessoft.common.Util;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User extends ListItemModel{
 
@@ -134,6 +136,9 @@ public class User extends ListItemModel{
 	}
 
 	public String getProfilePoint() {
+		if ( Util.isEmptyString( profilePoint ) )
+			return "0";
+		
 		return profilePoint;
 	}
 

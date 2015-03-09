@@ -117,7 +117,9 @@ public class HttpTransactionReturningString extends AsyncTask<Object, Integer, S
 		if ( Constants.bReal == false )
 			return Constants.serverURL + url;
 		
-		if ( url.indexOf("/taxi/registerUser.do") >= 0 )
+		if ( url.indexOf("/taxi/getRandomID.do") >= 0 )
+			return Constants.serverSSLURL + url;
+		if ( url.indexOf("/taxi/getRandomIDV2.do") >= 0 )
 			return Constants.serverSSLURL + url;
 		else if ( url.indexOf("/taxi/insertTermsAgreement.do") >= 0 )
 			return Constants.serverSSLURL + url;

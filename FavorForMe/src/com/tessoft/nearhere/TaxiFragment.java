@@ -120,6 +120,7 @@ public class TaxiFragment extends BaseFragment
 			
 			inquiryPosts();
 			
+//			setMetaInfo("lastLocationUpdatedDt", "");
 			getActivity().sendBroadcast(new Intent("startLocationUpdate"));
 		}
 		catch( Exception ex )

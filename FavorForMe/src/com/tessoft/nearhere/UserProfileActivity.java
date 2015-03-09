@@ -1,8 +1,11 @@
 package com.tessoft.nearhere;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.type.TypeReference;
 
 import android.animation.Animator;
@@ -22,9 +25,11 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -55,8 +60,6 @@ public class UserProfileActivity extends BaseActivity {
 		try
 		{
 			super.onCreate(savedInstanceState);
-
-			supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
 			setContentView(R.layout.activity_user_profile);
 
@@ -89,10 +92,7 @@ public class UserProfileActivity extends BaseActivity {
 
 			footer.findViewById(R.id.txtNone).setVisibility(ViewGroup.GONE);
 
-			User user = new User();
-			user.setUserID(getIntent().getExtras().getString("userID"));
-			setProgressBarIndeterminateVisibility(true);
-			sendHttp("/taxi/getUserInfo.do", mapper.writeValueAsString( user ), 1);
+			inquiryUserInfo();
 
 			ImageView imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
 			imgProfile.setOnClickListener( new OnClickListener() {
@@ -120,11 +120,44 @@ public class UserProfileActivity extends BaseActivity {
 			.displayer(new RoundedBitmapDisplayer(20))
 			.delayBeforeLoading(100)
 			.build();
+			
+			setTitle("사용자정보");
+			
+			Button btnRefresh = (Button) findViewById(R.id.btnRefresh);
+			btnRefresh.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					try {
+						inquiryUserInfo();
+					} catch ( Exception ex ) {
+						// TODO Auto-generated catch block
+						catchException(this, ex);
+					}
+				}
+			});
 		}
 		catch( Exception ex )
 		{
 			Log.e("error", ex.getMessage());
 		}
+	}
+	
+	protected void setTitle( String title ) {
+		TextView txtTitle = (TextView) findViewById(R.id.txtTitle);
+		txtTitle.setText( title );
+	}
+
+	private void inquiryUserInfo() throws IOException, JsonGenerationException,
+			JsonMappingException {
+		
+		findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
+		listMain.setVisibility(ViewGroup.GONE);
+		
+		User user = new User();
+		user.setUserID(getIntent().getExtras().getString("userID"));
+		sendHttp("/taxi/getUserInfo.do", mapper.writeValueAsString( user ), 1);
 	}
 
 	@Override
@@ -192,14 +225,16 @@ public class UserProfileActivity extends BaseActivity {
 		// TODO Auto-generated method stub
 		try
 		{
+			findViewById(R.id.marker_progress).setVisibility(ViewGroup.GONE);
+			
 			if ( Constants.FAIL.equals(result) )
 			{
-				setProgressBarIndeterminateVisibility(false);
 				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
 				return;
 			}
 
-			setProgressBarIndeterminateVisibility(false);
+			listMain.setVisibility(ViewGroup.VISIBLE);
+			
 			super.doPostTransaction(requestCode, result);		
 
 
@@ -241,6 +276,8 @@ public class UserProfileActivity extends BaseActivity {
 
 					TextView txtCreditValue = (TextView) header.findViewById(R.id.txtCreditValue);
 					txtCreditValue.setText( user.getProfilePoint() + "%" );
+					ProgressBar progressCreditValue = (ProgressBar) header.findViewById(R.id.progressCreditValue);
+					progressCreditValue.setProgress( Integer.parseInt( user.getProfilePoint() ));
 
 					if ( user.getBirthday() != null && !"".equals( user.getBirthday() ) )
 					{
@@ -270,12 +307,12 @@ public class UserProfileActivity extends BaseActivity {
 
 					if ( "M".equals( user.getSex() ))
 					{
-						imgSex.setImageResource(R.drawable.male);
+						imgSex.setImageResource(R.drawable.ic_male);
 						txtSex.setText("남자");
 					}
 					else if ( "F".equals( user.getSex() ))
 					{
-						imgSex.setImageResource(R.drawable.female);
+						imgSex.setImageResource(R.drawable.ic_female);
 						txtSex.setText("여자");
 					}
 					else

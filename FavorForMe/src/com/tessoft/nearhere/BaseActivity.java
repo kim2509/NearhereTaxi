@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.LimitedAgeMemoryCache;
@@ -16,6 +17,8 @@ import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.tessoft.common.AdapterDelegate;
 import com.tessoft.common.HttpTransactionReturningString;
 import com.tessoft.common.TransactionDelegate;
+import com.tessoft.common.Util;
+import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.User;
 
 import android.app.AlertDialog;
@@ -197,13 +200,56 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 	
 	public User getLoginUser()
 	{
-		User user = new User();
-		user.setUserNo( getMetaInfoString("userNo") );
-		user.setUserID( getMetaInfoString("userID") );
-		user.setUserName( getMetaInfoString("userName") );
-		user.setProfileImageURL( getMetaInfoString("profileImageURL"));
-		user.setUuid( getUniqueDeviceID() );
-		return user;
+		try
+		{
+			try
+			{
+				String result = getMetaInfoString("loginUserInfo");
+				
+				User user = new User();
+				
+				if ( Util.isEmptyString( result ) )
+				{
+					// 전환
+					user.setUserNo( getMetaInfoString("userNo") );
+					user.setUserID( getMetaInfoString("userID") );
+					user.setUserName( getMetaInfoString("userName") );
+					user.setProfileImageURL( getMetaInfoString("profileImageURL"));
+					user.setUuid( getUniqueDeviceID() );
+					
+					setMetaInfo("loginUserInfo", mapper.writeValueAsString(user));
+					
+					setMetaInfo("userNo", "");
+					setMetaInfo("userID", "");
+					setMetaInfo("userName", "");
+					setMetaInfo("profileImageURL", "");
+					
+					return user;
+				}
+				else
+				{
+					result = Util.decodeBase64( result );
+					user = mapper.readValue( result , new TypeReference<User>(){});	
+				}
+				
+				return user;
+			}
+			catch( Exception ex )
+			{
+				catchException(this, ex);
+				return new User();
+			}
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+			return new User();
+		}
+	}
+	
+	public void setLoginUser( String result )
+	{
+		setMetaInfo("loginUserInfo", result);
 	}
 	
 	@Override
