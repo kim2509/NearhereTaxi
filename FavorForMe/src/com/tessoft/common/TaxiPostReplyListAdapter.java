@@ -96,14 +96,17 @@ public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> implements
 			else
 				txtDistance.setVisibility(ViewGroup.GONE);
 			
-			
-			imageView.setImageResource(R.drawable.no_image);
-			
 			if ( !Util.isEmptyString( item.getUser().getProfileImageURL() ) )
 			{
 				ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
 						item.getUser().getProfileImageURL() , imageView);	
 			}
+			else
+			{
+				ImageLoader.getInstance().cancelDisplayTask(imageView);
+				imageView.setImageResource(R.drawable.no_image);
+			}
+				
 			
 			if ( Util.isEmptyString( item.getUser().getUserName() ) )
 				txtUserName.setText( item.getUser().getUserID() );
@@ -143,13 +146,18 @@ public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> implements
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		View row = (View) v.getParent();
-		PostReply reply = (PostReply) row.getTag();
-		
 		if ( v.getId() == R.id.txtDeleteReply )
+		{
+			View row = (View) v.getParent().getParent();
+			PostReply reply = (PostReply) row.getTag();
 			delegate.doAction("deleteReply", reply );
+		}
 		else
+		{
+			View row = (View) v.getParent();
+			PostReply reply = (PostReply) row.getTag();
 			delegate.doAction("userProfile", reply.getUser().getUserID() );
+		}
 	}
 
 }

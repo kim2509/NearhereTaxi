@@ -8,6 +8,8 @@ public class UserSetting {
 	private String messagePushReceiveYN;
 	private String replyPushReceiveYN;
 	private String recommendPushReceiveYN;
+	private String inquiryUserPushReceiveYN;
+	
 	private String createdDate;
 	public String getUserID() {
 		return userID;
@@ -38,5 +40,11 @@ public class UserSetting {
 	}
 	public void setCreatedDate(String createdDate) {
 		this.createdDate = createdDate;
+	}
+	public String getInquiryUserPushReceiveYN() {
+		return inquiryUserPushReceiveYN;
+	}
+	public void setInquiryUserPushReceiveYN(String inquiryUserPushReceiveYN) {
+		this.inquiryUserPushReceiveYN = inquiryUserPushReceiveYN;
 	}
 }

@@ -25,6 +25,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.tessoft.common.AddressTaskDelegate;
 import com.tessoft.common.Constants;
 import com.tessoft.common.GetAddressTask;
@@ -90,7 +91,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	protected static final int GET_UNREAD_COUNT = 3;
 	private static final int HTTP_LEAVE = 10;
 	private static final int HTTP_UPDATE_LOCATION = 20;
-	
+
 	String SENDER_ID = "30113798803";
 	GoogleCloudMessaging gcm;
 
@@ -98,8 +99,10 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 	public static String latitude = "";
 	public static String longitude = "";
-	public static String address = "";
 	public static String fullAddress = "";
+
+	public static String address = "";
+	DisplayImageOptions options = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -123,10 +126,10 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			.commit();
 
 			buildGoogleApiClient();
-			
+
 			// 마지막 위치업데이트 시간 clear
 			setMetaInfo("lastLocationUpdatedDt", "");
-			
+
 			createLocationRequest();
 
 			// 푸시 토큰을 생성한다.
@@ -139,7 +142,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			checkPlayServices();
 
 			checkIfGPSEnabled();
-			
+
 			MainActivity.active = true;
 		}
 		catch( Exception ex )
@@ -150,25 +153,35 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 	private void initLeftMenu() throws Exception 
 	{
-		
+
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
-		
+
 		View header = getLayoutInflater().inflate(R.layout.list_my_info_header, null);
 		header.setTag(new MainMenuItem("header"));
 		mDrawerList.addHeaderView(header);
 
+		options = new DisplayImageOptions.Builder()
+		.resetViewBeforeLoading(true)
+		.cacheInMemory(true)
+		.showImageOnLoading(R.drawable.no_image)
+		.showImageForEmptyUri(R.drawable.no_image)
+		.showImageOnFail(R.drawable.no_image)
+		.displayer(new RoundedBitmapDisplayer(20))
+		.delayBeforeLoading(100)
+		.build();
+
 		ImageView imageView = (ImageView) header.findViewById(R.id.imgProfile);
 		ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
-				getLoginUser().getProfileImageURL() , imageView);
-		
+				getLoginUser().getProfileImageURL() , imageView, options );
+
 		TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
 		txtUserName.setText( getLoginUser().getUserName() );
-		
+
 		// Set the adapter for the list view
 		adapter = new MainMenuArrayAdapter( getApplicationContext(), 0);
 		adapter.add(new MainMenuItem("홈"));
-		adapter.add(new MainMenuItem("내 정보"));
+		//		adapter.add(new MainMenuItem("내 정보"));
 		adapter.add(new MainMenuItem("알림메시지"));
 		adapter.add(new MainMenuItem("쪽지함"));
 		adapter.add(new MainMenuItem("공지사항"));
@@ -182,7 +195,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 			@Override
 			public void onItemClick(AdapterView parent, View view, int position, long id) {
-				
+
 				MainMenuItem item = (MainMenuItem) view.getTag();
 				selectItem( item );
 			}
@@ -209,7 +222,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 		// Set the drawer toggle as the DrawerListener
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
-		
+
 		TextView txtCreditValue = (TextView) findViewById(R.id.txtCreditValue);
 		txtCreditValue.setText( getLoginUser().getProfilePoint() + "%");
 		ProgressBar progressCreditValue = (ProgressBar) findViewById(R.id.progressCreditValue);
@@ -224,7 +237,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			super.onStart();
 			if ( mGoogleApiClient != null && mGoogleApiClient.isConnected() == false )
 				mGoogleApiClient.connect();
-			
+
 			registerReceiver(mMessageReceiver, new IntentFilter("updateUnreadCount"));
 			registerReceiver(mMessageReceiver, new IntentFilter("startLocationUpdate"));
 		}
@@ -246,7 +259,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 				stopLocationUpdates();
 				mGoogleApiClient.disconnect();
 			}
-			
+
 			unregisterReceiver(mMessageReceiver);
 		}
 		catch( Exception ex )
@@ -295,7 +308,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			}
 		}
 	};
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -328,7 +341,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		// Create a new fragment and specify the planet to show based on position
 
 		boolean bFragment = true;
-		
+
 		int position = adapter.getPosition(item);
 
 		if ( "홈".equals( item.getMenuName() ) )
@@ -351,23 +364,14 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			return;
 		}
 
-		if ( bFragment )
-		{
-			// Insert the fragment by replacing any existing fragment
-			FragmentManager fragmentManager = getFragmentManager();
-			fragmentManager.beginTransaction()
-			.replace(R.id.content_frame, mainFragment)
-			.addToBackStack(null)
-			.commit();
+		// Insert the fragment by replacing any existing fragment
+		FragmentManager fragmentManager = getFragmentManager();
+		fragmentManager.beginTransaction()
+		.replace(R.id.content_frame, mainFragment)
+		.addToBackStack(null)
+		.commit();
 
-			setTitle( item.getMenuName() );
-		}
-		else
-		{
-			Intent intent = new Intent( this, SettingsActivity.class);
-			startActivity(intent);
-			overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
-		}
+		setTitle( item.getMenuName() );
 
 		// Highlight the selected item, update the title, and close the drawer
 		mDrawerList.setItemChecked(position, true);
@@ -396,7 +400,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	@Override
 	public void setTitle(CharSequence title) {
 		mTitle = title.toString();
-//		getActionBar().setTitle(mTitle);
+		//		getActionBar().setTitle(mTitle);
 	}
 
 
@@ -436,7 +440,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 				TaxiFragment f = (TaxiFragment) mainFragment;
 				f.updateAddress( new LatLng( location.getLatitude(), location.getLongitude() ) );
 			}
-			
+
 			stopLocationUpdates();
 		}
 		catch( Exception ex )
@@ -448,18 +452,18 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	@Override
 	public void onAddressTaskPostExecute(int requestCode, Object result) {
 		// TODO Auto-generated method stub
-		
+
 		try
 		{
 			MainActivity.address = Util.getDongAddressString( result );
 			MainActivity.fullAddress = result.toString();
-			
+
 			Intent intent = new Intent("currentLocationChanged");
 			intent.putExtra("latitude", MainActivity.latitude );
 			intent.putExtra("longitude", MainActivity.longitude );
 			intent.putExtra("fullAddress", result.toString() );
 			sendBroadcast(intent);
-			
+
 			if ( bMyLocationUpdated == false )
 				updateMyLocation();			
 		}
@@ -470,7 +474,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	}
 
 	boolean bMyLocationUpdated = false;
-	
+
 	public void updateMyLocation() throws Exception
 	{
 		if ( !Util.isEmptyString( MainActivity.latitude ) && !Util.isEmptyString( MainActivity.longitude ) )
@@ -485,7 +489,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			sendHttp("/taxi/updateUserLocation.do", mapper.writeValueAsString( userLocation ), HTTP_UPDATE_LOCATION );			
 		}
 	}
-	
+
 	@Override
 	public void onConnectionFailed(ConnectionResult arg0) {
 		// TODO Auto-generated method stub
@@ -514,7 +518,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	}
 
 	protected void startLocationUpdates() {
-		
+
 		if ( mGoogleApiClient == null || mGoogleApiClient.isConnected() == false )
 			return;
 
@@ -522,28 +526,28 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		// 너무 자주 갱신하는 문제 수정
 		Date now = new Date();
 		Date lastLocationUpdatedDt = new Date();
-		
+
 		boolean bShouldUpdate = false;
 		if ( Util.isEmptyString( getMetaInfoString("lastLocationUpdatedDt")))
 			bShouldUpdate = true;
 		else
 		{
 			lastLocationUpdatedDt.setTime( Long.parseLong( getMetaInfoString("lastLocationUpdatedDt") ) );
-			
+
 			Calendar c = Calendar.getInstance(); 
 			c.setTime(lastLocationUpdatedDt); 
 			c.add(Calendar.MINUTE, 2);
 			lastLocationUpdatedDt = c.getTime();
-			
+
 			if(lastLocationUpdatedDt.before(now))
 				bShouldUpdate = true;
 		}
-		
+
 		if ( bShouldUpdate )
 		{
 			LocationServices.FusedLocationApi.requestLocationUpdates(
 					mGoogleApiClient, mLocationRequest, this);
-			
+
 			setMetaInfo("lastLocationUpdatedDt", String.valueOf( now.getTime() ));			
 		}
 	}
@@ -723,7 +727,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
-		
+
 		try
 		{
 			super.onDestroy();
@@ -734,7 +738,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			catchException(this, ex);
 		}
 	}
-	
+
 	public void openDrawerMenu( View v )
 	{
 		mDrawerLayout.openDrawer(mDrawerList);

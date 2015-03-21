@@ -14,7 +14,7 @@
         android:layout_marginRight="10dp"
         android:background="@drawable/layout_rounded_border"
         android:orientation="vertical"
-        android:paddingBottom="30dp"
+        android:paddingBottom="20dp"
         android:paddingLeft="15dp"
         android:paddingTop="10dp" >
 
@@ -225,6 +225,16 @@
                 android:text="미입력"
                 android:textSize="15sp" />
         </LinearLayout>
+
+        <Button
+            android:id="@+id/btnSendMessage"
+            style="@style/btn_style"
+           	android:layout_marginTop="10dp"
+           	android:paddingLeft="5dp"
+           	android:paddingRight="5dp"
+            android:layout_width="wrap_content"
+            android:onClick="goUserMessageActivity"
+            android:text="쪽지 보내기" />
     </LinearLayout>
 
     <LinearLayout

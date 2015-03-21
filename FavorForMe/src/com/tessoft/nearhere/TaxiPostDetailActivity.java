@@ -149,6 +149,9 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		txtUserName = (TextView) header.findViewById(R.id.txtUserName);
 		txtUserName.setOnClickListener( this );
 		
+		Button btnDelete = (Button) header.findViewById(R.id.btnDelete);
+		btnDelete.setOnClickListener(this);
+		
 		Button btnFinish = (Button) header.findViewById(R.id.btnFinish);
 		btnFinish.setOnClickListener(this);
 		
@@ -258,12 +261,6 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 				inquiryPostDetail();
 				return true;
 			}
-			else if ( id == R.id.action_edit )
-				modifyPost();
-			else if (id == R.id.action_delete) {
-				showYesNoDialog("확인", "정말 삭제하시겠습니까?", "postDelete");
-				return true;
-			}	
 		}
 		catch( Exception ex )
 		{
@@ -446,14 +443,14 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 				return;
 			}
 
-			listMain.setVisibility(ViewGroup.VISIBLE);
-			
 			super.doPostTransaction(requestCode, result);
 
 			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
 
 			if ( "0000".equals( response.getResCode() ) )
 			{
+				listMain.setVisibility(ViewGroup.VISIBLE);
+				
 				if ( requestCode == POST_DETAIL )
 				{
 					String postData = mapper.writeValueAsString( response.getData() );
@@ -554,23 +551,28 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					
 					ImageView imgStatus = (ImageView) header.findViewById(R.id.imgStatus);
 					imgStatus.setVisibility(ViewGroup.VISIBLE);
-					RelativeLayout layoutMyOption = (RelativeLayout) header.findViewById(R.id.layoutMyOption);
+					Button btnFinish = (Button) header.findViewById(R.id.btnFinish);
+					
+					if ( post.getUser().getUserID().equals( getLoginUser().getUserID() ))
+						header.findViewById(R.id.layoutMyOption).setVisibility(ViewGroup.VISIBLE);
+					else
+						header.findViewById(R.id.layoutMyOption).setVisibility(ViewGroup.GONE );
 					
 					if ( "진행중".equals( post.getStatus() ) )
 					{
 						imgStatus.setImageResource(R.drawable.progressing);
 						if ( post.getUser().getUserID().equals( getLoginUser().getUserID() ))
-							layoutMyOption.setVisibility(ViewGroup.VISIBLE);	
+							btnFinish.setVisibility(ViewGroup.VISIBLE);	
 					}
 					else
 					{
 						imgStatus.setImageResource(R.drawable.finished);
-						layoutMyOption.setVisibility(ViewGroup.GONE);
+						btnFinish.setVisibility(ViewGroup.GONE);
 					}
 				}
 				else if ( requestCode == INSERT_POST_REPLY )
 				{
-					sendHttp("/taxi/getPostDetail.do", mapper.writeValueAsString(post), POST_DETAIL );
+					inquiryPostDetail();
 				}
 				else if ( requestCode == DELETE_POST )
 				{
@@ -586,7 +588,8 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			}
 			else
 			{
-				showOKDialog("경고", response.getResMsg(), null);
+				listMain.setVisibility(ViewGroup.GONE);
+				showOKDialog("경고", response.getResMsg(), "error" );
 				return;
 			}
 		}
@@ -595,8 +598,17 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			catchException(this, ex);
 		}
 	}
+	
+	@Override
+	public void okClicked(Object param) {
+		// TODO Auto-generated method stub
+		super.okClicked(param);
+		
+		if ( "error".equals( param ) )
+			onBackPressed();
+	}
 
-	public void modifyPost()
+	public void modifyPost( View v )
 	{
 		Intent intent = new Intent( this, NewTaxiPostActivity.class);
 		intent.putExtra("mode", "modify");
@@ -614,7 +626,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		{
 			if ( responseCode == RESULT_OK )
 			{
-				sendHttp("/taxi/getPostDetail.do", mapper.writeValueAsString(post), POST_DETAIL );
+				inquiryPostDetail();
 
 				Intent result = new Intent();
 				result.putExtra("reload", true);
@@ -637,6 +649,11 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			if ( id == R.id.txtUserName || id == R.id.imgProfile )
 			{
 				goUserProfileActivity( post.getUser().getUserID() );
+			}
+			else if ( id == R.id.btnDelete )
+			{
+				showYesNoDialog("확인", "정말 삭제하시겠습니까?", "postDelete");
+				return;
 			}
 			else if ( id == R.id.btnFinish )
 			{

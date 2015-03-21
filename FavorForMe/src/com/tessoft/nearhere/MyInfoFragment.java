@@ -104,6 +104,9 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 			initializeComponent();
 
 			inquiryUserInfo();
+			
+			TextView txtTitle = (TextView) rootView.findViewById(R.id.txtTitle);
+			txtTitle.setText("내 정보");
 		}
 		catch( Exception ex )
 		{
@@ -118,6 +121,9 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 		User user = getLoginUser();
 		getActivity().setProgressBarIndeterminateVisibility(true);
 		sendHttp("/taxi/getUserInfo.do", mapper.writeValueAsString( user ), 1);
+		
+		listMain.setVisibility(ViewGroup.GONE);
+		rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
 	}
 
 	private void initializeComponent() {
@@ -324,6 +330,8 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 		// TODO Auto-generated method stub
 		try
 		{
+			rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.GONE);
+			
 			if ( Constants.FAIL.equals(result) )
 			{
 				getActivity().setProgressBarIndeterminateVisibility(false);
@@ -331,8 +339,8 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 				return;
 			}
 
-			getActivity().setProgressBarIndeterminateVisibility(false);
-
+			listMain.setVisibility(ViewGroup.VISIBLE);
+			
 			super.doPostTransaction(requestCode, result);
 
 			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});

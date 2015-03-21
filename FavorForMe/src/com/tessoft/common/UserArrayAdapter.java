@@ -100,13 +100,15 @@ public class UserArrayAdapter extends ArrayAdapter<User>{
 
 			viewHolder.user = user;
 			
-			imageView.invalidate();
-			imageView.setImageResource(R.drawable.no_image);
-			
 			if ( !Util.isEmptyString( user.getProfileImageURL() ))
 			{
 				ImageLoader.getInstance().displayImage( 
 						Constants.thumbnailImageURL + user.getProfileImageURL() , imageView, options );	
+			}
+			else
+			{
+				ImageLoader.getInstance().cancelDisplayTask(imageView);
+				imageView.setImageResource(R.drawable.no_image);
 			}
 			
 			txtUserName.setText( user.getUserName() );

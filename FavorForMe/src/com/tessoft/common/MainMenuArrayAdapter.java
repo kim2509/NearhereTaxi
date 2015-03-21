@@ -38,7 +38,9 @@ public class MainMenuArrayAdapter extends ArrayAdapter<MainMenuItem>{
 
 			ImageView icon_menu = (ImageView) row.findViewById(R.id.icon_menu);
 			
-			if ( "내 정보".equals( item.getMenuName() ) )
+			if ( "홈".equals( item.getMenuName() ) )
+				icon_menu.setImageResource(R.drawable.ic_home_off);
+			else if ( "내 정보".equals( item.getMenuName() ) )
 				icon_menu.setImageResource(R.drawable.ic_myinfo_off);
 			else if ( "알림메시지".equals( item.getMenuName() ) )
 				icon_menu.setImageResource(R.drawable.ic_push_off);

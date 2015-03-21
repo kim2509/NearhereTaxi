@@ -222,6 +222,17 @@ public class GcmIntentService extends IntentService {
             		mBuilder.setVibrate(new long[] { 1000, 1000 });
             	
             }
+            else if ( "inquiryUser".equals( type ))
+            {
+            	intent = new Intent(this, UserProfileActivity.class);
+            	intent.putExtra("userID", extras.getString("userID") );
+            	
+            	if ( extras.containsKey("sound") && "on".equals( extras.getString("sound") ) )
+            		mBuilder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
+            	if ( extras.containsKey("vibrate") && "on".equals( extras.getString("vibrate") ) )
+            		mBuilder.setVibrate(new long[] { 1000, 1000 });
+            	
+            }
             else
             {
             	intent = new Intent(this, MainActivity.class);

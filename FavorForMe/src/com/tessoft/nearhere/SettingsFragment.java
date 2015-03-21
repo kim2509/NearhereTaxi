@@ -61,6 +61,11 @@ public class SettingsFragment extends BaseListFragment {
 			setting.setSettingName("추천알림받기");
 			setting.setSettingValue("Y");
 			adapter.add(setting);
+			
+			setting = new SettingListItem();
+			setting.setSettingName("프로필 조회 알림받기");
+			setting.setSettingValue("Y");
+			adapter.add(setting);
 
 			listMain.setAdapter(adapter);
 
@@ -131,6 +136,7 @@ public class SettingsFragment extends BaseListFragment {
 						setting.setMessagePushReceiveYN("Y");
 						setting.setReplyPushReceiveYN("Y");
 						setting.setRecommendPushReceiveYN("Y");
+						setting.setInquiryUserPushReceiveYN("Y");
 					}
 
 					for ( int i = 0; i < adapter.getCount(); i++ )
@@ -142,6 +148,8 @@ public class SettingsFragment extends BaseListFragment {
 							item.setSettingValue( setting.getReplyPushReceiveYN() );
 						else if ("추천알림받기".equals( item.getSettingName() ))
 							item.setSettingValue( setting.getRecommendPushReceiveYN() );
+						else if ("프로필 조회 알림받기".equals( item.getSettingName() ))
+							item.setSettingValue( setting.getInquiryUserPushReceiveYN() );
 					}
 
 					adapter.notifyDataSetChanged();
@@ -178,6 +186,8 @@ public class SettingsFragment extends BaseListFragment {
 					setting.setReplyPushReceiveYN(item.getSettingValue() );
 				else if ("추천알림받기".equals( item.getSettingName() ))
 					setting.setRecommendPushReceiveYN(item.getSettingValue() );
+				else if ("프로필 조회 알림받기".equals( item.getSettingName() ))
+					setting.setInquiryUserPushReceiveYN(item.getSettingValue() );
 			}
 
 			getActivity().setProgressBarIndeterminateVisibility(true);

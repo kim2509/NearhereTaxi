@@ -137,6 +137,11 @@ public class UserProfileActivity extends BaseActivity {
 					}
 				}
 			});
+			
+			if ( getIntent().getExtras().getString("userID").equals( getLoginUser().getUserID() ))
+				header.findViewById(R.id.btnSendMessage).setVisibility(ViewGroup.GONE);
+			else
+				header.findViewById(R.id.btnSendMessage).setVisibility(ViewGroup.VISIBLE);
 		}
 		catch( Exception ex )
 		{
@@ -155,69 +160,34 @@ public class UserProfileActivity extends BaseActivity {
 		findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
 		listMain.setVisibility(ViewGroup.GONE);
 		
-		User user = new User();
-		user.setUserID(getIntent().getExtras().getString("userID"));
-		sendHttp("/taxi/getUserInfo.do", mapper.writeValueAsString( user ), 1);
+		HashMap hash = getDefaultRequest();
+		hash.put("userID", getLoginUser().getUserID() );
+		hash.put("userIDToInquiry", getIntent().getExtras().getString("userID"));
+		sendHttp("/taxi/getUserInfoV2.do", mapper.writeValueAsString( hash ), 1);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		try
-		{
-			getMenuInflater().inflate(R.menu.user_profile, menu);
-
-			MenuItem item = menu.findItem(R.id.action_chat);
-
-			if ( getIntent().getExtras().getString("userID").equals( getLoginUser().getUserID() ))
-				item.setVisible(false);
-			else
-				item.setVisible(true);
-		}
-		catch( Exception ex )
-		{
-			catchException(this, ex);
-		}
-
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-
-		try
-		{
-			int id = item.getItemId();
-			if (id == R.id.action_chat) {
-
-				HashMap hash = new HashMap();
-				hash.put("fromUserID", getIntent().getExtras().getString("userID") );
-				hash.put("userID",  getLoginUser().getUserID() );
-				Intent intent = new Intent( this, UserMessageActivity.class);
-				intent.putExtra("messageInfo", hash );
-				startActivity(intent);
-				overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
-
-				return true;
-			}
-
-		}
-		catch( Exception ex )
-		{
-
-		}
-
-		return super.onOptionsItemSelected(item);
+	@SuppressWarnings({ "rawtypes", "unchecked"})
+	public void goUserMessageActivity( View v ) {
+		HashMap hash = new HashMap();
+		hash.put("fromUserID", getIntent().getExtras().getString("userID") );
+		hash.put("userID",  getLoginUser().getUserID() );
+		Intent intent = new Intent( this, UserMessageActivity.class);
+		intent.putExtra("messageInfo", hash );
+		startActivity(intent);
+		overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 	}
 
 	@Override
 	public void finish() {
 		// TODO Auto-generated method stub
 		super.finish();
-		this.overridePendingTransition(R.anim.stay, R.anim.slide_out_to_bottom);
+		
+		if ( getIntent().getExtras() != null && getIntent().getExtras().containsKey("anim1") )
+		{
+			overridePendingTransition( getIntent().getExtras().getInt("anim1"), getIntent().getExtras().getInt("anim2"));
+		}
+		else
+			this.overridePendingTransition(R.anim.stay, R.anim.slide_out_to_bottom);
 	}
 
 	@Override
@@ -342,6 +312,18 @@ public class UserProfileActivity extends BaseActivity {
 		catch( Exception ex )
 		{
 			catchException(this, ex);
+		}
+	}
+	
+	@Override
+	public void onBackPressed() {
+
+		finish();
+		
+		if ( MainActivity.active == false )
+		{
+			Intent intent = new Intent(this, MainActivity.class);
+			startActivity(intent);			
 		}
 	}
 }

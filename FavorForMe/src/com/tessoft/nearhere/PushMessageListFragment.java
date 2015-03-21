@@ -97,6 +97,15 @@ public class PushMessageListFragment extends BaseListFragment {
 								startActivity(intent);
 								getActivity().overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 							}
+							else if ( "inquiryUser".equals( message.getType() ) )
+							{
+								Intent intent = new Intent( getActivity(), UserProfileActivity.class);
+								intent.putExtra("userID", message.getParam1() );
+								intent.putExtra("anim1", R.anim.slide_in_from_left );
+								intent.putExtra("anim2", R.anim.slide_out_to_right );
+								startActivity(intent);
+								getActivity().overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
+							}
 							
 							message.setRead(true);
 							sendHttp("/taxi/updatePushMessageAsRead.do", mapper.writeValueAsString( message ), UPDATE_AS_READ );

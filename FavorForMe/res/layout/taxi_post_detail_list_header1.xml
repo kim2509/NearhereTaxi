@@ -185,27 +185,42 @@
                 android:visibility="gone" />
         </RelativeLayout>
         
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/layoutMyOption" 
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:layout_margin="10dp">
+            android:layout_margin="10dp"
+            android:orientation="horizontal"
+            android:gravity="right|center_vertical">
             
             <TextView android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:text="출발일시에서 특정기간(1~2일)이 지나면\n자동 종료처리됩니다."
-                android:layout_toLeftOf="@+id/btnFinish"/>
+                android:visibility="gone"
+                android:text="출발일시에서 특정기간(1~2일)이 지나면\n자동 종료처리됩니다." />
+            
+            <Button
+                android:id="@+id/btnModify" 
+                android:layout_width="wrap_content"
+                style="@style/btn_style"
+                android:onClick="modifyPost"
+                android:text="수정하기"/>
+            
+            <Button
+                android:id="@+id/btnDelete" 
+                android:layout_width="wrap_content"
+                style="@style/btn_style"
+                android:layout_marginLeft="10dp"
+                android:text="삭제하기"/>
             
             <Button
                 android:id="@+id/btnFinish" 
                 android:layout_width="wrap_content"
                 style="@style/btn_style"
-                android:layout_alignParentRight="true"
+                android:layout_marginLeft="10dp"
                 android:text="지금종료"/>
             
-        </RelativeLayout>
+        </LinearLayout>
         
     </LinearLayout>
 

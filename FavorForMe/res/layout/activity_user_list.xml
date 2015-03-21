@@ -22,6 +22,7 @@
             android:singleLine="true"
             android:drawableLeft="@drawable/ic_cur_loc"
             android:drawablePadding="5dp"
+            android:text="5km 이내의 사용자"
             android:textSize="15sp" />
 
         <Spinner

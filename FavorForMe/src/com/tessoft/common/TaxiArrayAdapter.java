@@ -74,9 +74,6 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 				imgStatus = (ImageView) row.findViewById(R.id.imgStatus);
 			}
 			
-			imageView.invalidate();
-			imageView.setImageResource(R.drawable.no_image);
-			
 			String titleDummy = "";
 			
 			if ( item.getSexInfo() != null && !"상관없음".equals( item.getSexInfo() ) )
@@ -115,6 +112,8 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 			TextView txtDestination = (TextView) row.findViewById(R.id.txtDestination);
 			txtDestination.setText( item.getToAddress() );
 			
+			
+			
 //			TextView txtFromDistance = (TextView) row.findViewById(R.id.txtFromDistance);
 //			if ( Util.isEmptyString( item.getFromDistance() ) == false )
 //			{
@@ -144,7 +143,13 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 			
 			if ( item.getUser() != null && !Util.isEmptyString( item.getUser().getProfileImageURL() ) )
 			{
-				displayImage( imageView, item.getUser().getProfileImageURL(), item );
+				ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
+						item.getUser().getProfileImageURL() , imageView, options );
+			}
+			else
+			{
+				ImageLoader.getInstance().cancelDisplayTask(imageView);
+				imageView.setImageResource(R.drawable.no_image);
 			}
 
 			imgStatus.setVisibility(ViewGroup.VISIBLE);
@@ -205,9 +210,4 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 		return false;
 	}
 	
-	public void displayImage( ImageView imageView, String url, Post item )
-	{
-		ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
-				item.getUser().getProfileImageURL() , imageView, options );
-	}
 }

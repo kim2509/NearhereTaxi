@@ -118,7 +118,19 @@ public class TaxiFragment extends BaseFragment
 				}
 			});
 			
-			inquiryPosts();
+			if ( Util.isEmptyString( MainActivity.latitude ) || 
+					Util.isEmptyString( MainActivity.longitude ))
+			{
+				inquiryPosts();	
+			}
+			else
+			{
+				// 기존에 로딩했다가 다른 메뉴로 갔다가 왔을 경우
+				double latitude = Double.parseDouble( MainActivity.latitude );
+				double longitude = Double.parseDouble( MainActivity.longitude );
+				updateAddress( new LatLng(latitude, longitude));
+			}
+			
 			
 //			setMetaInfo("lastLocationUpdatedDt", "");
 			getActivity().sendBroadcast(new Intent("startLocationUpdate"));
