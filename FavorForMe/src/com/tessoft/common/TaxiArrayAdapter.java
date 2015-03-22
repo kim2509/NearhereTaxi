@@ -60,6 +60,20 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 			ImageView imgStatus = null;
 			ImageView imageView = null;
 			
+			if ( item.isMoreFlag() )
+			{
+				row = inflater.inflate(R.layout.list_user_more_item, parent, false);
+				row.setTag( item );
+				this.delegate.doAction("loadMore", item);
+				return row;
+			}
+			else if ( row != null )
+			{
+				Post tempItem = (Post) row.getTag();
+				if ( tempItem == null || tempItem.isMoreFlag() )
+					row = null;
+			}
+			
 			if (row == null) {
 				row = inflater.inflate(R.layout.list_taxi_post_item, parent, false);
 				imgStatus = (ImageView) row.findViewById(R.id.imgStatus);

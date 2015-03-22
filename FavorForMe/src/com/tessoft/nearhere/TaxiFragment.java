@@ -61,6 +61,9 @@ public class TaxiFragment extends BaseFragment
 	TaxiArrayAdapter adapter = null;
 	View header2 = null;
 	View header3 = null;
+	int pageNo = 1;
+	
+	Post moreFlag = new Post();
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -121,6 +124,8 @@ public class TaxiFragment extends BaseFragment
 			if ( Util.isEmptyString( MainActivity.latitude ) || 
 					Util.isEmptyString( MainActivity.longitude ))
 			{
+				listMain.setVisibility(ViewGroup.GONE);
+				rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
 				inquiryPosts();	
 			}
 			else
@@ -134,6 +139,8 @@ public class TaxiFragment extends BaseFragment
 			
 //			setMetaInfo("lastLocationUpdatedDt", "");
 			getActivity().sendBroadcast(new Intent("startLocationUpdate"));
+			
+			moreFlag.setMoreFlag(true);
 		}
 		catch( Exception ex )
 		{
@@ -208,7 +215,13 @@ public class TaxiFragment extends BaseFragment
 				if ( requestCode == REQUEST_NEW_POST || requestCode == REQUEST_POST_DETAIL )
 				{
 					if ( data.getExtras().getBoolean("reload") )
+					{
+						listMain.setVisibility(ViewGroup.GONE);
+						rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
+						adapter.clear();
+						pageNo = 1;
 						inquiryPosts();
+					}
 				}
 			}
 		}
@@ -243,11 +256,21 @@ public class TaxiFragment extends BaseFragment
 					
 					String postData = mapper.writeValueAsString( response.getData() );
 					List<Post> postList = mapper.readValue( postData, new TypeReference<List<Post>>(){});
-					adapter.clear();
+					
+					String moreFlagString = response.getData2().toString().split("\\|")[0];
+					String totalCount = response.getData2().toString().split("\\|")[1];
+
+					adapter.remove(moreFlag);
+					
+					if ( "true".equals( moreFlagString ) )
+					{
+						postList.add( moreFlag );
+					}
+					
 					adapter.addAll(postList);
 					adapter.notifyDataSetChanged();
 
-					int userCount = Integer.parseInt( response.getData2().toString() );
+					int userCount = Integer.parseInt( response.getData3().toString() );
 					
 					if ( postList.size() == 0 )
 					{
@@ -308,9 +331,6 @@ public class TaxiFragment extends BaseFragment
 		String fromLatitude = "";
 		String fromLongitude = "";
 		
-		listMain.setVisibility(ViewGroup.GONE);
-		rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
-		
 		if ( departure != null )
 		{
 			fromLatitude = String.valueOf( departure.latitude ); 
@@ -342,8 +362,12 @@ public class TaxiFragment extends BaseFragment
 		if ( !"전체".equals( status ) )
 			hash.put("status", status );
 
-		getActivity().setProgressBarIndeterminateVisibility(true);
-		sendHttp("/taxi/getPostsNearHere.do", mapper.writeValueAsString(hash), GET_POSTS );
+		hash.put("pageNo", pageNo );
+		
+		if ( pageNo == 1 )
+			adapter.clear();
+		
+		sendHttp("/taxi/getPostsNearHereV2.do", mapper.writeValueAsString(hash), GET_POSTS );
 	}
 
 	boolean bUpdatedOnce = false;
@@ -464,12 +488,25 @@ public class TaxiFragment extends BaseFragment
 					if ( "최근순".equals( spSearchOrder.getSelectedItem() ) )
 						spSearchOrder.setSelection(1);//거리순
 					else
-						inquiryPosts();	
+					{
+						listMain.setVisibility(ViewGroup.GONE);
+						rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
+						
+						adapter.clear();
+						pageNo = 1;
+						inquiryPosts();
+					}
 				}
 				else if ( departure == null && destination == null )
 					spSearchOrder.setSelection(0);
 				
-			}			
+			}
+			else if ( "loadMore".equals( actionName ) )
+			{
+				pageNo++;
+				inquiryPosts();
+			}
+				
 		}
 		catch( Exception ex )
 		{
@@ -491,6 +528,11 @@ public class TaxiFragment extends BaseFragment
 		public void onReceive(Context context, Intent intent) {
 			try
 			{
+				listMain.setVisibility(ViewGroup.GONE);
+				rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
+				
+				adapter.clear();
+				pageNo = 1;
 				inquiryPosts();
 			}
 			catch( Exception ex )
@@ -551,6 +593,11 @@ public class TaxiFragment extends BaseFragment
 				}
 			}
 			
+			listMain.setVisibility(ViewGroup.GONE);
+			rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
+			
+			adapter.clear();
+			pageNo = 1;
 			inquiryPosts();
 		}
 		catch( Exception ex )
@@ -594,6 +641,10 @@ public class TaxiFragment extends BaseFragment
 			}
 			else if ( v.getId() == R.id.btnRefresh )
 			{
+				adapter.clear();
+				pageNo = 1;
+				listMain.setVisibility(ViewGroup.GONE);
+				rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
 				inquiryPosts();
 			}
 		}

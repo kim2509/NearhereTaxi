@@ -32,6 +32,7 @@ public class Post extends ListItemModel {
 	private String toDistance;
 	private String status;
 	protected String type="taxi";
+	private boolean moreFlag;
 	
 	protected List<PostLike> postLikes;
 	protected List<PostReply> postReplies;
@@ -222,5 +223,13 @@ public class Post extends ListItemModel {
 
 	public void setReplyCount(int replyCount) {
 		this.replyCount = replyCount;
+	}
+
+	public boolean isMoreFlag() {
+		return moreFlag;
+	}
+
+	public void setMoreFlag(boolean moreFlag) {
+		this.moreFlag = moreFlag;
 	}
 }

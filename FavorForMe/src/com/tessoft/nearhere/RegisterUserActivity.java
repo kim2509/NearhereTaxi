@@ -153,8 +153,10 @@ public class RegisterUserActivity extends BaseActivity {
 			if ( "0000".equals( response.getResCode() ) )
 			{
 				String temp = mapper.writeValueAsString( response.getData() );
+				String userString = mapper.writeValueAsString( response.getData() );
+				User user = mapper.readValue( userString, new TypeReference<User>(){});
 
-				setMetaInfo("loginUserInfo", Util.encodeBase64( temp ) );
+				setLoginUser( user );
 
 				if ( requestCode == 1 )
 				{

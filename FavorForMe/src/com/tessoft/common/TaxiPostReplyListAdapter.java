@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.android.gms.wearable.NodeApi.GetLocalNodeResult;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.tessoft.domain.PostReply;
 import com.tessoft.domain.User;
 import com.tessoft.nearhere.R;
@@ -28,6 +30,7 @@ public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> implements
 	private User loginUser = null;
 
 	LayoutInflater inflater = null;
+	DisplayImageOptions options = null;
 
 	@Override
 	public void add(PostReply object) {
@@ -39,6 +42,17 @@ public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> implements
 		super(context, textViewResourceId);
 		inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.loginUser = user;
+		
+		options = new DisplayImageOptions.Builder()
+		.resetViewBeforeLoading(true)
+		.cacheInMemory(true)
+		.showImageOnLoading(R.drawable.no_image)
+		.showImageForEmptyUri(R.drawable.no_image)
+		.showImageOnFail(R.drawable.no_image)
+		.displayer(new RoundedBitmapDisplayer(20))
+		.delayBeforeLoading(100)
+		.build();
+		
 	}
 
 	public int getCount() {
@@ -99,14 +113,13 @@ public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> implements
 			if ( !Util.isEmptyString( item.getUser().getProfileImageURL() ) )
 			{
 				ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
-						item.getUser().getProfileImageURL() , imageView);	
+						item.getUser().getProfileImageURL() , imageView, options );	
 			}
 			else
 			{
 				ImageLoader.getInstance().cancelDisplayTask(imageView);
 				imageView.setImageResource(R.drawable.no_image);
 			}
-				
 			
 			if ( Util.isEmptyString( item.getUser().getUserName() ) )
 				txtUserName.setText( item.getUser().getUserID() );

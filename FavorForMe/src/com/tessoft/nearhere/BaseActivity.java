@@ -198,6 +198,13 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 			Log.e("이근처", "exception", ex);
 	}
 	
+	public void setLoginUser( User user ) throws Exception
+	{
+		String loginUserInfo = mapper.writeValueAsString(user);
+		loginUserInfo = Util.encodeBase64(loginUserInfo);
+		setMetaInfo("loginUserInfo", loginUserInfo );
+	}
+	
 	public User getLoginUser()
 	{
 		try
@@ -217,7 +224,7 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 					user.setProfileImageURL( getMetaInfoString("profileImageURL"));
 					user.setUuid( getUniqueDeviceID() );
 					
-					setMetaInfo("loginUserInfo", mapper.writeValueAsString(user));
+					setLoginUser( user );
 					
 					setMetaInfo("userNo", "");
 					setMetaInfo("userID", "");
@@ -245,11 +252,6 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 			catchException(this, ex);
 			return new User();
 		}
-	}
-	
-	public void setLoginUser( String result )
-	{
-		setMetaInfo("loginUserInfo", result);
 	}
 	
 	@Override

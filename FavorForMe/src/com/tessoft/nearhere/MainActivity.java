@@ -103,6 +103,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 	public static String address = "";
 	DisplayImageOptions options = null;
+	
+	View header = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -157,7 +159,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
-		View header = getLayoutInflater().inflate(R.layout.list_my_info_header, null);
+		header = getLayoutInflater().inflate(R.layout.list_my_info_header, null);
 		header.setTag(new MainMenuItem("header"));
 		mDrawerList.addHeaderView(header);
 
@@ -171,12 +173,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		.delayBeforeLoading(100)
 		.build();
 
-		ImageView imageView = (ImageView) header.findViewById(R.id.imgProfile);
-		ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
-				getLoginUser().getProfileImageURL() , imageView, options );
-
-		TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
-		txtUserName.setText( getLoginUser().getUserName() );
+		reloadProfile();
 
 		// Set the adapter for the list view
 		adapter = new MainMenuArrayAdapter( getApplicationContext(), 0);
@@ -227,6 +224,21 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		txtCreditValue.setText( getLoginUser().getProfilePoint() + "%");
 		ProgressBar progressCreditValue = (ProgressBar) findViewById(R.id.progressCreditValue);
 		progressCreditValue.setProgress( Integer.parseInt( getLoginUser().getProfilePoint() ) );
+	}
+
+	private void reloadProfile() {
+		ImageView imageView = (ImageView) header.findViewById(R.id.imgProfile);
+		
+		if ( Util.isEmptyString( getLoginUser().getProfileImageURL() ))
+			imageView.setImageResource(R.drawable.no_image);
+		else
+		{
+			ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
+					getLoginUser().getProfileImageURL() , imageView, options );			
+		}
+
+		TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
+		txtUserName.setText( getLoginUser().getUserName() );
 	}
 
 	@Override
@@ -700,12 +712,15 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 							item.setNotiCount( noticeCount );
 					}
 
-					if ( pushCount + messageCount + noticeCount > 0 )
+					if ( findViewById(R.id.btnLeftMenu) != null )
 					{
-						findViewById(R.id.btnLeftMenu).setBackgroundResource(R.drawable.top_ic_new);
+						if ( pushCount + messageCount + noticeCount > 0 )
+						{
+							findViewById(R.id.btnLeftMenu).setBackgroundResource(R.drawable.top_ic_new);
+						}
+						else
+							findViewById(R.id.btnLeftMenu).setBackgroundResource(R.drawable.top_ic_menu_off);	
 					}
-					else
-						findViewById(R.id.btnLeftMenu).setBackgroundResource(R.drawable.top_ic_menu_off);
 
 					adapter.notifyDataSetChanged();
 				}
@@ -750,6 +765,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 		if ( mainFragment instanceof TaxiFragment == false )
 		{
+			reloadProfile();
 			selectItem(new MainMenuItem("홈"));
 			return;
 		}

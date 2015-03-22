@@ -17,10 +17,11 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.tessoft.common.Constants;
 import com.tessoft.common.TaxiArrayAdapter;
-import com.tessoft.common.TaxiPostReplyListAdapter;
 import com.tessoft.common.UploadTask;
 import com.tessoft.common.Util;
 import com.tessoft.domain.APIResponse;
@@ -28,10 +29,6 @@ import com.tessoft.domain.Post;
 import com.tessoft.domain.User;
 import com.tessoft.domain.UserLocation;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -39,35 +36,26 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnShowListener;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.graphics.Bitmap.CompressFormat;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager.OnActivityResultListener;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.animation.DecelerateInterpolator;
 import android.view.ViewGroup;
-import android.webkit.WebView.FindListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 public class MyInfoFragment extends BaseFragment implements OnClickListener {
@@ -82,14 +70,15 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 	protected static final int UPDATE_USER_NAME = 20;
 	private static final int REQUEST_IMAGE_CROP = 40;
 	User user = null;
-
+	DisplayImageOptions options = null;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		try
 		{
-			rootView = inflater.inflate(R.layout.activity_user_profile, container, false);
+			rootView = inflater.inflate(R.layout.fragment_user_profile, container, false);
 
 			header = getActivity().getLayoutInflater().inflate(R.layout.user_profile_list_header1, null);
 			footer = getActivity().getLayoutInflater().inflate(R.layout.fragment_messagebox_footer, null);
@@ -105,8 +94,7 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 
 			inquiryUserInfo();
 			
-			TextView txtTitle = (TextView) rootView.findViewById(R.id.txtTitle);
-			txtTitle.setText("내 정보");
+			setTitle("내 정보");
 		}
 		catch( Exception ex )
 		{
@@ -116,10 +104,16 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 		return rootView;
 	}
 
+	private void setTitle( String title ) {
+		TextView txtTitle = (TextView) rootView.findViewById(R.id.txtTitle);
+		txtTitle.setVisibility(ViewGroup.VISIBLE);
+		rootView.findViewById(R.id.imgTitle).setVisibility(ViewGroup.GONE);
+		txtTitle.setText( title );
+	}
+	
 	private void inquiryUserInfo() throws IOException, JsonGenerationException,
 	JsonMappingException {
 		User user = getLoginUser();
-		getActivity().setProgressBarIndeterminateVisibility(true);
 		sendHttp("/taxi/getUserInfo.do", mapper.writeValueAsString( user ), 1);
 		
 		listMain.setVisibility(ViewGroup.GONE);
@@ -271,6 +265,8 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 		});
 
 		ImageView imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
+		imgProfile.setImageResource(R.drawable.no_image);
+		
 		imgProfile.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -278,6 +274,9 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 				// TODO Auto-generated method stub
 				try
 				{
+					if ( Util.isEmptyString( user.getProfileImageURL() ) )
+						return;
+					
 					Intent intent = new Intent( getActivity(), PhotoViewer.class);
 					intent.putExtra("imageURL", user.getProfileImageURL());
 					startActivity(intent);
@@ -318,6 +317,16 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 		
 		Button btnRefresh = (Button) rootView.findViewById(R.id.btnRefresh);
 		btnRefresh.setOnClickListener(this);
+		
+		options = new DisplayImageOptions.Builder()
+		.resetViewBeforeLoading(true)
+		.cacheInMemory(true)
+		.showImageOnLoading(R.drawable.no_image)
+		.showImageForEmptyUri(R.drawable.no_image)
+		.showImageOnFail(R.drawable.no_image)
+		.displayer(new RoundedBitmapDisplayer(20))
+		.delayBeforeLoading(100)
+		.build();
 	}
 
 	private static final int PICK_IMAGE = 1;
@@ -354,11 +363,15 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 					HashMap hash = (HashMap) response.getData();
 
 					String userString = mapper.writeValueAsString( hash.get("user") );
+					
 					String locationListString = mapper.writeValueAsString( hash.get("locationList") );
 					String userPostString = mapper.writeValueAsString( hash.get("userPost") );
 					String postsUserRepliedString = mapper.writeValueAsString( hash.get("postsUserReplied") );
 
 					user = mapper.readValue(userString, new TypeReference<User>(){});
+					
+					setLoginUser( user );
+					
 					List<UserLocation> locationList = mapper.readValue(locationListString, new TypeReference<List<UserLocation>>(){});
 					List<Post> userPosts = mapper.readValue(userPostString, new TypeReference<List<Post>>(){});
 					List<Post> userPostsReplied = mapper.readValue(postsUserRepliedString, new TypeReference<List<Post>>(){});
@@ -390,7 +403,7 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 					if ( user != null && user.getProfileImageURL() != null && user.getProfileImageURL().isEmpty() == false )
 					{
 						ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
-								user.getProfileImageURL() , imgProfile);
+								user.getProfileImageURL() , imgProfile, options );
 						imgProfile.setTag( user.getProfileImageURL() );
 					}
 

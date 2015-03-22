@@ -121,6 +121,13 @@ public class BaseFragment extends Fragment implements AdapterDelegate, Transacti
 		new HttpTransactionReturningString( this, url, requestCode ).execute( request );
 	}
 	
+	public void setLoginUser( User user ) throws Exception
+	{
+		String loginUserInfo = mapper.writeValueAsString(user);
+		loginUserInfo = Util.encodeBase64(loginUserInfo);
+		setMetaInfo("loginUserInfo", loginUserInfo );
+	}
+	
 	public User getLoginUser()
 	{
 		try
@@ -140,7 +147,7 @@ public class BaseFragment extends Fragment implements AdapterDelegate, Transacti
 					user.setProfileImageURL( getMetaInfoString("profileImageURL"));
 					user.setUuid( getUniqueDeviceID() );
 					
-					setMetaInfo("loginUserInfo", mapper.writeValueAsString(user));
+					setLoginUser( user );
 					
 					setMetaInfo("userNo", "");
 					setMetaInfo("userID", "");

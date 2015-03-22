@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class SettingsFragment extends BaseListFragment {
 
@@ -66,6 +67,11 @@ public class SettingsFragment extends BaseListFragment {
 			setting.setSettingName("프로필 조회 알림받기");
 			setting.setSettingValue("Y");
 			adapter.add(setting);
+			
+			setting = new SettingListItem();
+			setting.setSettingName("신규회원 알림받기");
+			setting.setSettingValue("Y");
+			adapter.add(setting);
 
 			listMain.setAdapter(adapter);
 
@@ -85,6 +91,8 @@ public class SettingsFragment extends BaseListFragment {
 					}
 				}
 			});
+			
+			setTitle("설정");
 		}
 		catch( Exception ex )
 		{
@@ -137,6 +145,7 @@ public class SettingsFragment extends BaseListFragment {
 						setting.setReplyPushReceiveYN("Y");
 						setting.setRecommendPushReceiveYN("Y");
 						setting.setInquiryUserPushReceiveYN("Y");
+						setting.setNewUserPushReceiveYN("Y");
 					}
 
 					for ( int i = 0; i < adapter.getCount(); i++ )
@@ -150,6 +159,8 @@ public class SettingsFragment extends BaseListFragment {
 							item.setSettingValue( setting.getRecommendPushReceiveYN() );
 						else if ("프로필 조회 알림받기".equals( item.getSettingName() ))
 							item.setSettingValue( setting.getInquiryUserPushReceiveYN() );
+						else if ("신규회원 알림받기".equals( item.getSettingName() ))
+							item.setSettingValue( setting.getNewUserPushReceiveYN() );
 					}
 
 					adapter.notifyDataSetChanged();
@@ -188,6 +199,8 @@ public class SettingsFragment extends BaseListFragment {
 					setting.setRecommendPushReceiveYN(item.getSettingValue() );
 				else if ("프로필 조회 알림받기".equals( item.getSettingName() ))
 					setting.setInquiryUserPushReceiveYN(item.getSettingValue() );
+				else if ("신규회원 알림받기".equals( item.getSettingName() ))
+					setting.setNewUserPushReceiveYN( item.getSettingValue() );
 			}
 
 			getActivity().setProgressBarIndeterminateVisibility(true);

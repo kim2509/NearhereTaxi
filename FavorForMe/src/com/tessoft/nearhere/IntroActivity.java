@@ -153,7 +153,9 @@ public class IntroActivity extends BaseActivity {
 			}
 			else if ( requestCode == HTTP_LOGIN_BACKGROUND )
 			{
-				setMetaInfo("loginUserInfo", Util.encodeBase64( mapper.writeValueAsString( response.getData() ) ));
+				String userString = mapper.writeValueAsString( response.getData() );
+				User user = mapper.readValue( userString, new TypeReference<User>(){});
+				setLoginUser(user);
 				Intent intent = new Intent( getApplicationContext(), MainActivity.class);
 				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);

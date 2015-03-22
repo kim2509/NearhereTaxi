@@ -102,6 +102,8 @@ public class NoticeListFragment extends BaseFragment {
 					}
 				}
 			});
+			
+			setTitle("공지사항");
 		}
 		catch( Exception ex )
 		{
@@ -111,6 +113,13 @@ public class NoticeListFragment extends BaseFragment {
 		return rootView;
 	}
 
+	private void setTitle( String title ) {
+		TextView txtTitle = (TextView) rootView.findViewById(R.id.txtTitle);
+		txtTitle.setVisibility(ViewGroup.VISIBLE);
+		rootView.findViewById(R.id.imgTitle).setVisibility(ViewGroup.GONE);
+		txtTitle.setText( title );
+	}
+	
 	private void inquiryNotice() throws IOException, JsonGenerationException,
 	JsonMappingException {
 		

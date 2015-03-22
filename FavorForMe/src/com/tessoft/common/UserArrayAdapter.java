@@ -3,6 +3,7 @@ package com.tessoft.common;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import com.tessoft.domain.Post;
 import com.tessoft.domain.User;
 import com.tessoft.nearhere.R;
 
@@ -58,8 +59,20 @@ public class UserArrayAdapter extends ArrayAdapter<User>{
 			if ( user.isMoreFlag() )
 			{
 				row = inflater.inflate(R.layout.list_user_more_item, parent, false);
+				row.setTag( user );
 				this.delegate.doAction("loadMore", user);
 				return row;
+			}
+			else if ( row != null )
+			{
+				if ( row.getTag() == null )
+					row = null;
+				else if ( row.getTag() instanceof User )
+				{
+					User tempItem = (User) row.getTag();
+					if ( tempItem == null || tempItem.isMoreFlag() )
+						row = null;
+				}
 			}
 			
 			ImageView imageView = null;
