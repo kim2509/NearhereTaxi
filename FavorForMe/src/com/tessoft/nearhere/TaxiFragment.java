@@ -238,7 +238,7 @@ public class TaxiFragment extends BaseFragment
 		{
 			if ( Constants.FAIL.equals(result) )
 			{
-				getActivity().setProgressBarIndeterminateVisibility(false);
+				rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.GONE);
 				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
 				return;
 			}

@@ -63,6 +63,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -173,8 +174,6 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		.delayBeforeLoading(100)
 		.build();
 
-		reloadProfile();
-
 		// Set the adapter for the list view
 		adapter = new MainMenuArrayAdapter( getApplicationContext(), 0);
 		adapter.add(new MainMenuItem("홈"));
@@ -186,6 +185,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		adapter.add(new MainMenuItem("로그아웃"));
 
 		mDrawerList.setAdapter( adapter );
+		
+		reloadProfile();
 
 		// Set the list's click listener
 		mDrawerList.setOnItemClickListener( new OnItemClickListener() {
@@ -212,6 +213,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 				super.onDrawerOpened(drawerView);
 
 				mDrawerList.setAdapter( adapter );
+				
+				reloadProfile();
 
 				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
 			}
@@ -219,11 +222,6 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 		// Set the drawer toggle as the DrawerListener
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-		TextView txtCreditValue = (TextView) findViewById(R.id.txtCreditValue);
-		txtCreditValue.setText( getLoginUser().getProfilePoint() + "%");
-		ProgressBar progressCreditValue = (ProgressBar) findViewById(R.id.progressCreditValue);
-		progressCreditValue.setProgress( Integer.parseInt( getLoginUser().getProfilePoint() ) );
 	}
 
 	private void reloadProfile() {
@@ -239,6 +237,16 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 		TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
 		txtUserName.setText( getLoginUser().getUserName() );
+		
+		TextView txtCreditValue = (TextView) header.findViewById(R.id.txtCreditValue);
+		txtCreditValue.setText( getLoginUser().getProfilePoint() + "%");
+		ProgressBar progressCreditValue = (ProgressBar) findViewById(R.id.progressCreditValue);
+		progressCreditValue.setProgress( Integer.parseInt( getLoginUser().getProfilePoint() ) );
+		
+		imageView.setVisibility(ViewGroup.VISIBLE);
+		imageView.invalidate();
+		txtCreditValue.setVisibility(View.VISIBLE);
+		txtCreditValue.invalidate();
 	}
 
 	@Override

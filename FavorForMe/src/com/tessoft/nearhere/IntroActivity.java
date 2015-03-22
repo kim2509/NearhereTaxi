@@ -60,7 +60,7 @@ public class IntroActivity extends BaseActivity {
 						{
 							HashMap request = getDefaultRequest();
 							request.put("user", getLoginUser());
-							sendHttp("/taxi/getRandomIDV2.do", mapper.writeValueAsString(request), HTTP_LOGIN_BACKGROUND);
+							sendHttp("/taxi/login_bg.do", mapper.writeValueAsString(request), HTTP_LOGIN_BACKGROUND);
 						}
 						
 					}
