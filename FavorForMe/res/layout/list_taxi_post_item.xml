@@ -13,34 +13,8 @@
 
         <com.tessoft.common.CustomImageView
             android:id="@+id/imgProfile"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginTop="10dp" />
-
-        <LinearLayout
-            android:id="@+id/layoutUserInfo"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/imgProfile"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal" >
-
-            <ImageView
-                android:id="@+id/imgSex"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:layout_marginTop="10dp"
-                android:paddingBottom="2dp"
-                android:src="@drawable/male" />
-
-            <TextView
-                android:id="@+id/txtUserName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="5dp"
-                android:text="..."
-                android:textColor="#3B5D98" />
-        </LinearLayout>
+            android:layout_width="60dp"
+            android:layout_height="60dp"/>
 
         <TextView
             android:id="@+id/txtTitle"
@@ -52,8 +26,9 @@
             android:singleLine="false"
             android:text="제목"
             android:textColor="@android:color/black"
-            android:textSize="18sp"/>
+            android:textSize="16sp"/>
 
+        
         <LinearLayout
             android:id="@+id/layoutComment"
             android:layout_width="wrap_content"
@@ -78,130 +53,47 @@
             
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/txtGuide1"
+        <LinearLayout
+            android:id="@+id/layoutUserInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/txtTitle"
             android:layout_below="@+id/txtTitle"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/rounded_corner"
-            android:paddingBottom="2dp"
-            android:paddingLeft="3dp"
-            android:paddingRight="3dp"
-            android:text="출발"
-            android:textColor="#ffffff"
-            android:textSize="12sp" />
+            android:layout_alignLeft="@+id/txtTitle"
+            android:orientation="horizontal" >
 
-        <TextView
-            android:id="@+id/txtDeparture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/txtGuide1"
-            android:layout_marginLeft="5dp"
-            android:layout_toRightOf="@+id/txtGuide1"
-            android:singleLine="false"
-            android:text="..."
-            android:textColor="@android:color/black" />
+            <ImageView
+                android:id="@+id/imgSex"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginTop="10dp"
+                android:paddingBottom="2dp"
+                android:src="@drawable/male" />
 
-        <TextView
-            android:id="@+id/txtGuide2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/txtGuide1"
-            android:layout_below="@+id/txtGuide1"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/rounded_corner_gray"
-            android:paddingBottom="2dp"
-            android:paddingLeft="3dp"
-            android:paddingRight="3dp"
-            android:text="도착"
-            android:textColor="#ffffff"
-            android:textSize="12sp" />
-
-        <TextView
-            android:id="@+id/txtDestination"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/txtGuide2"
-            android:layout_alignLeft="@+id/txtDeparture"
-            android:layout_toRightOf="@+id/txtGuide2"
-            android:singleLine="false"
-            android:text="..."
-            android:textColor="@android:color/black" />
-
-        <TextView
-            android:id="@+id/txtGuide3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/txtGuide2"
-            android:layout_below="@+id/txtGuide2"
-            android:layout_marginTop="10dp"
-            android:text="출발예정시간"
-            android:textColor="@android:color/black" />
-
+            <TextView
+                android:id="@+id/txtUserName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:text="..."
+                android:textColor="#3B5D98" />
+        </LinearLayout>
+        
         <TextView
             android:id="@+id/txtDepartureDateTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/txtGuide3"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@+id/txtGuide3"
-            android:text="..."
-            android:textColor="#3B5D98" />
-
-        <TextView
-            android:id="@+id/txtCreatedDateLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/txtGuide3"
-            android:layout_below="@+id/txtGuide3"
-            android:layout_marginTop="5dp"
-            android:text="등록시간"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            android:id="@+id/txtCreatedDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/txtCreatedDateLabel"
-            android:layout_marginLeft="5dp"
-            android:layout_toRightOf="@+id/txtCreatedDateLabel"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            android:id="@+id/txtFromDistance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/txtCreatedDate"
-            android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@+id/txtToDistance"
-            android:background="#2E6DC3"
-            android:paddingLeft="3dp"
-            android:paddingRight="3dp"
-            android:text="10m"
-            android:textColor="#ffffff"
-            android:visibility="invisible" />
-
-        <TextView
-            android:id="@+id/txtToDistance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/txtCreatedDate"
+            android:layout_below="@+id/txtTitle"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="10dp"
-            android:background="#636363"
-            android:paddingLeft="3dp"
-            android:paddingRight="3dp"
-            android:text="10m"
-            android:textColor="#ffffff"
-            android:visibility="invisible" />
+            android:layout_marginTop="10dp"
+            android:text="출발예정시간"
+            android:textColor="@android:color/black" />
+
     </RelativeLayout>
 
     <ImageView 
         android:id="@+id/imgStatus"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:visibility="gone"
         android:src="@drawable/finished"
         android:scaleType="fitStart"/>

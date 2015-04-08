@@ -4,12 +4,14 @@ import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import android.util.Base64;
+import android.util.Log;
 
 public class Util {
 
@@ -68,6 +70,73 @@ public class Util {
 	{
 		Date d = new Date();
 		return getDateStringFromDate(d, format);
+	}
+	
+	public static String getDepartureDateTime( String departureDate, String departureTime, String createdDateTime )
+	{
+		Date dCreatedDateTime = null;
+		Date dDepartureDateTime = null;
+		Date temp = null;
+		Date now = new Date();
+		
+		String result = "";
+		try
+		{
+			dCreatedDateTime = getDateFromString(createdDateTime, "yyyy-MM-dd HH:mm:ss");
+			
+			// 출발일자 설정
+			if (departureDate.indexOf("오늘") >= 0)
+				dDepartureDateTime = dCreatedDateTime;
+			else
+				dDepartureDateTime = getDateFromString(departureDate, "yyyy-MM-dd");
+			
+			if ( departureTime.indexOf( "지금" ) >= 0)
+				temp = dCreatedDateTime;
+			else
+				temp = getDateFromString(departureTime, "HH:mm");
+			
+			// 출발시간 설정
+			dDepartureDateTime.setHours(temp.getHours());
+			dDepartureDateTime.setMinutes(temp.getMinutes());
+			dDepartureDateTime.setSeconds(0);
+			
+			result = getDateStringFromDate(dDepartureDateTime,  "yyyy-MM-dd HH:mm");
+			
+			long diff = now.getTime() - dDepartureDateTime.getTime();
+			long diffDays = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+
+			if ( diffDays > 0 )
+			{
+				if ( diffDays <= 5 )
+					result = diffDays + " 일전 출발";
+				else
+					result = getDateStringFromDate(dDepartureDateTime,  "yyyy-MM-dd") + " 출발"; 
+			}
+			else if ( diffDays == 0 )
+			{
+				long diffHours = TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS);
+				long diffMinutes = TimeUnit.MINUTES.convert(diff, TimeUnit.MILLISECONDS);
+				
+				diffMinutes -= diffHours * 60;
+				
+				if ( diffHours > 0 && diffMinutes < 10 )
+					result = diffHours + " 시간전 출발예정";
+				else if ( diffHours > 0 )
+					result = diffHours + "시간 " + diffMinutes + "분전 출발예정";
+				else if ( diffMinutes > 10 )
+					result = diffMinutes + "분전 출발예정";
+				else result = "곧 출발예정";
+			}
+			else if ( diffDays < 0 )
+			{
+				result = getDateStringFromDate(dDepartureDateTime,  "yyyy-MM-dd") + " 출발";
+			}
+		}
+		catch( Exception ex )
+		{
+		}
+		
+		return result;
 	}
 
 	public static String getDongAddressString( Object fullAddress )

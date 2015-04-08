@@ -120,12 +120,13 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 			TextView txtTitle = (TextView) row.findViewById(R.id.txtTitle);
 			txtTitle.setText( item.getMessage() + titleDummy );
 
+/*			
 			TextView txtDeparture = (TextView) row.findViewById(R.id.txtDeparture);
 			txtDeparture.setText( item.getFromAddress() );
 			
 			TextView txtDestination = (TextView) row.findViewById(R.id.txtDestination);
 			txtDestination.setText( item.getToAddress() );
-			
+*/			
 			
 			
 //			TextView txtFromDistance = (TextView) row.findViewById(R.id.txtFromDistance);
@@ -146,14 +147,19 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 //			else
 //				txtToDistance.setVisibility(ViewGroup.INVISIBLE);
 			
+			/*
 			TextView txtCreatedDate = (TextView) row.findViewById(R.id.txtCreatedDate);
-			txtCreatedDate.setText( Util.getFormattedDateString(item.getCreatedDate(), "MM-dd HH:mm"));	
+			txtCreatedDate.setText( Util.getFormattedDateString(, "MM-dd HH:mm"));	
 			
 			if ( item.getDepartureDate() != null )
 			{
-				TextView txtDepartureDateTime = (TextView) row.findViewById(R.id.txtDepartureDateTime);
-				txtDepartureDateTime.setText( item.getDepartureDate() + " " + item.getDepartureTime() );	
+				
 			}
+			*/
+			
+			TextView txtDepartureDateTime = (TextView) row.findViewById(R.id.txtDepartureDateTime);
+			txtDepartureDateTime.setText( 
+					Util.getDepartureDateTime(item.getDepartureDate(), item.getDepartureTime(), item.getCreatedDate()) );	
 			
 			if ( item.getUser() != null && !Util.isEmptyString( item.getUser().getProfileImageURL() ) )
 			{
