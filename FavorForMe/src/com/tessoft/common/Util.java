@@ -107,13 +107,16 @@ public class Util {
 
 			if ( diffDays > 0 )
 			{
-				if ( diffDays <= 5 )
+				// 오늘 이전
+				
+				if ( diffDays <= 5 ) // 5일 이내
 					result = diffDays + " 일전 출발";
-				else
+				else // 5일 이상
 					result = getDateStringFromDate(dDepartureDateTime,  "yyyy-MM-dd") + " 출발"; 
 			}
 			else if ( diffDays == 0 )
 			{
+				// 오늘
 				long diffHours = TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS);
 				long diffMinutes = TimeUnit.MINUTES.convert(diff, TimeUnit.MILLISECONDS);
 				
@@ -122,14 +125,27 @@ public class Util {
 				if ( diffHours > 0 && diffMinutes < 10 )
 					result = diffHours + " 시간전 출발예정";
 				else if ( diffHours > 0 )
-					result = diffHours + "시간 " + diffMinutes + "분전 출발예정";
+					result = diffHours + "시간 " + diffMinutes + "분전 출발";
 				else if ( diffMinutes > 10 )
-					result = diffMinutes + "분전 출발예정";
-				else result = "곧 출발예정";
+					result = diffMinutes + "분전 출발";
+				else if ( diffMinutes >= 0 && diffMinutes <= 10 ) result = "곧 출발예정";
+				else
+				{
+					// 지금 시간 이후
+					if ( diffHours == 0 )
+					{
+						result = "5분후";
+					}
+					else if ( diffHours < 0 )
+					{
+						result = "이후";
+					}
+				}
 			}
 			else if ( diffDays < 0 )
 			{
-				result = getDateStringFromDate(dDepartureDateTime,  "yyyy-MM-dd") + " 출발";
+				// 오늘 이후
+				result = getDateStringFromDate(dDepartureDateTime,  "yyyy-MM-dd") + " 출발예정";
 			}
 		}
 		catch( Exception ex )
