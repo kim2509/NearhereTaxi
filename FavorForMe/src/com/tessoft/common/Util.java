@@ -72,80 +72,71 @@ public class Util {
 		return getDateStringFromDate(d, format);
 	}
 	
-	public static String getDepartureDateTime( String departureDate, String departureTime, String createdDateTime )
+	public static String getDepartureDateTime( String departureDateTime )
 	{
-		Date dCreatedDateTime = null;
 		Date dDepartureDateTime = null;
-		Date temp = null;
 		Date now = new Date();
+		String nowDate = "";
+		String departureDate = "";
 		
 		String result = "";
 		try
 		{
-			dCreatedDateTime = getDateFromString(createdDateTime, "yyyy-MM-dd HH:mm:ss");
-			
-			// 출발일자 설정
-			if (departureDate.indexOf("오늘") >= 0)
-				dDepartureDateTime = dCreatedDateTime;
-			else
-				dDepartureDateTime = getDateFromString(departureDate, "yyyy-MM-dd");
-			
-			if ( departureTime.indexOf( "지금" ) >= 0)
-				temp = dCreatedDateTime;
-			else
-				temp = getDateFromString(departureTime, "HH:mm");
-			
-			// 출발시간 설정
-			dDepartureDateTime.setHours(temp.getHours());
-			dDepartureDateTime.setMinutes(temp.getMinutes());
-			dDepartureDateTime.setSeconds(0);
-			
+			dDepartureDateTime = getDateFromString(departureDateTime, "yyyy-MM-dd HH:mm:ss");
 			result = getDateStringFromDate(dDepartureDateTime,  "yyyy-MM-dd HH:mm");
 			
 			long diff = now.getTime() - dDepartureDateTime.getTime();
 			long diffDays = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-
-			if ( diffDays > 0 )
+			long diffHours = TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS);
+			long diffMinutes = TimeUnit.MINUTES.convert(diff, TimeUnit.MILLISECONDS);
+			
+			nowDate = Util.getDateStringFromDate(now, "yyyy-MM-dd");
+			departureDate = Util.getDateStringFromDate(dDepartureDateTime, "yyyy-MM-dd");
+			
+			if ( diffDays > 0 ||
+					( diffDays == 0 && diffHours > 0 && !nowDate.equals(departureDate)))
 			{
 				// 오늘 이전
-				
-				if ( diffDays <= 5 ) // 5일 이내
+				if ( diffDays == 0 )
+					result = diffHours + "시간 전 출발";
+				else if ( diffDays <= 5 ) // 5일 이내
 					result = diffDays + " 일전 출발";
 				else // 5일 이상
-					result = getDateStringFromDate(dDepartureDateTime,  "yyyy-MM-dd") + " 출발"; 
+					result = getDateStringFromDate(dDepartureDateTime,  "yyyy년 MM월 dd일") + " 출발"; 
 			}
-			else if ( diffDays == 0 )
+			else if ( diffDays == 0 && nowDate.equals(departureDate) )
 			{
 				// 오늘
-				long diffHours = TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS);
-				long diffMinutes = TimeUnit.MINUTES.convert(diff, TimeUnit.MILLISECONDS);
-				
 				diffMinutes -= diffHours * 60;
 				
-				if ( diffHours > 0 && diffMinutes < 10 )
-					result = diffHours + " 시간전 출발예정";
-				else if ( diffHours > 0 )
+				if ( diffHours > 0 && diffMinutes <= 10 )
+					result = diffHours + " 시간전 출발";
+				else if ( diffHours > 0 && diffMinutes > 10 )
 					result = diffHours + "시간 " + diffMinutes + "분전 출발";
-				else if ( diffMinutes > 10 )
+				else if ( diffHours == 0 && diffMinutes > 10 )
 					result = diffMinutes + "분전 출발";
-				else if ( diffMinutes >= 0 && diffMinutes <= 10 ) result = "곧 출발예정";
 				else
 				{
 					// 지금 시간 이후
-					if ( diffHours == 0 )
-					{
-						result = "5분후";
-					}
-					else if ( diffHours < 0 )
-					{
-						result = "이후";
-					}
+					if ( diffHours == 0 && diffMinutes < -10 )
+						result = diffMinutes * -1 + "분후";
+					else if ( diffHours == 0 && diffMinutes > -10 )
+						result = "곧";
+					else if ( diffHours < 0 && diffMinutes > -10 )
+						result = diffHours * -1 + "시간 이후";
+					else
+						result = diffHours * -1 + "시간 " + diffMinutes * -1 + "분 이후";
+					
+					result += " 출발예정";
 				}
 			}
-			else if ( diffDays < 0 )
+			else if ( diffDays < 0 || ( diffDays == 0 && !nowDate.equals(departureDate) ) )
 			{
 				// 오늘 이후
-				result = getDateStringFromDate(dDepartureDateTime,  "yyyy-MM-dd") + " 출발예정";
+				if ( diffDays < 0 )
+					result = getDateStringFromDate(dDepartureDateTime,  "yyyy년 MM월 dd일") + " 출발예정";
+				else
+					result = diffHours * -1 + "시간 이후 출발예정";
 			}
 		}
 		catch( Exception ex )

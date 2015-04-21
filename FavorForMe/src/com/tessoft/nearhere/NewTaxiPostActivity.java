@@ -301,6 +301,8 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 
 			setProgressBarIndeterminateVisibility(true);
 			
+			post.setbPushOff(true);
+			
 			if ( "new".equals( mode ) )
 				sendHttp("/taxi/insertPost.do", mapper.writeValueAsString(post), 1);
 			else

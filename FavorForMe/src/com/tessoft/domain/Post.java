@@ -28,11 +28,14 @@ public class Post extends ListItemModel {
 	private String numOfUsers;
 	private String departureDate;
 	private String departureTime;
+	private String departureDateTime;
 	private String fromDistance;
 	private String toDistance;
 	private String status;
 	protected String type="taxi";
 	private boolean moreFlag;
+	
+	private boolean bPushOff;
 	
 	protected List<PostLike> postLikes;
 	protected List<PostReply> postReplies;
@@ -231,5 +234,21 @@ public class Post extends ListItemModel {
 
 	public void setMoreFlag(boolean moreFlag) {
 		this.moreFlag = moreFlag;
+	}
+
+	public String getDepartureDateTime() {
+		return departureDateTime;
+	}
+
+	public void setDepartureDateTime(String departureDateTime) {
+		this.departureDateTime = departureDateTime;
+	}
+
+	public boolean isbPushOff() {
+		return bPushOff;
+	}
+
+	public void setbPushOff(boolean bPushOff) {
+		this.bPushOff = bPushOff;
 	}
 }

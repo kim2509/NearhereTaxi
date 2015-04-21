@@ -158,8 +158,7 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 			*/
 			
 			TextView txtDepartureDateTime = (TextView) row.findViewById(R.id.txtDepartureDateTime);
-			txtDepartureDateTime.setText( 
-					Util.getDepartureDateTime(item.getDepartureDate(), item.getDepartureTime(), item.getCreatedDate()) );	
+			txtDepartureDateTime.setText( Util.getDepartureDateTime( item.getDepartureDateTime() ) );	
 			
 			if ( item.getUser() != null && !Util.isEmptyString( item.getUser().getProfileImageURL() ) )
 			{
