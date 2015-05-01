@@ -1,4 +1,4 @@
-package com.tessoft.nearhere;
+package com.tessoft.nearhere.fragment;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +18,17 @@ import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.Post;
 import com.tessoft.domain.User;
 import com.tessoft.domain.UserLocation;
+import com.tessoft.nearhere.MainActivity;
+import com.tessoft.nearhere.NewTaxiPostActivity;
+import com.tessoft.nearhere.R;
+import com.tessoft.nearhere.SafetyKeeperActivity;
+import com.tessoft.nearhere.TaxiPostDetailActivity;
+import com.tessoft.nearhere.UserListActivity;
+import com.tessoft.nearhere.UserProfileActivity;
+import com.tessoft.nearhere.R.anim;
+import com.tessoft.nearhere.R.array;
+import com.tessoft.nearhere.R.id;
+import com.tessoft.nearhere.R.layout;
 
 import android.app.DialogFragment;
 import android.app.Fragment;

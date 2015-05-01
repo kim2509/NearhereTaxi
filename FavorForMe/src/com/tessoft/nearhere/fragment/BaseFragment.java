@@ -1,4 +1,4 @@
-package com.tessoft.nearhere;
+package com.tessoft.nearhere.fragment;
 
 import java.util.UUID;
 
@@ -10,6 +10,9 @@ import com.tessoft.common.HttpTransactionReturningString;
 import com.tessoft.common.TransactionDelegate;
 import com.tessoft.common.Util;
 import com.tessoft.domain.User;
+import com.tessoft.nearhere.R;
+import com.tessoft.nearhere.R.id;
+import com.tessoft.nearhere.R.layout;
 
 import android.app.AlertDialog;
 import android.app.Fragment;

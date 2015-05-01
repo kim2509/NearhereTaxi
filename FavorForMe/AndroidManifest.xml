@@ -131,15 +131,15 @@
             android:theme="@style/NoTitleBarTheme" >
         </activity>
         <activity
-            android:name=".MessageBoxFragment"
+            android:name="com.tessoft.nearhere.fragment.MessageBoxFragment"
             android:label="@string/title_activity_message_box" >
         </activity>
         <activity
-            android:name=".NoticeListFragment"
+            android:name="com.tessoft.nearhere.fragment.NoticeListFragment"
             android:label="@string/title_activity_notice_list" >
         </activity>
         <activity
-            android:name=".PushMessageListFragment"
+            android:name="com.tessoft.nearhere.fragment.PushMessageListFragment"
             android:label="@string/title_activity_push_message_list" >
         </activity>
         <activity

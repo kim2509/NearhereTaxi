@@ -1,4 +1,4 @@
-package com.tessoft.nearhere;
+package com.tessoft.nearhere.fragment;
 
 import java.util.HashMap;
 
@@ -7,6 +7,9 @@ import com.tessoft.common.AdapterDelegate;
 import com.tessoft.common.ReadContactArrayAdapter;
 import com.tessoft.common.Util;
 import com.tessoft.domain.Contact;
+import com.tessoft.nearhere.R;
+import com.tessoft.nearhere.R.id;
+import com.tessoft.nearhere.R.layout;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

@@ -1,4 +1,4 @@
-package com.tessoft.nearhere;
+package com.tessoft.nearhere.fragment;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +16,9 @@ import com.tessoft.common.Util;
 import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.Notice;
 import com.tessoft.domain.User;
+import com.tessoft.nearhere.R;
+import com.tessoft.nearhere.R.id;
+import com.tessoft.nearhere.R.layout;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

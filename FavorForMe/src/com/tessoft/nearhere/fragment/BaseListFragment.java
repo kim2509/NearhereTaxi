@@ -1,4 +1,4 @@
-package com.tessoft.nearhere;
+package com.tessoft.nearhere.fragment;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -6,6 +6,9 @@ import com.tessoft.common.AdapterDelegate;
 import com.tessoft.common.HttpTransactionReturningString;
 import com.tessoft.common.TransactionDelegate;
 import com.tessoft.domain.User;
+import com.tessoft.nearhere.R;
+import com.tessoft.nearhere.R.id;
+import com.tessoft.nearhere.R.layout;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -23,11 +26,11 @@ import android.widget.TextView;
 
 public class BaseListFragment extends BaseFragment{
 
-	View rootView = null;
-	ListView listMain = null;
-	View header = null;
-	View footer = null;
-	ObjectMapper mapper = new ObjectMapper();
+	protected View rootView = null;
+	protected ListView listMain = null;
+	protected View header = null;
+	protected View footer = null;
+	protected ObjectMapper mapper = new ObjectMapper();
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,

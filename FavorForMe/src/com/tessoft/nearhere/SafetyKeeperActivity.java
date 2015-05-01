@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import com.tessoft.common.ReadContactArrayAdapter;
 import com.tessoft.domain.Contact;
+import com.tessoft.nearhere.fragment.ReadContactsFragment;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;

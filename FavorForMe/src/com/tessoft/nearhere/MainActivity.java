@@ -35,6 +35,11 @@ import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.MainMenuItem;
 import com.tessoft.domain.User;
 import com.tessoft.domain.UserLocation;
+import com.tessoft.nearhere.fragment.MessageBoxFragment;
+import com.tessoft.nearhere.fragment.MyInfoFragment;
+import com.tessoft.nearhere.fragment.NoticeListFragment;
+import com.tessoft.nearhere.fragment.PushMessageListFragment;
+import com.tessoft.nearhere.fragment.TaxiFragment;
 
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;

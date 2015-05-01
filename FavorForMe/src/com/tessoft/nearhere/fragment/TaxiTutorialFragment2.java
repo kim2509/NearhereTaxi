@@ -1,4 +1,7 @@
-package com.tessoft.nearhere;
+package com.tessoft.nearhere.fragment;
+
+import com.tessoft.nearhere.R;
+import com.tessoft.nearhere.R.layout;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

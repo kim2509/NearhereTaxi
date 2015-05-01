@@ -1,4 +1,4 @@
-package com.tessoft.nearhere;
+package com.tessoft.nearhere.fragment;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,6 +28,14 @@ import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.Post;
 import com.tessoft.domain.User;
 import com.tessoft.domain.UserLocation;
+import com.tessoft.nearhere.PhotoViewer;
+import com.tessoft.nearhere.R;
+import com.tessoft.nearhere.SetDestinationActivity;
+import com.tessoft.nearhere.TaxiPostDetailActivity;
+import com.tessoft.nearhere.R.anim;
+import com.tessoft.nearhere.R.drawable;
+import com.tessoft.nearhere.R.id;
+import com.tessoft.nearhere.R.layout;
 
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;

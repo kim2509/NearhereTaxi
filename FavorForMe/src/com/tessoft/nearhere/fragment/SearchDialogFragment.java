@@ -1,10 +1,16 @@
-package com.tessoft.nearhere;
+package com.tessoft.nearhere.fragment;
 
 import java.util.HashMap;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.tessoft.common.AdapterDelegate;
 import com.tessoft.common.Util;
+import com.tessoft.nearhere.R;
+import com.tessoft.nearhere.SetDestinationActivity;
+import com.tessoft.nearhere.R.anim;
+import com.tessoft.nearhere.R.array;
+import com.tessoft.nearhere.R.id;
+import com.tessoft.nearhere.R.layout;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

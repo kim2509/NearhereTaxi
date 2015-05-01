@@ -2,6 +2,12 @@ package com.tessoft.nearhere;
 
 import java.util.ArrayList;
 
+import com.tessoft.nearhere.fragment.TaxiTutorialFragment0;
+import com.tessoft.nearhere.fragment.TaxiTutorialFragment1;
+import com.tessoft.nearhere.fragment.TaxiTutorialFragment2;
+import com.tessoft.nearhere.fragment.TaxiTutorialFragment3;
+import com.tessoft.nearhere.fragment.TaxiTutorialFragment4;
+
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
