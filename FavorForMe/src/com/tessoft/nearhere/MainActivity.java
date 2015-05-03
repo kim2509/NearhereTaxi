@@ -35,6 +35,7 @@ import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.MainMenuItem;
 import com.tessoft.domain.User;
 import com.tessoft.domain.UserLocation;
+import com.tessoft.nearhere.fragment.MainFragment;
 import com.tessoft.nearhere.fragment.MessageBoxFragment;
 import com.tessoft.nearhere.fragment.MyInfoFragment;
 import com.tessoft.nearhere.fragment.NoticeListFragment;
@@ -87,7 +88,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	ListView mDrawerList = null;
 	String mTitle = "";
 	private ActionBarDrawerToggle mDrawerToggle;
-	private Fragment mainFragment = null;
+	private Fragment currentFragment = null;
 	GoogleApiClient mGoogleApiClient = null;
 
 	public static final String EXTRA_MESSAGE = "message";
@@ -125,14 +126,15 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 			initLeftMenu();
 
-			mainFragment = new TaxiFragment();
+			currentFragment = new MainFragment();
 
 			// Insert the fragment by replacing any existing fragment
 			FragmentManager fragmentManager = getFragmentManager();
 			fragmentManager.beginTransaction()
-			.add(R.id.content_frame, mainFragment)
+			.add(R.id.content_frame, currentFragment)
 			.commit();
 
+			/*
 			buildGoogleApiClient();
 
 			// 마지막 위치업데이트 시간 clear
@@ -152,6 +154,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			checkIfGPSEnabled();
 
 			MainActivity.active = true;
+			*/
 		}
 		catch( Exception ex )
 		{
@@ -370,17 +373,17 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		int position = adapter.getPosition(item);
 
 		if ( "홈".equals( item.getMenuName() ) )
-			mainFragment = new TaxiFragment();
+			currentFragment = new TaxiFragment();
 		else if ( "header".equals( item.getMenuName() ) || "내 정보".equals( item.getMenuName() ) )
-			mainFragment = new MyInfoFragment();
+			currentFragment = new MyInfoFragment();
 		else if ( "알림메시지".equals( item.getMenuName() ) )
-			mainFragment = new PushMessageListFragment();
+			currentFragment = new PushMessageListFragment();
 		else if ( "쪽지함".equals( item.getMenuName() ) )
-			mainFragment = new MessageBoxFragment();
+			currentFragment = new MessageBoxFragment();
 		else if ( "공지사항".equals( item.getMenuName() ) )
-			mainFragment = new NoticeListFragment();
+			currentFragment = new NoticeListFragment();
 		else if ( "설정".equals( item.getMenuName() ) )
-			mainFragment = new SettingsFragment();
+			currentFragment = new SettingsFragment();
 		else if ( "로그아웃".equals( item.getMenuName() ) )
 		{
 			showYesNoDialog("확인", "정말 로그아웃 하시겠습니까?", "logout" );
@@ -392,7 +395,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		// Insert the fragment by replacing any existing fragment
 		FragmentManager fragmentManager = getFragmentManager();
 		fragmentManager.beginTransaction()
-		.replace(R.id.content_frame, mainFragment)
+		.replace(R.id.content_frame, currentFragment)
 		.addToBackStack(null)
 		.commit();
 
@@ -460,9 +463,9 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 			new GetAddressTask( this, this, 1 ).execute(location);
 
-			if ( mainFragment instanceof TaxiFragment )
+			if ( currentFragment instanceof TaxiFragment )
 			{
-				TaxiFragment f = (TaxiFragment) mainFragment;
+				TaxiFragment f = (TaxiFragment) currentFragment;
 				f.updateAddress( new LatLng( location.getLatitude(), location.getLongitude() ) );
 			}
 
@@ -776,7 +779,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	@Override
 	public void onBackPressed() {
 
-		if ( mainFragment instanceof TaxiFragment == false )
+		if ( currentFragment instanceof TaxiFragment == false )
 		{
 			reloadProfile();
 			selectItem(new MainMenuItem("홈"));
