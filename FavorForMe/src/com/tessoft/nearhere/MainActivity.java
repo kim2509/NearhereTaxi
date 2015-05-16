@@ -134,7 +134,6 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			.add(R.id.content_frame, currentFragment)
 			.commit();
 
-			/*
 			buildGoogleApiClient();
 
 			// 마지막 위치업데이트 시간 clear
@@ -154,7 +153,6 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			checkIfGPSEnabled();
 
 			MainActivity.active = true;
-			*/
 		}
 		catch( Exception ex )
 		{

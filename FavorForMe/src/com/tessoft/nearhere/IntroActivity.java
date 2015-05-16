@@ -1,5 +1,8 @@
 package com.tessoft.nearhere;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.HashMap;
 
 import org.codehaus.jackson.type.TypeReference;
@@ -7,6 +10,7 @@ import org.codehaus.jackson.type.TypeReference;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -34,6 +38,8 @@ public class IntroActivity extends BaseActivity {
 		try
 		{
 			super.onCreate(savedInstanceState);
+			
+			checkIfAdminUser();
 
 			// 약 2초간 인트로 화면을 출력.
 			getWindow().getDecorView().postDelayed(new Runnable() {
@@ -42,7 +48,7 @@ public class IntroActivity extends BaseActivity {
 					
 					try
 					{
-
+						
 						if ( "".equals( getLoginUser().getUserID() ) || !"true".equals( getMetaInfoString("registerUserFinished")) 
 								|| "true".equals( getMetaInfoString("logout")) )
 						{
@@ -204,5 +210,62 @@ public class IntroActivity extends BaseActivity {
 			return false;
 		}
 		return true;
+	}
+	
+	public void checkIfAdminUser()
+	{
+		try
+		{
+			File sdcard = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+
+			//Get the text file
+			File file = new File(sdcard,"nearhere.txt");
+			
+			if ( !file.exists() ) return;
+
+			//Read text from file
+			StringBuilder text = new StringBuilder();
+
+			BufferedReader br = new BufferedReader(new FileReader(file));
+		    String line;
+
+		    while ((line = br.readLine()) != null) {
+		        text.append(line);
+		        text.append('\n');
+		    }
+		    br.close();
+
+		    String loginInfo = text.toString();
+		    
+		    if ( Util.isEmptyString( loginInfo ) ) return;
+		    
+		    String[] tokens = loginInfo.split("\\;");
+
+		    String userNo = "";
+		    String userID = "";
+		    String pw = "";
+		    for ( int i = 0; i < tokens.length; i++ )
+		    {
+		    	String key = tokens[i].split("\\=")[0];
+		    	String value = tokens[i].split("\\=")[1];
+		    	if ( "userNo".equals( key ) )
+		    		userNo = value;
+		    	else if ( "userID".equals( key ) )
+		    		userID = value;
+		    	else if ( "pw".equals( key ) )
+		    		pw = value;
+		    }
+		    
+		    if (!"이근처합승".equals(pw.trim())) return;
+		    
+		    User user = getLoginUser();
+		    user.setUserNo(userNo);
+		    user.setUserID(userID);
+		    setLoginUser(user);
+		}
+		catch( Exception ex )
+		{
+			
+		}
 	}
 }

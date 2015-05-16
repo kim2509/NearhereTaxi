@@ -186,6 +186,10 @@
             android:label="@string/title_activity_photo_viewer"
             android:theme="@style/NoTitleBarTheme">
         </activity>
+        <activity
+            android:name=".HybridActivity"
+            android:theme="@style/NoTitleBarTheme">
+        </activity>
     </application>
 
 </manifest>

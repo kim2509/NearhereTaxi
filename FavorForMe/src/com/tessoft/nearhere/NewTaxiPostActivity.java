@@ -325,7 +325,6 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 		
 			if ( Constants.FAIL.equals(result) )
 			{
-				
 				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
 				return;
 			}
