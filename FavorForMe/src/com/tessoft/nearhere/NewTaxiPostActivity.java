@@ -277,7 +277,7 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 			
 			Spinner spSex = (Spinner)findViewById(R.id.spSex);
 			
-			if ( "여자만".equals( spSex.getSelectedItem() ) && "M".equals( getMetaInfoString("sex") ) )
+			if ( "여자만".equals( spSex.getSelectedItem() ) && "M".equals( getLoginUser().getSex() ) )
 			{
 				showOKDialog("경고", "남성회원은 여자만 옵션을 선택할 수 없습니다.", null);
 				return;
@@ -342,7 +342,7 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 			}
 			else
 			{
-				showOKDialog("위치 등록도중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
+				showOKDialog("합승내역 등록도중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
 			}
 
 		}

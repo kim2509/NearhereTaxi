@@ -102,7 +102,7 @@ public class Util {
 				else if ( diffDays <= 5 ) // 5일 이내
 					result = diffDays + " 일전 출발";
 				else // 5일 이상
-					result = getDateStringFromDate(dDepartureDateTime,  "yyyy년 MM월 dd일") + " 출발"; 
+					result = getDateStringFromDate(dDepartureDateTime,  "MM월 dd일") + " 출발"; 
 			}
 			else if ( diffDays == 0 && nowDate.equals(departureDate) )
 			{
@@ -134,7 +134,7 @@ public class Util {
 			{
 				// 오늘 이후
 				if ( diffDays < 0 )
-					result = getDateStringFromDate(dDepartureDateTime,  "yyyy년 MM월 dd일") + " 출발예정";
+					result = getDateStringFromDate(dDepartureDateTime,  " MM월 dd일") + " 출발예정";
 				else
 					result = diffHours * -1 + "시간 이후 출발예정";
 			}
