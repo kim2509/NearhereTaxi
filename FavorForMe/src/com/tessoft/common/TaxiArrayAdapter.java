@@ -120,45 +120,12 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 			TextView txtTitle = (TextView) row.findViewById(R.id.txtTitle);
 			txtTitle.setText( item.getMessage() + titleDummy );
 
-/*			
-			TextView txtDeparture = (TextView) row.findViewById(R.id.txtDeparture);
-			txtDeparture.setText( item.getFromAddress() );
-			
-			TextView txtDestination = (TextView) row.findViewById(R.id.txtDestination);
-			txtDestination.setText( item.getToAddress() );
-*/			
-			
-			
-//			TextView txtFromDistance = (TextView) row.findViewById(R.id.txtFromDistance);
-//			if ( Util.isEmptyString( item.getFromDistance() ) == false )
-//			{
-//				txtFromDistance.setText( Util.getDistance( item.getFromDistance() ) );
-//				txtFromDistance.setVisibility(ViewGroup.VISIBLE);
-//			}
-//			else
-//				txtFromDistance.setVisibility(ViewGroup.INVISIBLE);
-//			
-//			TextView txtToDistance = (TextView) row.findViewById(R.id.txtToDistance);
-//			if ( Util.isEmptyString( item.getToDistance() ) == false )
-//			{
-//				txtToDistance.setText( Util.getDistance( item.getToDistance() ) );
-//				txtToDistance.setVisibility(ViewGroup.VISIBLE);
-//			}
-//			else
-//				txtToDistance.setVisibility(ViewGroup.INVISIBLE);
-			
-			/*
-			TextView txtCreatedDate = (TextView) row.findViewById(R.id.txtCreatedDate);
-			txtCreatedDate.setText( Util.getFormattedDateString(, "MM-dd HH:mm"));	
-			
-			if ( item.getDepartureDate() != null )
-			{
-				
-			}
-			*/
-			
 			TextView txtDepartureDateTime = (TextView) row.findViewById(R.id.txtDepartureDateTime);
-			txtDepartureDateTime.setText( Util.getDepartureDateTime( item.getDepartureDateTime() ) );	
+			
+			if ( item.getMessage().indexOf("매일") < 0 )
+				txtDepartureDateTime.setText( Util.getDepartureDateTime( item.getDepartureDateTime() ) );
+			else
+				txtDepartureDateTime.setText("매일");
 			
 			if ( item.getUser() != null && !Util.isEmptyString( item.getUser().getProfileImageURL() ) )
 			{
@@ -187,6 +154,50 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 			}
 			else
 				layoutComment.setVisibility(ViewGroup.GONE);
+			
+			if ( !Util.isEmptyString( item.getVehicle() ) )
+			{
+				TextView txtVehicle = (TextView) row.findViewById(R.id.txtVehicle);
+				txtVehicle.setVisibility(ViewGroup.VISIBLE);
+				txtVehicle.setText( item.getVehicle() );
+			}
+			else
+				row.findViewById(R.id.txtVehicle).setVisibility(ViewGroup.GONE);
+			
+			if ( !Util.isEmptyString( item.getFareOption() ) )
+			{
+				TextView txtFareOption = (TextView) row.findViewById(R.id.txtFareOption);
+				txtFareOption.setVisibility(ViewGroup.VISIBLE);
+				txtFareOption.setText( item.getFareOption() );
+			}
+			else
+				row.findViewById(R.id.txtFareOption).setVisibility(ViewGroup.GONE);
+			
+			if ( !Util.isEmptyString( item.getRepetitiveYN() ) )
+			{
+				TextView txtRepeat = (TextView) row.findViewById(R.id.txtRepeat);
+				txtRepeat.setVisibility(ViewGroup.VISIBLE);
+			}
+			else
+				row.findViewById(R.id.txtRepeat).setVisibility(ViewGroup.GONE);
+			
+			if ( !"상관없음".equals( item.getSexInfo() ) && !Util.isEmptyString( item.getSexInfo() ) )
+			{
+				TextView txtSex = (TextView) row.findViewById(R.id.txtSex);
+				txtSex.setVisibility(ViewGroup.VISIBLE);
+				txtSex.setText( item.getSexInfo() );
+			}
+			else
+				row.findViewById(R.id.txtSex).setVisibility(ViewGroup.GONE);
+			
+			if ( !"상관없음".equals( item.getNumOfUsers() ) && !Util.isEmptyString( item.getNumOfUsers() ) )
+			{
+				TextView txtNOP = (TextView) row.findViewById(R.id.txtNOP);
+				txtNOP.setVisibility(ViewGroup.VISIBLE);
+				txtNOP.setText( item.getNumOfUsers() );
+			}
+			else
+				row.findViewById(R.id.txtNOP).setVisibility(ViewGroup.GONE);
 			
 			row.setTag( item );
 		}

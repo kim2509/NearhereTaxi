@@ -117,6 +117,18 @@
         <item>100km</item>
     </string-array>
 
+    <string-array name="vehicle_list">
+        <item>택시</item>
+        <item>카풀</item>
+        <item>KTX</item>
+    </string-array>
+    
+    <string-array name="fare_condition">
+        <item>나눠서 분담</item>
+        <item>협의</item>
+        <item>본인부담</item>
+    </string-array>
+    
     <string name="drawer_open">메뉴 선택</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="set_destination_guide1">출발지를 선택해 주십시오.</string>

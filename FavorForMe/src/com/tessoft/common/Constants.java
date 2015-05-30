@@ -19,4 +19,8 @@ public class Constants {
 			"http://www.hereby.co.kr/image/" : "http://tessoft.synology.me:8090/image/";
 	
 	public static String FAIL = "9999";
+	
+	public static boolean bPushOffOnNewPost = false;
+	
+	public static boolean bAdminMode = false;
 }

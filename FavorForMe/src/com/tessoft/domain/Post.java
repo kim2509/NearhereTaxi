@@ -33,6 +33,11 @@ public class Post extends ListItemModel {
 	private String toDistance;
 	private String status;
 	protected String type="taxi";
+	private String vehicle;
+	private String fareOption;
+	
+	private String repetitiveYN = "";
+	
 	private boolean moreFlag;
 	
 	private boolean bPushOff;
@@ -250,5 +255,29 @@ public class Post extends ListItemModel {
 
 	public void setbPushOff(boolean bPushOff) {
 		this.bPushOff = bPushOff;
+	}
+
+	public String getVehicle() {
+		return vehicle;
+	}
+
+	public void setVehicle(String vehicle) {
+		this.vehicle = vehicle;
+	}
+
+	public String getFareOption() {
+		return fareOption;
+	}
+
+	public void setFareOption(String fareOption) {
+		this.fareOption = fareOption;
+	}
+
+	public String getRepetitiveYN() {
+		return repetitiveYN;
+	}
+
+	public void setRepetitiveYN(String repetitiveYN) {
+		this.repetitiveYN = repetitiveYN;
 	}
 }

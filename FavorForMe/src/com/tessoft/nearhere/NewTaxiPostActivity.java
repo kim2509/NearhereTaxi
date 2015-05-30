@@ -21,10 +21,12 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -34,11 +36,15 @@ import android.widget.TimePicker;
 public class NewTaxiPostActivity extends BaseActivity implements OnClickListener, OnTimeSetListener, OnDateSetListener{
 
 	private static final int MODIFY_POST = 2;
+	private int SELECT_DEPARTURE = 1;
+	private int SELECT_DESTINATION = 2;
 	TextView txtDeparture = null;
 	TextView txtDestination = null;
 	Post post = null;
 	Spinner spSexInfo = null;
 	Spinner spNumOfUsers = null;
+	Spinner spVehicle = null;
+	Spinner spFareCondition = null;
 	EditText edtMessage = null;
 	String mode = "new";
 	
@@ -67,16 +73,28 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 			txtChangeDepartureDate.setOnClickListener(this);
 			
 			spSexInfo = (Spinner) findViewById(R.id.spSex);
-			ArrayAdapter<CharSequence> sexAdapter = ArrayAdapter.createFromResource( this ,
-					R.array.sex_select_list, android.R.layout.simple_spinner_item);
+			ArrayAdapter<String> sexAdapter = new ArrayAdapter<String>(this, R.layout.spinner_item, 
+					getResources().getStringArray(R.array.sex_select_list) );
 			sexAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 			spSexInfo.setAdapter(sexAdapter);
 
 			spNumOfUsers = (Spinner) findViewById(R.id.spNumOfUsers);
-			ArrayAdapter<CharSequence> nouAdapter = ArrayAdapter.createFromResource( this ,
-					R.array.nou_list, android.R.layout.simple_spinner_item);
+			ArrayAdapter<String> nouAdapter = new ArrayAdapter<String>(this, R.layout.spinner_item, 
+					getResources().getStringArray(R.array.nou_list) );
 			nouAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 			spNumOfUsers.setAdapter(nouAdapter);
+			
+			spVehicle = (Spinner) findViewById(R.id.spVehicle);
+			ArrayAdapter<String> vehicleAdapter = new ArrayAdapter<String>(this, R.layout.spinner_item, 
+					getResources().getStringArray(R.array.vehicle_list) );
+			vehicleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			spVehicle.setAdapter(vehicleAdapter);
+			
+			spFareCondition = (Spinner) findViewById(R.id.spFareCondition);
+			ArrayAdapter<String> fareAdapter = new ArrayAdapter<String>(this, R.layout.spinner_item, 
+					getResources().getStringArray(R.array.fare_condition) );
+			fareAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			spFareCondition.setAdapter(fareAdapter);
 			
 			txtDepartureDate = (TextView) findViewById(R.id.txtDepartureDate);
 			txtDepartureTime = (TextView) findViewById(R.id.txtDepartureTime);
@@ -96,6 +114,8 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 					displayModifyInfo();
 					mode = "modify";
 				}
+				
+				visibleAdditionslFields();
 			}
 			else
 			{
@@ -203,7 +223,7 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 		intent.putExtra("title", "출발지 선택");
 		intent.putExtra("subTitle", "출발지를 선택해 주십시오.");
 		intent.putExtra("departure", departure );
-		startActivityForResult(intent, 1);
+		startActivityForResult(intent, SELECT_DEPARTURE  );
 		overridePendingTransition(R.anim.slide_in_from_right, R.anim.stay);
 	}
 	
@@ -228,22 +248,36 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 				String address = data.getExtras().getString("address");
 				LatLng location = (LatLng) data.getExtras().get("location");
 			
-				if ( requestCode == 1 )
+				if ( requestCode == SELECT_DEPARTURE )
 				{
 					txtDeparture.setText(address);
 					departure = location;
 				}
-				else if ( requestCode == 2 )
+				else if ( requestCode == SELECT_DESTINATION )
 				{
 					txtDestination.setText(address);
 					destination = location;
-				}				
+				}
+			}
+			
+			if ( departure != null && destination != null )
+			{
+				visibleAdditionslFields();
 			}
 		}
 		catch( Exception ex )
 		{
 			catchException(this, ex);
 		}
+	}
+
+	private void visibleAdditionslFields() {
+		findViewById(R.id.layoutDepartureDate).setVisibility(ViewGroup.VISIBLE);
+		findViewById(R.id.layoutDepartureTime).setVisibility(ViewGroup.VISIBLE);
+		findViewById(R.id.layoutAddInfo).setVisibility(ViewGroup.VISIBLE);
+		findViewById(R.id.layoutAddInfo2).setVisibility(ViewGroup.VISIBLE);
+		findViewById(R.id.edtMessage).setVisibility(ViewGroup.VISIBLE);
+		findViewById(R.id.btnSend).setVisibility(ViewGroup.VISIBLE);
 	}
 	
 	LatLng departure = null;
@@ -292,18 +326,21 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 			post.setToAddress( txtDestination.getText().toString()  );
 			post.setDepartureDate( txtDepartureDate.getText().toString() );
 			post.setDepartureTime( txtDepartureTime.getText().toString() );
-			
-			
 			post.setSexInfo( spSex.getSelectedItem().toString() );
-			
 			Spinner spNumOfUsers = (Spinner)findViewById(R.id.spNumOfUsers);
 			post.setNumOfUsers( spNumOfUsers.getSelectedItem().toString() );
-			
 			post.setUser( getLoginUser() );
+			
+			post.setVehicle( spVehicle.getSelectedItem().toString() );
+			post.setFareOption( spFareCondition.getSelectedItem().toString() );
+			
+			boolean bRepetitive = ((CheckBox)findViewById(R.id.chkRepetitive) ).isChecked();
+			post.setRepetitiveYN( bRepetitive ? "Y":"N" );
 
 			setProgressBarIndeterminateVisibility(true);
 			
-			post.setbPushOff(true);
+			if ( Constants.bPushOffOnNewPost )
+				post.setbPushOff(true);
 			
 			if ( "new".equals( mode ) )
 				sendHttp("/taxi/insertPost.do", mapper.writeValueAsString(post), 1);
@@ -373,5 +410,23 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 		spNumOfUsers.setSelection( adapter.getPosition( post.getNumOfUsers() ) );
 		
 		edtMessage.setText( post.getMessage() );
+		
+		if ( !Util.isEmptyString( post.getVehicle() ) )
+		{
+			ArrayAdapter<CharSequence> vehicleAdapter = (ArrayAdapter<CharSequence>) spVehicle.getAdapter();
+			spVehicle.setSelection(vehicleAdapter.getPosition( post.getVehicle() ));	
+		}
+		
+		if ( !Util.isEmptyString( post.getFareOption() ) )
+		{
+			ArrayAdapter<CharSequence> fareOptionAdapter = (ArrayAdapter<CharSequence>) spFareCondition.getAdapter();
+			spFareCondition.setSelection(fareOptionAdapter.getPosition( post.getFareOption() ));	
+		}
+		
+		CheckBox chkRepetitive = (CheckBox) findViewById(R.id.chkRepetitive);
+		if ( "Y".equals( post.getRepetitiveYN() ) )
+			chkRepetitive.setChecked( true );
+		else
+			chkRepetitive.setChecked( false );
 	}
 }

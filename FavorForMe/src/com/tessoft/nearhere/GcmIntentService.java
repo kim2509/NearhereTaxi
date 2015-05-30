@@ -235,7 +235,7 @@ public class GcmIntentService extends IntentService {
             }
             else
             {
-            	intent = new Intent(this, MainActivity.class);
+            	return;
             }
             
             PendingIntent contentIntent = PendingIntent.getActivity(this, 0,

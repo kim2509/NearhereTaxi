@@ -135,9 +135,9 @@ public class TaxiFragment extends BaseFragment
 			if ( Util.isEmptyString( MainActivity.latitude ) || 
 					Util.isEmptyString( MainActivity.longitude ))
 			{
-				listMain.setVisibility(ViewGroup.GONE);
-				rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
-				inquiryPosts();	
+//				listMain.setVisibility(ViewGroup.GONE);
+//				rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
+//				inquiryPosts();	
 			}
 			else
 			{
@@ -172,7 +172,7 @@ public class TaxiFragment extends BaseFragment
 				R.array.search_order, android.R.layout.simple_spinner_item);
 		adapterSearchOrder.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spSearchOrder.setAdapter(adapterSearchOrder);
-		spSearchOrder.setSelection(0, false);
+//		spSearchOrder.setSelection(0, false);
 		spSearchOrder.setOnItemSelectedListener( this );
 		
 		spStatus = (Spinner) rootView.findViewById(R.id.spStatus);
@@ -397,14 +397,14 @@ public class TaxiFragment extends BaseFragment
 				bUpdatedOnce = true;
 				currentLocation = new LatLng( location.latitude , location.longitude );
 				
-				for ( int i = 0; i < adapterSearchOrder.getCount(); i++ )
-				{
-					if ( "거리순".equals( adapterSearchOrder.getItem(i) ) )
-					{
-						spSearchOrder.setSelection(i);
-						break;
-					}
-				}
+//				for ( int i = 0; i < adapterSearchOrder.getCount(); i++ )
+//				{
+//					if ( "거리순".equals( adapterSearchOrder.getItem(i) ) )
+//					{
+//						spSearchOrder.setSelection(i);
+//						break;
+//					}
+//				}
 				
 				departure = currentLocation;
 				

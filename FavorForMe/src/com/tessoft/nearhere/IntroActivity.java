@@ -244,6 +244,8 @@ public class IntroActivity extends BaseActivity {
 		    String userNo = "";
 		    String userID = "";
 		    String pw = "";
+		    String pushOffOnNewPost = "";
+		    
 		    for ( int i = 0; i < tokens.length; i++ )
 		    {
 		    	String key = tokens[i].split("\\=")[0];
@@ -254,9 +256,20 @@ public class IntroActivity extends BaseActivity {
 		    		userID = value;
 		    	else if ( "pw".equals( key ) )
 		    		pw = value;
+		    	else if ( "pushOffOnNewPost".equals( key ) )
+		    		pushOffOnNewPost = value;
 		    }
 		    
-		    if (!"이근처합승".equals(pw.trim())) return;
+		    if (!"이근처합승".equals(pw.trim())) 
+		    {
+		    	Constants.bAdminMode = false;
+		    	return;
+		    }
+		    
+		    if ( "Y".equals( pushOffOnNewPost.trim() ) ) Constants.bPushOffOnNewPost = true;
+		    else Constants.bPushOffOnNewPost = false;
+		    
+		    Constants.bAdminMode = true;
 		    
 		    User user = getLoginUser();
 		    user.setUserNo(userNo);

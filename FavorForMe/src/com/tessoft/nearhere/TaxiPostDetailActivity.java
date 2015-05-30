@@ -553,7 +553,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					imgStatus.setVisibility(ViewGroup.VISIBLE);
 					Button btnFinish = (Button) header.findViewById(R.id.btnFinish);
 					
-					if ( post.getUser().getUserID().equals( getLoginUser().getUserID() ))
+					if ( post.getUser().getUserID().equals( getLoginUser().getUserID() ) || Constants.bAdminMode )
 						header.findViewById(R.id.layoutMyOption).setVisibility(ViewGroup.VISIBLE);
 					else
 						header.findViewById(R.id.layoutMyOption).setVisibility(ViewGroup.GONE );
