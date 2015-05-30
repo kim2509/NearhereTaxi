@@ -45,6 +45,7 @@ public class Post extends ListItemModel {
 	protected List<PostLike> postLikes;
 	protected List<PostReply> postReplies;
 	
+	private int readCount = 0;
 	private int replyCount = 0;
 	
 	public Post()
@@ -279,5 +280,13 @@ public class Post extends ListItemModel {
 
 	public void setRepetitiveYN(String repetitiveYN) {
 		this.repetitiveYN = repetitiveYN;
+	}
+
+	public int getReadCount() {
+		return readCount;
+	}
+
+	public void setReadCount(int readCount) {
+		this.readCount = readCount;
 	}
 }

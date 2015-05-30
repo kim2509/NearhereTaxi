@@ -406,7 +406,7 @@ public class TaxiFragment extends BaseFragment
 //					}
 //				}
 				
-				departure = currentLocation;
+//				departure = currentLocation;
 				
 				new GetAddressTask( getActivity(), this, 1 ).execute(locs);
 			}

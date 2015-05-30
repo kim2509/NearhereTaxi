@@ -488,19 +488,8 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					else
 						imgSex.setVisibility(ViewGroup.GONE);
 
-					String titleDummy = "";
-
-					if ( post.getSexInfo() != null && !"상관없음".equals( post.getSexInfo() ) )
-						titleDummy += post.getSexInfo();
-
-					if ( post.getNumOfUsers() != null && !"상관없음".equals( post.getNumOfUsers() ) )
-						titleDummy += " " + post.getNumOfUsers();
-
-					if ( titleDummy.isEmpty() == false )
-						titleDummy = "(" + titleDummy.trim() + ")";
-
 					TextView txtTitle = (TextView) header.findViewById(R.id.txtTitle);
-					txtTitle.setText( post.getMessage() + titleDummy );
+					txtTitle.setText( post.getMessage() );
 
 					TextView txtDeparture = (TextView) header.findViewById(R.id.txtDeparture);
 					txtDeparture.setText( post.getFromAddress() );
@@ -569,6 +558,8 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 						imgStatus.setImageResource(R.drawable.finished);
 						btnFinish.setVisibility(ViewGroup.GONE);
 					}
+					
+					setControlsVisibility( post );
 				}
 				else if ( requestCode == INSERT_POST_REPLY )
 				{
@@ -597,6 +588,62 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		{
 			catchException(this, ex);
 		}
+	}
+	
+	private void setControlsVisibility( Post item ) {
+		
+		if ( !Util.isEmptyString( item.getVehicle() ) )
+		{
+			TextView txtVehicle = (TextView) findViewById(R.id.txtVehicle);
+			txtVehicle.setVisibility(ViewGroup.VISIBLE);
+			txtVehicle.setText( item.getVehicle() );
+		}
+		else
+			findViewById(R.id.txtVehicle).setVisibility(ViewGroup.GONE);
+		
+		if ( !Util.isEmptyString( item.getFareOption() ) )
+		{
+			TextView txtFareOption = (TextView) findViewById(R.id.txtFareOption);
+			txtFareOption.setVisibility(ViewGroup.VISIBLE);
+			txtFareOption.setText( item.getFareOption() );
+		}
+		else
+			findViewById(R.id.txtFareOption).setVisibility(ViewGroup.GONE);
+		
+		if ( !Util.isEmptyString( item.getRepetitiveYN() ) )
+		{
+			TextView txtRepeat = (TextView) findViewById(R.id.txtRepeat);
+			txtRepeat.setVisibility(ViewGroup.VISIBLE);
+		}
+		else
+			findViewById(R.id.txtRepeat).setVisibility(ViewGroup.GONE);
+		
+		if ( !"상관없음".equals( item.getSexInfo() ) && !Util.isEmptyString( item.getSexInfo() ) )
+		{
+			TextView txtSex = (TextView) findViewById(R.id.txtSex);
+			txtSex.setVisibility(ViewGroup.VISIBLE);
+			txtSex.setText( item.getSexInfo() );
+		}
+		else
+			findViewById(R.id.txtSex).setVisibility(ViewGroup.GONE);
+		
+		if ( !"상관없음".equals( item.getNumOfUsers() ) && !Util.isEmptyString( item.getNumOfUsers() ) )
+		{
+			TextView txtNOP = (TextView) findViewById(R.id.txtNOP);
+			txtNOP.setVisibility(ViewGroup.VISIBLE);
+			txtNOP.setText( item.getNumOfUsers() );
+		}
+		else
+			findViewById(R.id.txtNOP).setVisibility(ViewGroup.GONE);
+		
+		TextView readCount = (TextView) findViewById(R.id.txtReadCount);
+		if ( item.getReadCount() > 0 )
+		{
+			readCount.setVisibility(ViewGroup.VISIBLE);
+			readCount.setText( "조회 : " + item.getReadCount() );
+		}
+		else
+			readCount.setVisibility(ViewGroup.GONE);
 	}
 	
 	@Override

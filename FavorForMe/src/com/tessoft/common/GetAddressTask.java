@@ -85,6 +85,8 @@ public class GetAddressTask extends AsyncTask<Location, Void, String> {
 
 			// Locality is usually a city
 			String gu = address.getLocality();
+			if ( Util.isEmptyString( gu ) )
+				gu = address.getSubLocality();
 
 			// The country of the address
 			String country = address.getCountryName();

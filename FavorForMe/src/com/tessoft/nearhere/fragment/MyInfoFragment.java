@@ -28,6 +28,7 @@ import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.Post;
 import com.tessoft.domain.User;
 import com.tessoft.domain.UserLocation;
+import com.tessoft.nearhere.MainActivity;
 import com.tessoft.nearhere.PhotoViewer;
 import com.tessoft.nearhere.R;
 import com.tessoft.nearhere.SetDestinationActivity;
@@ -79,6 +80,13 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 	private static final int REQUEST_IMAGE_CROP = 40;
 	User user = null;
 	DisplayImageOptions options = null;
+	
+	MainActivity mainActivity = null;
+	
+	public MyInfoFragment( MainActivity mainActivity )
+	{
+		this.mainActivity = mainActivity;
+	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -493,6 +501,9 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 				}
 				else
 				{
+					if ( requestCode == PROFILE_IMAGE_UPLOAD )
+						mainActivity.reloadProfile();
+					
 					inquiryUserInfo();
 				}
 			}

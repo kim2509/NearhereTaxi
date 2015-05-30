@@ -221,7 +221,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 				mDrawerList.setAdapter( adapter );
 				
-				reloadProfile();
+//				reloadProfile();
 
 				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
 			}
@@ -231,7 +231,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
 	}
 
-	private void reloadProfile() {
+	public void reloadProfile() {
 		ImageView imageView = (ImageView) header.findViewById(R.id.imgProfile);
 		
 		if ( Util.isEmptyString( getLoginUser().getProfileImageURL() ))
@@ -374,7 +374,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		if ( "홈".equals( item.getMenuName() ) )
 			currentFragment = new TaxiFragment();
 		else if ( "header".equals( item.getMenuName() ) || "내 정보".equals( item.getMenuName() ) )
-			currentFragment = new MyInfoFragment();
+			currentFragment = new MyInfoFragment( this );
 		else if ( "알림메시지".equals( item.getMenuName() ) )
 			currentFragment = new PushMessageListFragment();
 		else if ( "쪽지함".equals( item.getMenuName() ) )

@@ -134,8 +134,8 @@
                 android:layout_alignBaseline="@+id/txtGuide3"
                 android:layout_marginLeft="10dp"
                 android:layout_toRightOf="@+id/txtGuide3"
-                android:textColor="#3B5D98" 
-                android:textStyle="bold"/>
+                android:textColor="#3B5D98"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/txtGuide4"
@@ -146,15 +146,15 @@
                 android:layout_marginTop="5dp"
                 android:text="등록시간"
                 android:textColor="@android:color/black" />
-            
+
             <TextView
                 android:id="@+id/txtCreatedDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@+id/txtGuide4"
-                android:layout_toRightOf="@+id/txtGuide4"
+                android:layout_marginLeft="10dp"
                 android:layout_marginTop="5dp"
-                android:layout_marginLeft="10dp" />
+                android:layout_toRightOf="@+id/txtGuide4" />
 
             <TextView
                 android:id="@+id/txtFromDistance"
@@ -184,44 +184,137 @@
                 android:textColor="#ffffff"
                 android:visibility="gone" />
         </RelativeLayout>
-        
-        <LinearLayout
-            android:id="@+id/layoutMyOption" 
+
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_margin="10dp"
-            android:orientation="horizontal"
-            android:gravity="right|center_vertical">
-            
-            <TextView android:layout_width="wrap_content"
+            android:layout_marginLeft="90dp">
+
+            <TextView
+                android:id="@+id/txtReadCount"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:text="출발일시에서 특정기간(1~2일)이 지나면\n자동 종료처리됩니다." />
-            
-            <Button
-                android:id="@+id/btnModify" 
+                android:layout_marginLeft="10dp"
+                android:text="조회 : 5"
+                android:textColor="@android:color/black"
+                android:textSize="12dp" />
+
+            <LinearLayout
+                android:id="@+id/layoutAddInfo"
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/txtVehicle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="3dp"
+                    android:background="#F66C3C"
+                    android:padding="2dp"
+                    android:text="택시합승"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/txtFareOption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="3dp"
+                    android:background="#F66C3C"
+                    android:padding="2dp"
+                    android:text="나눠서 분담"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/txtSex"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="3dp"
+                    android:background="#F66C3C"
+                    android:padding="2dp"
+                    android:text="여자만"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/txtNOP"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="3dp"
+                    android:background="#F66C3C"
+                    android:padding="2dp"
+                    android:text="3명"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/txtRepeat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="3dp"
+                    android:background="#F66C3C"
+                    android:padding="2dp"
+                    android:text="반복"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutMyOption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:gravity="right|center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="출발일시에서 특정기간(1~2일)이 지나면\n자동 종료처리됩니다."
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnModify"
                 style="@style/btn_style"
+                android:layout_width="wrap_content"
                 android:onClick="modifyPost"
-                android:text="수정하기"/>
-            
+                android:text="수정하기" />
+
             <Button
-                android:id="@+id/btnDelete" 
-                android:layout_width="wrap_content"
+                android:id="@+id/btnDelete"
                 style="@style/btn_style"
+                android:layout_width="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:text="삭제하기"/>
-            
+                android:text="삭제하기" />
+
             <Button
-                android:id="@+id/btnFinish" 
-                android:layout_width="wrap_content"
+                android:id="@+id/btnFinish"
                 style="@style/btn_style"
+                android:layout_width="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:text="지금종료"/>
-            
+                android:text="지금종료" />
         </LinearLayout>
-        
     </LinearLayout>
 
     <ImageView

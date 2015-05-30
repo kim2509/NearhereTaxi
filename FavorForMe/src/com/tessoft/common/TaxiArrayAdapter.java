@@ -88,17 +88,6 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 				imgStatus = (ImageView) row.findViewById(R.id.imgStatus);
 			}
 			
-			String titleDummy = "";
-			
-			if ( item.getSexInfo() != null && !"상관없음".equals( item.getSexInfo() ) )
-				titleDummy += item.getSexInfo();
-			
-			if ( item.getNumOfUsers() != null && !"상관없음".equals( item.getNumOfUsers() ) )
-				titleDummy += " " + item.getNumOfUsers();
-			
-			if ( titleDummy.isEmpty() == false )
-				titleDummy = "(" + titleDummy.trim() + ")";
-			
 			ImageView imgSex = (ImageView) row.findViewById(R.id.imgSex);
 			imgSex.setVisibility(ViewGroup.VISIBLE);
 			
@@ -118,7 +107,7 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 				txtUserName.setText( item.getUser().getUserName() );
 			
 			TextView txtTitle = (TextView) row.findViewById(R.id.txtTitle);
-			txtTitle.setText( item.getMessage() + titleDummy );
+			txtTitle.setText( item.getMessage() );
 
 			TextView txtDepartureDateTime = (TextView) row.findViewById(R.id.txtDepartureDateTime);
 			
@@ -138,66 +127,7 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 				imageView.setImageResource(R.drawable.no_image);
 			}
 
-			imgStatus.setVisibility(ViewGroup.VISIBLE);
-			
-			if ( "진행중".equals( item.getStatus() ) )
-				imgStatus.setImageResource(R.drawable.progressing);
-			else
-				imgStatus.setImageResource(R.drawable.finished);
-			
-			LinearLayout layoutComment = (LinearLayout) row.findViewById(R.id.layoutComment);
-			if ( item.getReplyCount() > 0 )
-			{
-				layoutComment.setVisibility(ViewGroup.VISIBLE);
-				TextView txtReplyCount = (TextView) row.findViewById(R.id.txtReplyCount);
-				txtReplyCount.setText( String.valueOf( item.getReplyCount() ) );
-			}
-			else
-				layoutComment.setVisibility(ViewGroup.GONE);
-			
-			if ( !Util.isEmptyString( item.getVehicle() ) )
-			{
-				TextView txtVehicle = (TextView) row.findViewById(R.id.txtVehicle);
-				txtVehicle.setVisibility(ViewGroup.VISIBLE);
-				txtVehicle.setText( item.getVehicle() );
-			}
-			else
-				row.findViewById(R.id.txtVehicle).setVisibility(ViewGroup.GONE);
-			
-			if ( !Util.isEmptyString( item.getFareOption() ) )
-			{
-				TextView txtFareOption = (TextView) row.findViewById(R.id.txtFareOption);
-				txtFareOption.setVisibility(ViewGroup.VISIBLE);
-				txtFareOption.setText( item.getFareOption() );
-			}
-			else
-				row.findViewById(R.id.txtFareOption).setVisibility(ViewGroup.GONE);
-			
-			if ( !Util.isEmptyString( item.getRepetitiveYN() ) )
-			{
-				TextView txtRepeat = (TextView) row.findViewById(R.id.txtRepeat);
-				txtRepeat.setVisibility(ViewGroup.VISIBLE);
-			}
-			else
-				row.findViewById(R.id.txtRepeat).setVisibility(ViewGroup.GONE);
-			
-			if ( !"상관없음".equals( item.getSexInfo() ) && !Util.isEmptyString( item.getSexInfo() ) )
-			{
-				TextView txtSex = (TextView) row.findViewById(R.id.txtSex);
-				txtSex.setVisibility(ViewGroup.VISIBLE);
-				txtSex.setText( item.getSexInfo() );
-			}
-			else
-				row.findViewById(R.id.txtSex).setVisibility(ViewGroup.GONE);
-			
-			if ( !"상관없음".equals( item.getNumOfUsers() ) && !Util.isEmptyString( item.getNumOfUsers() ) )
-			{
-				TextView txtNOP = (TextView) row.findViewById(R.id.txtNOP);
-				txtNOP.setVisibility(ViewGroup.VISIBLE);
-				txtNOP.setText( item.getNumOfUsers() );
-			}
-			else
-				row.findViewById(R.id.txtNOP).setVisibility(ViewGroup.GONE);
+			setControlsVisibility(row, item, imgStatus);
 			
 			row.setTag( item );
 		}
@@ -207,6 +137,78 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 		}
 
 		return row;
+	}
+
+	private void setControlsVisibility(View row, Post item, ImageView imgStatus) {
+		imgStatus.setVisibility(ViewGroup.VISIBLE);
+		
+		if ( "진행중".equals( item.getStatus() ) )
+			imgStatus.setImageResource(R.drawable.progressing);
+		else
+			imgStatus.setImageResource(R.drawable.finished);
+		
+		LinearLayout layoutComment = (LinearLayout) row.findViewById(R.id.layoutComment);
+		if ( item.getReplyCount() > 0 )
+		{
+			layoutComment.setVisibility(ViewGroup.VISIBLE);
+			TextView txtReplyCount = (TextView) row.findViewById(R.id.txtReplyCount);
+			txtReplyCount.setText( String.valueOf( item.getReplyCount() ) );
+		}
+		else
+			layoutComment.setVisibility(ViewGroup.GONE);
+		
+		if ( !Util.isEmptyString( item.getVehicle() ) )
+		{
+			TextView txtVehicle = (TextView) row.findViewById(R.id.txtVehicle);
+			txtVehicle.setVisibility(ViewGroup.VISIBLE);
+			txtVehicle.setText( item.getVehicle() );
+		}
+		else
+			row.findViewById(R.id.txtVehicle).setVisibility(ViewGroup.GONE);
+		
+		if ( !Util.isEmptyString( item.getFareOption() ) )
+		{
+			TextView txtFareOption = (TextView) row.findViewById(R.id.txtFareOption);
+			txtFareOption.setVisibility(ViewGroup.VISIBLE);
+			txtFareOption.setText( item.getFareOption() );
+		}
+		else
+			row.findViewById(R.id.txtFareOption).setVisibility(ViewGroup.GONE);
+		
+		if ( !Util.isEmptyString( item.getRepetitiveYN() ) )
+		{
+			TextView txtRepeat = (TextView) row.findViewById(R.id.txtRepeat);
+			txtRepeat.setVisibility(ViewGroup.VISIBLE);
+		}
+		else
+			row.findViewById(R.id.txtRepeat).setVisibility(ViewGroup.GONE);
+		
+		if ( !"상관없음".equals( item.getSexInfo() ) && !Util.isEmptyString( item.getSexInfo() ) )
+		{
+			TextView txtSex = (TextView) row.findViewById(R.id.txtSex);
+			txtSex.setVisibility(ViewGroup.VISIBLE);
+			txtSex.setText( item.getSexInfo() );
+		}
+		else
+			row.findViewById(R.id.txtSex).setVisibility(ViewGroup.GONE);
+		
+		if ( !"상관없음".equals( item.getNumOfUsers() ) && !Util.isEmptyString( item.getNumOfUsers() ) )
+		{
+			TextView txtNOP = (TextView) row.findViewById(R.id.txtNOP);
+			txtNOP.setVisibility(ViewGroup.VISIBLE);
+			txtNOP.setText( item.getNumOfUsers() );
+		}
+		else
+			row.findViewById(R.id.txtNOP).setVisibility(ViewGroup.GONE);
+		
+		TextView readCount = (TextView) row.findViewById(R.id.txtReadCount);
+		if ( item.getReadCount() > 0 )
+		{
+			readCount.setVisibility(ViewGroup.VISIBLE);
+			readCount.setText( "조회 : " + item.getReadCount() );
+		}
+		else
+			readCount.setVisibility(ViewGroup.GONE);
 	}
 
 	public Bitmap decodeToBitmap(byte[] decodedByte) {
