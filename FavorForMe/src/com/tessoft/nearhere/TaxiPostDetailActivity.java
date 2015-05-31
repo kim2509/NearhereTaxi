@@ -610,7 +610,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		else
 			findViewById(R.id.txtFareOption).setVisibility(ViewGroup.GONE);
 		
-		if ( !Util.isEmptyString( item.getRepetitiveYN() ) )
+		if ( "Y".equals( item.getRepetitiveYN() ) )
 		{
 			TextView txtRepeat = (TextView) findViewById(R.id.txtRepeat);
 			txtRepeat.setVisibility(ViewGroup.VISIBLE);

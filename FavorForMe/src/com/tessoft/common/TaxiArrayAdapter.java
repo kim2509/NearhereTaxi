@@ -175,7 +175,7 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 		else
 			row.findViewById(R.id.txtFareOption).setVisibility(ViewGroup.GONE);
 		
-		if ( !Util.isEmptyString( item.getRepetitiveYN() ) )
+		if ( "Y".equals( item.getRepetitiveYN() ) )
 		{
 			TextView txtRepeat = (TextView) row.findViewById(R.id.txtRepeat);
 			txtRepeat.setVisibility(ViewGroup.VISIBLE);
