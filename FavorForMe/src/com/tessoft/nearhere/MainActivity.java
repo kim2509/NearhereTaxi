@@ -126,8 +126,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 			initLeftMenu();
 
-//			currentFragment = new MainFragment();
-			currentFragment = new TaxiFragment();
+			currentFragment = new MainFragment();
+//			currentFragment = new TaxiFragment();
 
 			// Insert the fragment by replacing any existing fragment
 			FragmentManager fragmentManager = getFragmentManager();
@@ -145,8 +145,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			// 푸시 토큰을 생성한다.
 			gcm = GoogleCloudMessaging.getInstance(this);
 			regid = getMetaInfoString("registrationID");
-			if ( Util.isEmptyString( regid ))
-				registerInBackground();
+//			if ( Util.isEmptyString( regid ))
+			registerInBackground();
 
 			// google play sdk 설치 여부를 검사한다.
 			checkPlayServices();

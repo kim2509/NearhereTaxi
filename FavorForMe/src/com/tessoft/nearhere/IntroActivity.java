@@ -49,7 +49,7 @@ public class IntroActivity extends BaseActivity {
 					try
 					{
 						
-						if ( "".equals( getLoginUser().getUserID() ) || !"true".equals( getMetaInfoString("registerUserFinished")) 
+						if ( getLoginUser() == null || "".equals( getLoginUser().getUserID() ) || !"true".equals( getMetaInfoString("registerUserFinished")) 
 								|| "true".equals( getMetaInfoString("logout")) )
 						{
 							Intent intent = null;
