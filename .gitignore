@@ -5,4 +5,5 @@ appcompat_v7/bin
 appcompat_v7/bin/*
 google-play-services_lib/bin
 google-play-services_lib/bin/*
-
+sdk/bin
+sdk/bin/*
