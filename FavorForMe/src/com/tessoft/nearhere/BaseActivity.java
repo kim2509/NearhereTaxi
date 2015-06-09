@@ -239,6 +239,9 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 					user = mapper.readValue( result , new TypeReference<User>(){});	
 				}
 				
+				if ( user == null )
+					return new User();
+				
 				return user;
 			}
 			catch( Exception ex )
