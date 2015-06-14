@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:gravity="center_horizontal"
+        android:layout_above="@+id/com_kakao_login"
         android:orientation="vertical" >
 
         <TextView
@@ -20,15 +21,25 @@
 
         <Button
             android:id="@+id/btnRandomID"
+            style="@style/btn_style"
             android:layout_width="wrap_content"
             android:layout_marginTop="20dp"
-            style="@style/btn_style"
             android:enabled="false"
             android:onClick="proceed"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:text="로딩중.." />
     </LinearLayout>
+
+    <com.kakao.widget.LoginButton
+        android:id="@+id/com_kakao_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_weight="1" />
 
     <!--
     LinearLayout
@@ -96,6 +107,7 @@
             android:layout_height="wrap_content"
             android:onClick="registerUser"
             android:text="전송" />
-    </LinearLayout-->
+    </LinearLayout
+    -->
 
 </RelativeLayout>

@@ -7,3 +7,5 @@ google-play-services_lib/bin
 google-play-services_lib/bin/*
 sdk/bin
 sdk/bin/*
+loginbase-template/bin
+loginbase-template/bin/*

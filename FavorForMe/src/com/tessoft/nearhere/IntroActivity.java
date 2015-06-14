@@ -39,7 +39,7 @@ public class IntroActivity extends BaseActivity {
 		{
 			super.onCreate(savedInstanceState);
 			
-			checkIfAdminUser();
+//			checkIfAdminUser();
 
 			// 약 2초간 인트로 화면을 출력.
 			getWindow().getDecorView().postDelayed(new Runnable() {
@@ -53,7 +53,8 @@ public class IntroActivity extends BaseActivity {
 								|| "true".equals( getMetaInfoString("logout")) )
 						{
 							Intent intent = null;
-							intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
+//							intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
+							intent = new Intent( getApplicationContext(), KakaoLoginActivity.class);
 							intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 							startActivity(intent);
 							finish();

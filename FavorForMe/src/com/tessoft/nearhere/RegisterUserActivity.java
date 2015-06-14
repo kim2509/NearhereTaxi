@@ -1,31 +1,24 @@
 package com.tessoft.nearhere;
 
+import java.io.IOException;
 import java.util.HashMap;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.type.TypeReference;
 
 import com.tessoft.common.Constants;
-import com.tessoft.common.Util;
 import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.User;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 public class RegisterUserActivity extends BaseActivity {
@@ -40,11 +33,8 @@ public class RegisterUserActivity extends BaseActivity {
 			supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
 			setContentView(R.layout.activity_register_user);
-
-			setProgressBarIndeterminateVisibility(true);
-			HashMap request = getDefaultRequest();
-			request.put("user", getLoginUser());
-			sendHttp("/taxi/getRandomIDV2.do", mapper.writeValueAsString(request), 2);
+			
+			getRandomIDV2();
 		}
 		catch( Exception ex )
 		{
@@ -52,6 +42,14 @@ public class RegisterUserActivity extends BaseActivity {
 		}
 	}
 
+	private void getRandomIDV2() throws IOException, JsonGenerationException,
+			JsonMappingException {
+		setProgressBarIndeterminateVisibility(true);
+		HashMap request = getDefaultRequest();
+		request.put("user", getLoginUser());
+		sendHttp("/taxi/getRandomIDV2.do", mapper.writeValueAsString(request), 2);
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
