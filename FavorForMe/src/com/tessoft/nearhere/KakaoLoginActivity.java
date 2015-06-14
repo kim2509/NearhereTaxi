@@ -10,9 +10,16 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
+import com.kakao.APIErrorResult;
+import com.kakao.KakaoTalkHttpResponseHandler;
+import com.kakao.KakaoTalkProfile;
+import com.kakao.KakaoTalkService;
+import com.kakao.LogoutResponseCallback;
 import com.kakao.Session;
 import com.kakao.SessionCallback;
+import com.kakao.UserManagement;
 import com.kakao.exception.KakaoException;
 import com.kakao.template.loginbase.SampleLoginActivity;
 import com.kakao.widget.LoginButton;
@@ -27,17 +34,11 @@ public class KakaoLoginActivity extends SampleLoginActivity{
 	protected void onCreate(Bundle savedInstanceState) {
 		try
 		{
-			super.onCreate(savedInstanceState);
-			setContentView(R.layout.activity_register_user);
-			
 			// 세션을 초기화 한다.
 	        Session.initialize(this);
-
-	        loginButton = (LoginButton) findViewById(R.id.com_kakao_login);
 	        
-	        // 세션 콜백 추가
-	        session = Session.getCurrentSession();
-	        session.addCallback(mySessionCallback);
+			super.onCreate(savedInstanceState);
+			setContentView(R.layout.activity_register_user);
 	        
 	        // 카카오 로그인에 필요한 해쉬키 알아내기 위해
 	     	getAppKeyHash();
@@ -64,44 +65,9 @@ public class KakaoLoginActivity extends SampleLoginActivity{
         }
     }
 	
-	@Override
-    protected void onResume() {
-        super.onResume();
-        // 세션이 완전 종료된 상태로 갱신도 할 수 없으므로 명시적 오픈을 위한 로그인 버튼을 보여준다.
-        if (session.isClosed()){
-            loginButton.setVisibility(View.VISIBLE);
-        }
-        // 세션을 가지고 있거나, 갱신할 수 있는 상태로 명시적 오픈을 위한 로그인 버튼을 보여주지 않는다.
-        else {
-            loginButton.setVisibility(View.GONE);
-
-            // 갱신이 가능한 상태라면 갱신을 시켜준다.
-            if (session.isOpenable()) {
-                session.implicitOpen();
-            }
-        }
-    }
-	
-	@Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (Session.getCurrentSession().handleActivityResult(requestCode, resultCode, data)) {
-            return;
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-	
-	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onDestroy();
-		session.removeCallback(mySessionCallback);
-	}
-	
 	public class MySessionStatusCallback implements SessionCallback {
-        /**
-         * 세션이 오픈되었으면 가입페이지로 이동 한다.
-         */
+
+        // 세션이 오픈되었으면 가입페이지로 이동 한다.
         @Override
         public void onSessionOpened() {
             // 뺑글이 종료
@@ -116,10 +82,7 @@ public class KakaoLoginActivity extends SampleLoginActivity{
         	}
         }
 
-        /**
-         * 세션이 삭제되었으니 로그인 화면이 보여야 한다.
-         * @param exception  에러가 발생하여 close가 된 경우 해당 exception
-         */
+        // 세션이 삭제되었으니 로그인 화면이 보여야 한다.
         @Override
         public void onSessionClosed(final KakaoException exception) {
             // 뺑글이 종료
@@ -141,8 +104,45 @@ public class KakaoLoginActivity extends SampleLoginActivity{
     }
 	
 	protected void onSessionOpened(){
+		
+		KakaoTalkService.requestProfile(new KakaoTalkHttpResponseHandler<KakaoTalkProfile>() {
+            @Override
+            protected void onHttpSuccess(final KakaoTalkProfile talkProfile) {
+                Toast.makeText(getApplicationContext(), "success to get talk profile", Toast.LENGTH_SHORT).show();
+//                applyTalkProfileToView(talkProfile);
+            }
+
+            @Override
+            protected void onHttpSessionClosedFailure(APIErrorResult errorResult) {
+//                redirectLoginActivity();
+            }
+
+            @Override
+            protected void onNotKakaoTalkUser() {
+                Toast.makeText(getApplicationContext(), "not a KakaoTalk user", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            protected void onFailure(APIErrorResult errorResult) {
+                Toast.makeText(getApplicationContext(), "failure : " + errorResult, Toast.LENGTH_LONG).show();
+            }
+        });
+		
         final Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
     }
+	
+	public static void onClickLogout() {
+        UserManagement.requestLogout(new LogoutResponseCallback() {
+            @Override
+            protected void onSuccess(final long userId) {
+            }
+
+            @Override
+            protected void onFailure(final APIErrorResult apiErrorResult) {
+            }
+        });
+    }
+	
 }

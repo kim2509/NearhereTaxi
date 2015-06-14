@@ -276,6 +276,9 @@ public class IntroActivity extends BaseActivity {
 		    user.setUserNo(userNo);
 		    user.setUserID(userID);
 		    setLoginUser(user);
+		    
+		    setMetaInfo("registerUserFinished", "true");
+		    setMetaInfo("logout", "false");
 		}
 		catch( Exception ex )
 		{

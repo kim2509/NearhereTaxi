@@ -416,6 +416,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			{
 				setProgressBarIndeterminateVisibility(true);
 				sendHttp("/taxi/logout.do", mapper.writeValueAsString( getLoginUser() ), 2 );
+				KakaoLoginActivity.onClickLogout();
 			}			
 		}
 		catch( Exception ex )
