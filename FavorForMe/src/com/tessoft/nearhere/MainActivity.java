@@ -145,7 +145,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			// 푸시 토큰을 생성한다.
 			gcm = GoogleCloudMessaging.getInstance(this);
 			regid = getMetaInfoString("registrationID");
-			if ( Util.isEmptyString( regid ))
+//			if ( Util.isEmptyString( regid ))
 				registerInBackground();
 
 			// google play sdk 설치 여부를 검사한다.
