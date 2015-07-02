@@ -23,4 +23,6 @@ public class Constants {
 	public static boolean bPushOffOnNewPost = false;
 	
 	public static boolean bAdminMode = false;
+	
+	public static boolean bKakaoLogin = false;
 }

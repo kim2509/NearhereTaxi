@@ -34,7 +34,7 @@ public class RegisterUserActivity extends BaseActivity {
 
 			setContentView(R.layout.activity_register_user);
 			
-//			getRandomIDV2();
+			getRandomIDV2();
 		}
 		catch( Exception ex )
 		{

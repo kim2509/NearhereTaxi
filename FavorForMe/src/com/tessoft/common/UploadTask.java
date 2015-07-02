@@ -24,7 +24,7 @@ public class UploadTask extends AsyncTask<Bitmap, Void, String> {
 	private TransactionDelegate delegate;
 	int requestCode = 0;
 
-	public UploadTask( Context context, TransactionDelegate delegate, String fileName, int requestCode )
+	public UploadTask( Context context, String fileName, int requestCode, TransactionDelegate delegate )
 	{
 		this.context = context;
 		this.fileName = fileName;

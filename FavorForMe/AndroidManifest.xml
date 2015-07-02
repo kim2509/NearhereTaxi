@@ -195,7 +195,8 @@
         </activity>
         <activity
             android:name=".KakaoLoginActivity"
-            android:theme="@style/NoTitleBarTheme" >
+            android:screenOrientation="portrait"
+            android:theme="@style/NoTitleBarTheme">
         </activity>
     </application>
 

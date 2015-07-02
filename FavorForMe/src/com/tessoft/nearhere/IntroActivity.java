@@ -9,6 +9,8 @@ import org.codehaus.jackson.type.TypeReference;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -32,6 +34,9 @@ import com.tessoft.nearhere.R;
 public class IntroActivity extends BaseActivity {
 
 	private static final int HTTP_LOGIN_BACKGROUND = 2;
+	private static final int HTTP_APP_INFO = 3;
+	private static final String UPDATE_NOTICE = "UPDATE_NOTICE";
+	
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		
@@ -39,44 +44,9 @@ public class IntroActivity extends BaseActivity {
 		{
 			super.onCreate(savedInstanceState);
 			
-//			checkIfAdminUser();
-
-			// 약 2초간 인트로 화면을 출력.
-			getWindow().getDecorView().postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					
-					try
-					{
-						
-						if ( getLoginUser() == null || "".equals( getLoginUser().getUserID() ) || !"true".equals( getMetaInfoString("registerUserFinished")) 
-								|| "true".equals( getMetaInfoString("logout")) )
-						{
-							Intent intent = null;
-//							intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
-							intent = new Intent( getApplicationContext(), KakaoLoginActivity.class);
-							intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-							startActivity(intent);
-							finish();
-							// 액티비티 이동시 페이드인/아웃 효과를 보여준다. 즉, 인트로
-							//    화면에 부드럽게 사라진다.
-							overridePendingTransition(android.R.anim.fade_in, 
-									android.R.anim.fade_out);
-						}
-						else
-						{
-							HashMap request = getDefaultRequest();
-							request.put("user", getLoginUser());
-							sendHttp("/taxi/login_bg.do", mapper.writeValueAsString(request), HTTP_LOGIN_BACKGROUND);
-						}
-						
-					}
-					catch( Exception ex )
-					{
-						catchException(this, ex);
-					}
-				}
-			}, 1000);
+			HashMap hash = getDefaultRequest();
+			hash.put("os", "Android");
+			sendHttp("/app/appInfo.do", mapper.writeValueAsString( hash ), HTTP_APP_INFO );
 		}
 		catch( Exception ex )
 		{
@@ -85,7 +55,43 @@ public class IntroActivity extends BaseActivity {
 		}
 		
 	}
+
+	private void login( HashMap appInfo ) throws Exception{
+
+		if ( Constants.bKakaoLogin == false )
+			checkIfAdminUser();
+		
+		if ( Constants.bKakaoLogin )
+		{
+			Intent intent = new Intent( getApplicationContext(), KakaoLoginActivity.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+			finish();
+			overridePendingTransition(android.R.anim.fade_in, 
+					android.R.anim.fade_out);
+		}
+		else if ( getLoginUser() == null || "".equals( getLoginUser().getUserID() ) || !"true".equals( getMetaInfoString("registerUserFinished")) 
+				|| "true".equals( getMetaInfoString("logout")) )
+		{
+			Intent intent = null;
+			intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
+			
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+			finish();
+			overridePendingTransition(android.R.anim.fade_in, 
+					android.R.anim.fade_out);
+		}
+		else
+		{
+			HashMap request = getDefaultRequest();
+			request.put("user", getLoginUser());
+			sendHttp("/taxi/login_bg.do", mapper.writeValueAsString(request), HTTP_LOGIN_BACKGROUND);
+		}
+
+	}
 	
+	/*
 	public void login( View v )
 	{
 		try
@@ -120,6 +126,7 @@ public class IntroActivity extends BaseActivity {
 			catchException(this, ex);
 		}
 	}
+	*/
 
 	@Override
 	public void doPostTransaction(int requestCode, Object result) {
@@ -168,10 +175,77 @@ public class IntroActivity extends BaseActivity {
 				startActivity(intent);
 				finish();
 			}
+			else if ( requestCode == HTTP_APP_INFO )
+			{
+				String appInfoString = mapper.writeValueAsString( response.getData() );
+				HashMap appInfo = mapper.readValue( appInfoString, new TypeReference<HashMap>(){});
+				
+				if ( appInfo == null || !appInfo.containsKey("version") || !appInfo.containsKey("forceUpdate") ) return;
+				
+				if ( !getPackageVersion().equals( appInfo.get("version") ) )
+				{
+					if ("Y".equals( appInfo.get("forceUpdate") ) )
+						showOKDialog("알림","이근처 합승이 업데이트 되었습니다.\r\n확인을 누르시면 업데이트 화면으로 이동합니다." , UPDATE_NOTICE );
+					else
+						showYesNoDialog("알림", "이근처 합승이 업데이트 되었습니다.\r\n지금 업데이트 하시겠습니까?", UPDATE_NOTICE );
+					
+					return;
+				}
+				
+				if ( "Y".equals( appInfo.get("kakaoYN") ) )
+					Constants.bKakaoLogin = true;
+				else
+					Constants.bKakaoLogin = false;
+				
+				login( appInfo );
+			}
 		}
 		catch( Exception ex )
 		{
 			catchException(this, ex);
+		}
+	}
+	
+	@Override
+	public void okClicked(Object param) {
+		// TODO Auto-generated method stub
+		super.okClicked(param);
+		
+		if ( UPDATE_NOTICE.equals( param ) )
+		{
+			goUpdate();
+		}
+	}
+
+	private void goUpdate() {
+		final String appPackageName = getPackageName();
+		try {
+		    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+		} catch (android.content.ActivityNotFoundException anfe) {
+		    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+		}
+	}
+	
+	@Override
+	public void yesClicked(Object param) {
+		// TODO Auto-generated method stub
+		super.yesClicked(param);
+		
+		if ( UPDATE_NOTICE.equals( param ) )
+		{
+			goUpdate();
+			finish();
+		}
+	}
+	
+	@Override
+	public void noClicked(Object param) {
+		// TODO Auto-generated method stub
+		super.noClicked(param);
+		
+		if ( UPDATE_NOTICE.equals( param ) )
+		{
+			finish();
 		}
 	}
 	

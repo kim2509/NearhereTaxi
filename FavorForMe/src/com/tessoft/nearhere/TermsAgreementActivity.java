@@ -149,7 +149,12 @@ public class TermsAgreementActivity extends BaseActivity {
 	@Override
 	public void onBackPressed() {
 		super.onBackPressed();
-		Intent intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
+		Intent intent = null;
+		
+		if ( Constants.bKakaoLogin )
+			intent = new Intent( getApplicationContext(), KakaoLoginActivity.class);
+		else
+			intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(intent);
 	}

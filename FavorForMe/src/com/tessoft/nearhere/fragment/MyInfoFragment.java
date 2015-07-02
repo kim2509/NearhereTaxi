@@ -720,7 +720,7 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 
 	private void sendPhoto(Bitmap f) throws Exception {
 		User user = getLoginUser();
-		new UploadTask( getActivity(), this, user.getUserID() , PROFILE_IMAGE_UPLOAD ).execute(f);
+		new UploadTask( getActivity(), user.getUserID() , PROFILE_IMAGE_UPLOAD, this ).execute(f);
 	}
 
 	//This is the handler that will manager to process the broadcast intent
