@@ -1,6 +1,8 @@
 package com.tessoft.nearhere;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -20,6 +22,8 @@ import com.tessoft.common.Util;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -274,13 +278,32 @@ implements OnMapReadyCallback, AddressTaskDelegate {
 			      Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(edtSearchLocation.getWindowToken(), 0);
 			
-			progressDialog = ProgressDialog.show(
-					this, "확인", "검색 중입니다");
+//			progressDialog = ProgressDialog.show(
+//					this, "확인", "검색 중입니다");
 			
-			httpUtil.requestMapSearch( new ResultHandler( this ), edtSearchLocation.getText().toString().trim(), "");
+			//httpUtil.requestMapSearch( new ResultHandler( this ), edtSearchLocation.getText().toString().trim(), "");
+			
+			Geocoder geocoder = new Geocoder( getApplicationContext(), Locale.getDefault());
+			List <Address> addresses = geocoder.getFromLocationName( edtSearchLocation.getText().toString().trim(), 1);
+			
+//			progressDialog.dismiss();
+			
+			if ( addresses == null || addresses.size() < 1 )
+			{
+				showOKDialog("경고", "검색 결과가 올바르지 않습니다.\r\n다른 키워드로 검색해 보십시오.", null);
+				return;
+			}
+			
+			LatLng location =  new LatLng( addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
+			moveMap( location );
+			map.clear();
+			addMarker( location );
+			getAddress(location, 1);
+			selectedLocation = location;
 		}
 		catch( Exception ex )
 		{
+			progressDialog.dismiss();
 			catchException(this, ex);
 		}
 	}
