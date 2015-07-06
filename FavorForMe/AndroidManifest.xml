@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.tessoft.nearhere"
-    android:versionCode="12"
-    android:versionName="1.37" >
+    android:versionCode="13"
+    android:versionName="1.38" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -169,6 +169,12 @@
         <service android:name=".SafetyKeeperService" >
             <intent-filter>
                 <action android:name="com.tessoft.nearhere.safetyKeeperService" />
+            </intent-filter>
+        </service>
+        
+        <service android:name=".LocationUpdateService" >
+            <intent-filter>
+                <action android:name="com.tessoft.nearhere.locationUpdateService" />
             </intent-filter>
         </service>
 

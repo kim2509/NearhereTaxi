@@ -38,6 +38,7 @@ import android.os.Vibrator;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * This {@code IntentService} does the actual handling of the GCM message.
@@ -170,6 +171,12 @@ public class GcmIntentService extends IntentService {
                 Vibrator v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
                 v.vibrate(500);
             }
+            else
+            {
+            	Intent locUpdateIntent = new Intent("com.tessoft.nearhere.locationUpdateService");
+            	startService(locUpdateIntent);
+            	return;
+            }
         	
             getApplicationContext().sendBroadcast(intent);
         }
@@ -235,6 +242,8 @@ public class GcmIntentService extends IntentService {
             }
             else
             {
+            	Intent locUpdateIntent = new Intent("com.tessoft.nearhere.locationUpdateService");
+            	startService(locUpdateIntent);
             	return;
             }
             
