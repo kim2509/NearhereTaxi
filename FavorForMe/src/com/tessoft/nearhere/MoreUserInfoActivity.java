@@ -114,8 +114,8 @@ public class MoreUserInfoActivity extends BaseActivity {
 			
 			if ( "0000".equals( response.getResCode() ) )
 			{
-				setMetaInfo("logout", "false");
-				setMetaInfo("registerUserFinished", "true");
+				application.setMetaInfo("logout", "false");
+				application.setMetaInfo("registerUserFinished", "true");
 				
 				goTaxiTutorialActivity();
 			}

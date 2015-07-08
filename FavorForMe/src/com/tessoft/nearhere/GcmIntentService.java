@@ -110,6 +110,20 @@ public class GcmIntentService extends IntentService {
     	String type = extras.getString("type");
     	String msg = extras.getString("message");
     	 
+    	if ( "locationUpdate".equals( type ) )
+    	{
+    		try
+        	{
+        		Intent locUpdateIntent = new Intent( getApplicationContext(), LocationUpdateService.class);
+            	startService(locUpdateIntent);	
+        	}
+        	catch( Exception ex )
+        	{
+        		Log.e("error", ex.getMessage());
+        	}
+    		return;
+    	}
+    	
         mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
         
@@ -173,8 +187,6 @@ public class GcmIntentService extends IntentService {
             }
             else
             {
-            	Intent locUpdateIntent = new Intent("com.tessoft.nearhere.locationUpdateService");
-            	startService(locUpdateIntent);
             	return;
             }
         	
@@ -242,8 +254,6 @@ public class GcmIntentService extends IntentService {
             }
             else
             {
-            	Intent locUpdateIntent = new Intent("com.tessoft.nearhere.locationUpdateService");
-            	startService(locUpdateIntent);
             	return;
             }
             

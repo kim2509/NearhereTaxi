@@ -39,7 +39,8 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:theme="@style/BaseTheme" >
+        android:theme="@style/BaseTheme"
+        android:name="com.tessoft.nearhere.NearhereApplication">
         <activity
             android:name=".IntroActivity"
             android:label="@string/app_name"
@@ -64,11 +65,6 @@
 
         <service android:name=".GcmIntentService" />
 
-        <activity
-            android:name=".HelpMainActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" >
-        </activity>
         <activity
             android:name=".PostDetailActivity"
             android:label="@string/app_name"

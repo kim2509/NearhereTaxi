@@ -23,4 +23,6 @@ public class Constants {
 	public static boolean bPushOffOnNewPost = false;
 	
 	public static boolean bAdminMode = false;
+	
+	public static final int HTTP_UPDATE_LOCATION = 20;
 }

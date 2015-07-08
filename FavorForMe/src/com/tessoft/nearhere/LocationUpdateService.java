@@ -10,7 +10,11 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.tessoft.common.AddressTaskDelegate;
+import com.tessoft.common.Constants;
 import com.tessoft.common.GetAddressTask;
+import com.tessoft.common.Util;
+import com.tessoft.domain.User;
+import com.tessoft.domain.UserLocation;
 
 import android.app.Service;
 import android.content.Intent;
@@ -26,6 +30,7 @@ public class LocationUpdateService extends Service
 	String longitude = "";
 	public static String address = "";
 	ObjectMapper mapper = null;
+	NearhereApplication application = null;
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -35,13 +40,24 @@ public class LocationUpdateService extends Service
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub
-		super.onCreate();
-		
-        buildGoogleApiClient();
-        
-        createLocationRequest();
-        
-    	mapper = new ObjectMapper();
+		try
+		{
+			super.onCreate();
+			
+			application = (NearhereApplication) getApplication();
+			
+			if ( application.isGooglePlayServicesAvailable() == false || application.checkIfGPSEnabled() == false ) return;
+			
+	        buildGoogleApiClient();
+	        
+	        createLocationRequest();
+	        
+	    	mapper = new ObjectMapper();			
+		}
+		catch( Exception ex )
+		{
+			
+		}
 	}
 	
 	@Override
@@ -150,21 +166,30 @@ public class LocationUpdateService extends Service
 	@Override
 	public void onAddressTaskPostExecute(int requestCode, Object result) {
 		// TODO Auto-generated method stub
-		if ( result != null && result instanceof String )
+		try
 		{
-			address = result.toString();
+			if ( result != null && result instanceof String )
+			{
+				address = Util.getDongAddressString( result );
 
-//			User user = getLoginUser();
-//			UserLocation userLocation = new UserLocation();
-//			userLocation.setUser( user );
-//			userLocation.setLocationName("현재위치");
-//			userLocation.setLatitude( MainActivity.latitude );
-//			userLocation.setLongitude( MainActivity.longitude );
-//			userLocation.setAddress( MainActivity.address );
-//			sendHttp("/taxi/updateUserLocation.do", mapper.writeValueAsString( userLocation ), HTTP_UPDATE_LOCATION );
-			
+				User user = application.getLoginUser();
+				UserLocation userLocation = new UserLocation();
+				userLocation.setUser( user );
+				userLocation.setLocationName("현재위치");
+				userLocation.setLatitude( latitude );
+				userLocation.setLongitude( longitude );
+				userLocation.setAddress( address );
+				application.sendHttp("/taxi/updateUserLocation.do", mapper.writeValueAsString( userLocation ), 
+						Constants.HTTP_UPDATE_LOCATION, null );
+			}
+		}
+		catch( Exception ex )
+		{
+			application.catchException(null, ex);
+		}
+		finally
+		{
 			stopSelf();
-			
 		}
 	}
 }

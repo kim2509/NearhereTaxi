@@ -97,7 +97,6 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 	protected static final int GET_UNREAD_COUNT = 3;
 	private static final int HTTP_LEAVE = 10;
-	private static final int HTTP_UPDATE_LOCATION = 20;
 
 	String SENDER_ID = "30113798803";
 	GoogleCloudMessaging gcm;
@@ -138,7 +137,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			buildGoogleApiClient();
 
 			// 마지막 위치업데이트 시간 clear
-			setMetaInfo("lastLocationUpdatedDt", "");
+			application.setMetaInfo("lastLocationUpdatedDt", "");
 
 			createLocationRequest();
 
@@ -151,7 +150,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			// google play sdk 설치 여부를 검사한다.
 			checkPlayServices();
 
-			checkIfGPSEnabled();
+			if ( application.checkIfGPSEnabled() == false )
+				buildAlertMessageNoGps();
 
 			MainActivity.active = true;
 		}
@@ -513,7 +513,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			userLocation.setLatitude( MainActivity.latitude );
 			userLocation.setLongitude( MainActivity.longitude );
 			userLocation.setAddress( MainActivity.address );
-			sendHttp("/taxi/updateUserLocation.do", mapper.writeValueAsString( userLocation ), HTTP_UPDATE_LOCATION );			
+			sendHttp("/taxi/updateUserLocation.do", mapper.writeValueAsString( userLocation ), Constants.HTTP_UPDATE_LOCATION );			
 		}
 	}
 
@@ -575,7 +575,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			LocationServices.FusedLocationApi.requestLocationUpdates(
 					mGoogleApiClient, mLocationRequest, this);
 
-			setMetaInfo("lastLocationUpdatedDt", String.valueOf( now.getTime() ));			
+			application.setMetaInfo("lastLocationUpdatedDt", String.valueOf( now.getTime() ));			
 		}
 	}
 
@@ -636,7 +636,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 					// can use GCM/HTTP or CCS to send messages to your app.
 					sendRegistrationIdToBackend( regid );
 
-					setMetaInfo("registrationID",  regid );
+					application.setMetaInfo("registrationID",  regid );
 				} catch (IOException ex) {
 					msg = "Error :" + ex.getMessage();
 					// If there is an error, don't just keep trying to register.
@@ -688,11 +688,11 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 				{
 					//					setMetaInfo("userNo", "");
 					//					setMetaInfo("registerUserFinished", "");
-					setMetaInfo("logout", "true");
-					setMetaInfo("userID", "");
-					setMetaInfo("userName", "");
-					setMetaInfo("profileImageURL", "");
-					setMetaInfo("registrationID", "");
+					application.setMetaInfo("logout", "true");
+					application.setMetaInfo("userID", "");
+					application.setMetaInfo("userName", "");
+					application.setMetaInfo("profileImageURL", "");
+					application.setMetaInfo("registrationID", "");
 
 					Intent intent = null;
 					intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
@@ -739,7 +739,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 					adapter.notifyDataSetChanged();
 				}
-				else if ( requestCode == HTTP_UPDATE_LOCATION )
+				else if ( requestCode == Constants.HTTP_UPDATE_LOCATION )
 					bMyLocationUpdated = true;
 			}
 			else
@@ -815,15 +815,6 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			return false;
 		}
 		return true;
-	}
-
-	public void checkIfGPSEnabled()
-	{
-		final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
-
-		if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
-			buildAlertMessageNoGps();
-		}
 	}
 
 	private void buildAlertMessageNoGps() {

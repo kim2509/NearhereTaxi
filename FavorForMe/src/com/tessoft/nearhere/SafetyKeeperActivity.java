@@ -210,7 +210,7 @@ public class SafetyKeeperActivity extends BaseActivity implements OnClickListene
 					return;
 				}
 				
-				Intent intent = new Intent("com.tessoft.nearhere.safetyKeeperService");
+				Intent intent = new Intent( getApplicationContext(), SafetyKeeperService.class );
 
 				intent.putExtra("message", edtMessage.getText().toString() );
 
