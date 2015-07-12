@@ -15,6 +15,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.internal.ok;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -97,6 +98,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 	protected static final int GET_UNREAD_COUNT = 3;
 	private static final int HTTP_LEAVE = 10;
+	private static final String UPDATE_NOTICE = "UPDATE_NOTICE";
 
 	String SENDER_ID = "30113798803";
 	GoogleCloudMessaging gcm;
@@ -154,6 +156,10 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 				buildAlertMessageNoGps();
 
 			MainActivity.active = true;
+			
+			HashMap hash = getDefaultRequest();
+			hash.put("os", "Android");
+			sendHttp("/app/appInfo.do", mapper.writeValueAsString( hash ), Constants.HTTP_APP_INFO );
 		}
 		catch( Exception ex )
 		{
@@ -406,6 +412,18 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	}
 
 	@Override
+	public void okClicked(Object param) {
+		// TODO Auto-generated method stub
+		super.okClicked(param);
+		
+		if ( UPDATE_NOTICE.equals( param ) )
+		{
+			goUpdate();
+			finish();
+		}
+	}
+	
+	@Override
 	public void yesClicked(Object param) {
 		// TODO Auto-generated method stub
 		try
@@ -416,14 +434,28 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			{
 				setProgressBarIndeterminateVisibility(true);
 				sendHttp("/taxi/logout.do", mapper.writeValueAsString( getLoginUser() ), 2 );
-			}			
+			}
+			else if ( UPDATE_NOTICE.equals( param ) )
+			{
+				goUpdate();
+				finish();
+			}
 		}
 		catch( Exception ex )
 		{
-
+			catchException(this, ex);
 		}
 	}
 
+	private void goUpdate() {
+		final String appPackageName = getPackageName();
+		try {
+		    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+		} catch (android.content.ActivityNotFoundException anfe) {
+		    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+		}
+	}
+	
 	@Override
 	public void setTitle(CharSequence title) {
 		mTitle = title.toString();
@@ -741,6 +773,23 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 				}
 				else if ( requestCode == Constants.HTTP_UPDATE_LOCATION )
 					bMyLocationUpdated = true;
+				else if ( requestCode == Constants.HTTP_APP_INFO )
+				{
+					String appInfoString = mapper.writeValueAsString( response.getData() );
+					HashMap appInfo = mapper.readValue( appInfoString, new TypeReference<HashMap>(){});
+					
+					if ( appInfo == null || !appInfo.containsKey("version") || !appInfo.containsKey("forceUpdate") ) return;
+					
+					if ( !getPackageVersion().equals( appInfo.get("version") ) )
+					{
+						if ("Y".equals( appInfo.get("forceUpdate") ) )
+							showOKDialog("알림","이근처 합승이 업데이트 되었습니다.\r\n확인을 누르시면 업데이트 화면으로 이동합니다." , UPDATE_NOTICE );
+						else
+							showYesNoDialog("알림", "이근처 합승이 업데이트 되었습니다.\r\n지금 업데이트 하시겠습니까?", UPDATE_NOTICE );
+						
+						return;
+					}
+				}
 			}
 			else
 			{
@@ -753,7 +802,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			catchException(this, ex);
 		}
 	}
-
+	
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
