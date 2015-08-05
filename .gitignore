@@ -1,6 +1,8 @@
 *.class
 FavorForMe/bin
 FavorForMe/bin/*
+FavorForMe/gen
+FavorForMe/gen/*
 appcompat_v7/bin
 appcompat_v7/bin/*
 google-play-services_lib/bin
