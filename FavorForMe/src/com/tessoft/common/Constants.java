@@ -25,4 +25,6 @@ public class Constants {
 	public static boolean bAdminMode = false;
 	
 	public static boolean bKakaoLogin = false;
+	public static final int HTTP_UPDATE_LOCATION = 20;
+	public static final int HTTP_APP_INFO = 1010;
 }

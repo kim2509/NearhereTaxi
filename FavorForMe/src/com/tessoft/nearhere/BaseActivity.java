@@ -38,11 +38,13 @@ import android.widget.Toast;
 public class BaseActivity extends ActionBarActivity implements TransactionDelegate, AdapterDelegate {
 
 	ObjectMapper mapper = new ObjectMapper();
+	NearhereApplication application = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		application = (NearhereApplication) getApplication();
 		initImageLoader();
 	}
 
@@ -67,25 +69,12 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		return "";
 	}
 	
-	public String getUniqueDeviceID()
-	{
-		final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
-
-	    final String tmDevice, tmSerial, androidId;
-	    tmDevice = "" + tm.getDeviceId();
-	    tmSerial = "" + tm.getSimSerialNumber();
-	    androidId = "" + android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
-
-	    UUID deviceUuid = new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode());
-	    return deviceUuid.toString();
-	}
-	
 	public HashMap getDefaultRequest()
 	{
 		HashMap request = new HashMap();
 		request.put("OSVersion", getOSVersion());
 		request.put("AppVersion", getPackageVersion());
-		request.put("UUID", getUniqueDeviceID());
+		request.put("UUID", application.getUniqueDeviceID());
 		return request;
 	}
 	
@@ -145,14 +134,6 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		
 	}
 	
-	public void setMetaInfo( String key, String value )
-	{
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences( this );
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putString( key, value );
-		editor.commit();
-	}
-	
 	public String getMetaInfoString( String key )
 	{
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences( this );
@@ -202,7 +183,7 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 	{
 		String loginUserInfo = mapper.writeValueAsString(user);
 		loginUserInfo = Util.encodeBase64(loginUserInfo);
-		setMetaInfo("loginUserInfo", loginUserInfo );
+		application.setMetaInfo("loginUserInfo", loginUserInfo );
 	}
 	
 	public User getLoginUser()
@@ -222,14 +203,14 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 					user.setUserID( getMetaInfoString("userID") );
 					user.setUserName( getMetaInfoString("userName") );
 					user.setProfileImageURL( getMetaInfoString("profileImageURL"));
-					user.setUuid( getUniqueDeviceID() );
+					user.setUuid( application.getUniqueDeviceID() );
 					
 					setLoginUser( user );
 					
-					setMetaInfo("userNo", "");
-					setMetaInfo("userID", "");
-					setMetaInfo("userName", "");
-					setMetaInfo("profileImageURL", "");
+					application.setMetaInfo("userNo", "");
+					application.setMetaInfo("userID", "");
+					application.setMetaInfo("userName", "");
+					application.setMetaInfo("profileImageURL", "");
 					
 					return user;
 				}

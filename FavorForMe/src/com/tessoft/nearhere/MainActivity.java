@@ -15,6 +15,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.internal.ok;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -97,7 +98,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 	protected static final int GET_UNREAD_COUNT = 3;
 	private static final int HTTP_LEAVE = 10;
-	private static final int HTTP_UPDATE_LOCATION = 20;
+	private static final String UPDATE_NOTICE = "UPDATE_NOTICE";
 
 	String SENDER_ID = "30113798803";
 	GoogleCloudMessaging gcm;
@@ -138,7 +139,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			buildGoogleApiClient();
 
 			// 마지막 위치업데이트 시간 clear
-			setMetaInfo("lastLocationUpdatedDt", "");
+			application.setMetaInfo("lastLocationUpdatedDt", "");
 
 			createLocationRequest();
 
@@ -151,9 +152,14 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			// google play sdk 설치 여부를 검사한다.
 			checkPlayServices();
 
-			checkIfGPSEnabled();
+			if ( application.checkIfGPSEnabled() == false )
+				buildAlertMessageNoGps();
 
 			MainActivity.active = true;
+			
+			HashMap hash = getDefaultRequest();
+			hash.put("os", "Android");
+			sendHttp("/app/appInfo.do", mapper.writeValueAsString( hash ), Constants.HTTP_APP_INFO );
 		}
 		catch( Exception ex )
 		{
@@ -406,6 +412,18 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	}
 
 	@Override
+	public void okClicked(Object param) {
+		// TODO Auto-generated method stub
+		super.okClicked(param);
+		
+		if ( UPDATE_NOTICE.equals( param ) )
+		{
+			goUpdate();
+			finish();
+		}
+	}
+	
+	@Override
 	public void yesClicked(Object param) {
 		// TODO Auto-generated method stub
 		try
@@ -417,14 +435,28 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 				setProgressBarIndeterminateVisibility(true);
 				sendHttp("/taxi/logout.do", mapper.writeValueAsString( getLoginUser() ), 2 );
 				KakaoLoginActivity.onClickLogout();
-			}			
+			}
+			else if ( UPDATE_NOTICE.equals( param ) )
+			{
+				goUpdate();
+				finish();
+			}
 		}
 		catch( Exception ex )
 		{
-
+			catchException(this, ex);
 		}
 	}
 
+	private void goUpdate() {
+		final String appPackageName = getPackageName();
+		try {
+		    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+		} catch (android.content.ActivityNotFoundException anfe) {
+		    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+		}
+	}
+	
 	@Override
 	public void setTitle(CharSequence title) {
 		mTitle = title.toString();
@@ -514,7 +546,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			userLocation.setLatitude( MainActivity.latitude );
 			userLocation.setLongitude( MainActivity.longitude );
 			userLocation.setAddress( MainActivity.address );
-			sendHttp("/taxi/updateUserLocation.do", mapper.writeValueAsString( userLocation ), HTTP_UPDATE_LOCATION );			
+			sendHttp("/taxi/updateUserLocation.do", mapper.writeValueAsString( userLocation ), Constants.HTTP_UPDATE_LOCATION );			
 		}
 	}
 
@@ -576,7 +608,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			LocationServices.FusedLocationApi.requestLocationUpdates(
 					mGoogleApiClient, mLocationRequest, this);
 
-			setMetaInfo("lastLocationUpdatedDt", String.valueOf( now.getTime() ));			
+			application.setMetaInfo("lastLocationUpdatedDt", String.valueOf( now.getTime() ));			
 		}
 	}
 
@@ -637,7 +669,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 					// can use GCM/HTTP or CCS to send messages to your app.
 					sendRegistrationIdToBackend( regid );
 
-					setMetaInfo("registrationID",  regid );
+					application.setMetaInfo("registrationID",  regid );
 				} catch (IOException ex) {
 					msg = "Error :" + ex.getMessage();
 					// If there is an error, don't just keep trying to register.
@@ -689,11 +721,11 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 				{
 					//					setMetaInfo("userNo", "");
 					//					setMetaInfo("registerUserFinished", "");
-					setMetaInfo("logout", "true");
-					setMetaInfo("userID", "");
-					setMetaInfo("userName", "");
-					setMetaInfo("profileImageURL", "");
-					setMetaInfo("registrationID", "");
+					application.setMetaInfo("logout", "true");
+					application.setMetaInfo("userID", "");
+					application.setMetaInfo("userName", "");
+					application.setMetaInfo("profileImageURL", "");
+					application.setMetaInfo("registrationID", "");
 
 					Intent intent = null;
 					intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
@@ -740,8 +772,25 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 					adapter.notifyDataSetChanged();
 				}
-				else if ( requestCode == HTTP_UPDATE_LOCATION )
+				else if ( requestCode == Constants.HTTP_UPDATE_LOCATION )
 					bMyLocationUpdated = true;
+				else if ( requestCode == Constants.HTTP_APP_INFO )
+				{
+					String appInfoString = mapper.writeValueAsString( response.getData() );
+					HashMap appInfo = mapper.readValue( appInfoString, new TypeReference<HashMap>(){});
+					
+					if ( appInfo == null || !appInfo.containsKey("version") || !appInfo.containsKey("forceUpdate") ) return;
+					
+					if ( !getPackageVersion().equals( appInfo.get("version") ) )
+					{
+						if ("Y".equals( appInfo.get("forceUpdate") ) )
+							showOKDialog("알림","이근처 합승이 업데이트 되었습니다.\r\n확인을 누르시면 업데이트 화면으로 이동합니다." , UPDATE_NOTICE );
+						else
+							showYesNoDialog("알림", "이근처 합승이 업데이트 되었습니다.\r\n지금 업데이트 하시겠습니까?", UPDATE_NOTICE );
+						
+						return;
+					}
+				}
 			}
 			else
 			{
@@ -754,7 +803,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			catchException(this, ex);
 		}
 	}
-
+	
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
@@ -816,15 +865,6 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			return false;
 		}
 		return true;
-	}
-
-	public void checkIfGPSEnabled()
-	{
-		final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
-
-		if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
-			buildAlertMessageNoGps();
-		}
 	}
 
 	private void buildAlertMessageNoGps() {

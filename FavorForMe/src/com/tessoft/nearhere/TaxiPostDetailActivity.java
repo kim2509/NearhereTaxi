@@ -799,13 +799,13 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		{
 			findViewById(R.id.map_layout).setVisibility(ViewGroup.VISIBLE);
 			btn.setText("경로 숨기기");
-			setMetaInfo("hideMapOnPostDetail", "false");
+			application.setMetaInfo("hideMapOnPostDetail", "false");
 		}
 		else
 		{
 			findViewById(R.id.map_layout).setVisibility(ViewGroup.GONE);
 			btn.setText("경로 보기");
-			setMetaInfo("hideMapOnPostDetail", "true");
+			application.setMetaInfo("hideMapOnPostDetail", "true");
 		}
 	}
 }

@@ -149,8 +149,8 @@ public class IntroActivity extends BaseActivity {
 				{
 					String postData = mapper.writeValueAsString( response.getData() );
 					User user = mapper.readValue( postData, new TypeReference<User>(){});
-					setMetaInfo("userID", user.getUserID() );
-					setMetaInfo("userName", user.getUserName() );
+					application.setMetaInfo("userID", user.getUserID() );
+					application.setMetaInfo("userName", user.getUserName() );
 					goMainActivity();
 					finish();
 				}

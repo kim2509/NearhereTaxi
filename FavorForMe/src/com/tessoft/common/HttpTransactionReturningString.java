@@ -153,7 +153,8 @@ public class HttpTransactionReturningString extends AsyncTask<Object, Integer, S
 
 	protected void onPostExecute(String result) {
 
-		delegate.doPostTransaction( requestCode, result );
+		if ( delegate != null )
+			delegate.doPostTransaction( requestCode, result );
 		
 	}
 
