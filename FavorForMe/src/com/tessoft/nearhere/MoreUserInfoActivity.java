@@ -83,7 +83,7 @@ public class MoreUserInfoActivity extends BaseActivity {
 				return;
 			}
 			
-			User user = getLoginUser();
+			User user = application.getLoginUser();
 			
 			if ( "남".equals( spSex.getSelectedItem() ))
 				user.setSex("M");

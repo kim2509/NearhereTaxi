@@ -54,6 +54,7 @@ public class KakaoLoginActivity extends SampleLoginActivity{
 	private LoginButton loginButton;
 	private final SessionCallback mySessionCallback = new MySessionStatusCallback();
 	private Session session;
+	NearhereApplication application = null;
 	
 	private final int HTTP_REQUEST_GET_RANDOM_ID_V2 = 2;
 	
@@ -72,6 +73,8 @@ public class KakaoLoginActivity extends SampleLoginActivity{
 
 			// 카카오 로그인에 필요한 해쉬키 알아내기 위해
 			getAppKeyHash();
+			
+			application = (NearhereApplication) getApplication();
 		}
 		catch( Exception ex )
 		{
@@ -134,6 +137,8 @@ public class KakaoLoginActivity extends SampleLoginActivity{
 	}
 
 	protected void onSessionOpened(){
+
+		application.showToastMessage("onSessionOpened");
 
 		UserManagement.requestMe(new MeResponseCallback() {
 

@@ -54,7 +54,7 @@ public class UserMessageActivity extends BaseActivity {
 			listMain = (ListView) findViewById(R.id.listMain);
 			//listMain.addHeaderView(header);
 
-			adapter = new UserMessageArrayAdapter( getApplicationContext(), this, getLoginUser(), 0 );
+			adapter = new UserMessageArrayAdapter( getApplicationContext(), this, application.getLoginUser(), 0 );
 			listMain.setAdapter(adapter);
 			adapter.setDelegate(this);
 
@@ -93,7 +93,7 @@ public class UserMessageActivity extends BaseActivity {
 						edtMessage.setText("");
 
 						UserMessage userMessage = new UserMessage();
-						userMessage.setFromUser( getLoginUser() );
+						userMessage.setFromUser( application.getLoginUser() );
 						User toUser = new User();
 						toUser.setUserID( messageInfo.get("fromUserID").toString() );
 						userMessage.setToUser( toUser );

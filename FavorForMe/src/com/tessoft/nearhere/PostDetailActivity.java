@@ -266,7 +266,7 @@ public class PostDetailActivity extends BaseActivity implements OnMapReadyCallba
 				edtReplyMessage.setText("");
 				
 				PostReply postReply = new PostReply();
-				postReply.setUser( getLoginUser() );
+				postReply.setUser( application.getLoginUser() );
 				postReply.setPostID( post.getPostID() ); 
 				postReply.setMessage( replyText );
 				

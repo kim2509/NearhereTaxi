@@ -70,7 +70,8 @@ public class IntroActivity extends BaseActivity {
 			overridePendingTransition(android.R.anim.fade_in, 
 					android.R.anim.fade_out);
 		}
-		else if ( getLoginUser() == null || "".equals( getLoginUser().getUserID() ) || !"true".equals( getMetaInfoString("registerUserFinished")) 
+		else if ( application.getLoginUser() == null || "".equals( application.getLoginUser().getUserID() ) || 
+				!"true".equals( getMetaInfoString("registerUserFinished")) 
 				|| "true".equals( getMetaInfoString("logout")) )
 		{
 			Intent intent = null;
@@ -85,7 +86,7 @@ public class IntroActivity extends BaseActivity {
 		else
 		{
 			HashMap request = getDefaultRequest();
-			request.put("user", getLoginUser());
+			request.put("user", application.getLoginUser());
 			sendHttp("/taxi/login_bg.do", mapper.writeValueAsString(request), HTTP_LOGIN_BACKGROUND);
 		}
 
@@ -180,19 +181,20 @@ public class IntroActivity extends BaseActivity {
 				String appInfoString = mapper.writeValueAsString( response.getData() );
 				HashMap appInfo = mapper.readValue( appInfoString, new TypeReference<HashMap>(){});
 				
-				if ( appInfo == null || !appInfo.containsKey("version") || !appInfo.containsKey("forceUpdate") ) return;
-				
-				if ( !getPackageVersion().equals( appInfo.get("version") ) )
+				if ( appInfo != null && appInfo.containsKey("version") && appInfo.containsKey("forceUpdate") )
 				{
-					if ("Y".equals( appInfo.get("forceUpdate") ) )
-						showOKDialog("알림","이근처 합승이 업데이트 되었습니다.\r\n확인을 누르시면 업데이트 화면으로 이동합니다." , UPDATE_NOTICE );
-					else
-						showYesNoDialog("알림", "이근처 합승이 업데이트 되었습니다.\r\n지금 업데이트 하시겠습니까?", UPDATE_NOTICE );
-					
-					return;
+					if ( !getPackageVersion().equals( appInfo.get("version") ) )
+					{
+						if ("Y".equals( appInfo.get("forceUpdate") ) )
+							showOKDialog("알림","이근처 합승이 업데이트 되었습니다.\r\n확인을 누르시면 업데이트 화면으로 이동합니다." , UPDATE_NOTICE );
+						else
+							showYesNoDialog("알림", "이근처 합승이 업데이트 되었습니다.\r\n지금 업데이트 하시겠습니까?", UPDATE_NOTICE );
+						
+						return;
+					}					
 				}
 				
-				if ( "Y".equals( appInfo.get("kakaoYN") ) )
+				if ( "".equals( application.getLoginUser().getUserID() ) )
 					Constants.bKakaoLogin = true;
 				else
 					Constants.bKakaoLogin = false;
@@ -346,13 +348,13 @@ public class IntroActivity extends BaseActivity {
 		    
 		    Constants.bAdminMode = true;
 		    
-		    User user = getLoginUser();
+		    User user = application.getLoginUser();
 		    user.setUserNo(userNo);
 		    user.setUserID(userID);
 		    setLoginUser(user);
 		    
-		    setMetaInfo("registerUserFinished", "true");
-		    setMetaInfo("logout", "false");
+		    application.setMetaInfo("registerUserFinished", "true");
+		    application.setMetaInfo("logout", "false");
 		}
 		catch( Exception ex )
 		{

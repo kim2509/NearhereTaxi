@@ -151,11 +151,6 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 			return 0;
 	}
 	
-	public void showToastMessage( String message )
-	{
-		Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-	}
-	
 	public void writeLog( String log )
 	{
 		Log.e("NearHereHelp", log );
@@ -184,58 +179,6 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		String loginUserInfo = mapper.writeValueAsString(user);
 		loginUserInfo = Util.encodeBase64(loginUserInfo);
 		application.setMetaInfo("loginUserInfo", loginUserInfo );
-	}
-	
-	public User getLoginUser()
-	{
-		try
-		{
-			try
-			{
-				String result = getMetaInfoString("loginUserInfo");
-				
-				User user = new User();
-				
-				if ( Util.isEmptyString( result ) )
-				{
-					// 전환
-					user.setUserNo( getMetaInfoString("userNo") );
-					user.setUserID( getMetaInfoString("userID") );
-					user.setUserName( getMetaInfoString("userName") );
-					user.setProfileImageURL( getMetaInfoString("profileImageURL"));
-					user.setUuid( application.getUniqueDeviceID() );
-					
-					setLoginUser( user );
-					
-					application.setMetaInfo("userNo", "");
-					application.setMetaInfo("userID", "");
-					application.setMetaInfo("userName", "");
-					application.setMetaInfo("profileImageURL", "");
-					
-					return user;
-				}
-				else
-				{
-					result = Util.decodeBase64( result );
-					user = mapper.readValue( result , new TypeReference<User>(){});	
-				}
-				
-				if ( user == null )
-					return new User();
-				
-				return user;
-			}
-			catch( Exception ex )
-			{
-				catchException(this, ex);
-				return new User();
-			}
-		}
-		catch( Exception ex )
-		{
-			catchException(this, ex);
-			return new User();
-		}
 	}
 	
 	@Override

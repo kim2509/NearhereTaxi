@@ -94,7 +94,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 
 			listMain.setSelector(android.R.color.transparent);
 
-			adapter = new TaxiPostReplyListAdapter( getApplicationContext(), getLoginUser(),0 );
+			adapter = new TaxiPostReplyListAdapter( getApplicationContext(), application.getLoginUser(),0 );
 			listMain.setAdapter(adapter);
 			adapter.setDelegate(this);
 
@@ -130,7 +130,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 				hash.put("toLongitude", getIntent().getExtras().getString("toLongitude") );
 		}
 		
-		hash.put("userID", getLoginUser().getUserID() );
+		hash.put("userID", application.getLoginUser().getUserID() );
 
 		sendHttp("/taxi/getPostDetail.do", mapper.writeValueAsString(hash), POST_DETAIL );
 	}
@@ -413,7 +413,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 
 			PostReply postReply = new PostReply();
 			postReply.setPostID( post.getPostID() );
-			postReply.setUser( getLoginUser() );
+			postReply.setUser( application.getLoginUser() );
 			postReply.setLatitude( MainActivity.latitude );
 			postReply.setLongitude( MainActivity.longitude );
 			postReply.setMessage( edtPostReply.getText().toString() );
@@ -542,7 +542,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					imgStatus.setVisibility(ViewGroup.VISIBLE);
 					Button btnFinish = (Button) header.findViewById(R.id.btnFinish);
 					
-					if ( post.getUser().getUserID().equals( getLoginUser().getUserID() ) || Constants.bAdminMode )
+					if ( post.getUser().getUserID().equals( application.getLoginUser().getUserID() ) || Constants.bAdminMode )
 						header.findViewById(R.id.layoutMyOption).setVisibility(ViewGroup.VISIBLE);
 					else
 						header.findViewById(R.id.layoutMyOption).setVisibility(ViewGroup.GONE );
@@ -550,7 +550,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					if ( "진행중".equals( post.getStatus() ) )
 					{
 						imgStatus.setImageResource(R.drawable.progressing);
-						if ( post.getUser().getUserID().equals( getLoginUser().getUserID() ))
+						if ( post.getUser().getUserID().equals( application.getLoginUser().getUserID() ))
 							btnFinish.setVisibility(ViewGroup.VISIBLE);	
 					}
 					else

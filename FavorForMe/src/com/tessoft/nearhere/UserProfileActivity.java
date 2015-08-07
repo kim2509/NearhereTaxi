@@ -138,7 +138,7 @@ public class UserProfileActivity extends BaseActivity {
 				}
 			});
 			
-			if ( getIntent().getExtras().getString("userID").equals( getLoginUser().getUserID() ))
+			if ( getIntent().getExtras().getString("userID").equals( application.getLoginUser().getUserID() ))
 				header.findViewById(R.id.btnSendMessage).setVisibility(ViewGroup.GONE);
 			else
 				header.findViewById(R.id.btnSendMessage).setVisibility(ViewGroup.VISIBLE);
@@ -161,7 +161,7 @@ public class UserProfileActivity extends BaseActivity {
 		listMain.setVisibility(ViewGroup.GONE);
 		
 		HashMap hash = getDefaultRequest();
-		hash.put("userID", getLoginUser().getUserID() );
+		hash.put("userID", application.getLoginUser().getUserID() );
 		hash.put("userIDToInquiry", getIntent().getExtras().getString("userID"));
 		sendHttp("/taxi/getUserInfoV2.do", mapper.writeValueAsString( hash ), 1);
 	}
@@ -170,7 +170,7 @@ public class UserProfileActivity extends BaseActivity {
 	public void goUserMessageActivity( View v ) {
 		HashMap hash = new HashMap();
 		hash.put("fromUserID", getIntent().getExtras().getString("userID") );
-		hash.put("userID",  getLoginUser().getUserID() );
+		hash.put("userID",  application.getLoginUser().getUserID() );
 		Intent intent = new Intent( this, UserMessageActivity.class);
 		intent.putExtra("messageInfo", hash );
 		startActivity(intent);

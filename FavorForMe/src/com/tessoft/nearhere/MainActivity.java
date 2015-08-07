@@ -240,21 +240,21 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	public void reloadProfile() {
 		ImageView imageView = (ImageView) header.findViewById(R.id.imgProfile);
 		
-		if ( Util.isEmptyString( getLoginUser().getProfileImageURL() ))
+		if ( Util.isEmptyString( application.getLoginUser().getProfileImageURL() ))
 			imageView.setImageResource(R.drawable.no_image);
 		else
 		{
 			ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
-					getLoginUser().getProfileImageURL() , imageView, options );			
+					application.getLoginUser().getProfileImageURL() , imageView, options );			
 		}
 
 		TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
-		txtUserName.setText( getLoginUser().getUserName() );
+		txtUserName.setText( application.getLoginUser().getUserName() );
 		
 		TextView txtCreditValue = (TextView) header.findViewById(R.id.txtCreditValue);
-		txtCreditValue.setText( getLoginUser().getProfilePoint() + "%");
+		txtCreditValue.setText( application.getLoginUser().getProfilePoint() + "%");
 		ProgressBar progressCreditValue = (ProgressBar) findViewById(R.id.progressCreditValue);
-		progressCreditValue.setProgress( Integer.parseInt( getLoginUser().getProfilePoint() ) );
+		progressCreditValue.setProgress( Integer.parseInt( application.getLoginUser().getProfilePoint() ) );
 		
 		imageView.setVisibility(ViewGroup.VISIBLE);
 		imageView.invalidate();
@@ -318,7 +318,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	public  void getUnreadCount() throws Exception 
 	{
 		HashMap hash = getDefaultRequest();
-		hash.put("userID", getLoginUser().getUserID() );
+		hash.put("userID", application.getLoginUser().getUserID() );
 		hash.put("lastNoticeID", getMetaInfoString("lastNoticeID"));
 		sendHttp("/taxi/getUnreadCount.do", mapper.writeValueAsString(hash), GET_UNREAD_COUNT );
 	}
@@ -433,7 +433,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			if ( "logout".equals( param ) )
 			{
 				setProgressBarIndeterminateVisibility(true);
-				sendHttp("/taxi/logout.do", mapper.writeValueAsString( getLoginUser() ), 2 );
+				sendHttp("/taxi/logout.do", mapper.writeValueAsString( application.getLoginUser() ), 2 );
 				KakaoLoginActivity.onClickLogout();
 			}
 			else if ( UPDATE_NOTICE.equals( param ) )
@@ -539,7 +539,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	{
 		if ( !Util.isEmptyString( MainActivity.latitude ) && !Util.isEmptyString( MainActivity.longitude ) )
 		{
-			User user = getLoginUser();
+			User user = application.getLoginUser();
 			UserLocation userLocation = new UserLocation();
 			userLocation.setUser( user );
 			userLocation.setLocationName("현재위치");
@@ -690,7 +690,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	{
 		try
 		{
-			User user = getLoginUser();
+			User user = application.getLoginUser();
 			user.setRegID(regid);
 			sendHttp("/taxi/updateUserRegID.do", mapper.writeValueAsString( user ), 1);
 		}
@@ -892,7 +892,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 		try
 		{
-			sendHttp("/taxi/statistics.do?name=exit", mapper.writeValueAsString( getLoginUser() ), HTTP_LEAVE);			
+			sendHttp("/taxi/statistics.do?name=exit", mapper.writeValueAsString( application.getLoginUser() ), HTTP_LEAVE);			
 		}
 		catch( Exception ex )
 		{

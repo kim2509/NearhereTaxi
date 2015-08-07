@@ -46,7 +46,7 @@ public class RegisterUserActivity extends BaseActivity {
 			JsonMappingException {
 		setProgressBarIndeterminateVisibility(true);
 		HashMap request = getDefaultRequest();
-		request.put("user", getLoginUser());
+		request.put("user", application.getLoginUser());
 		sendHttp("/taxi/getRandomIDV2.do", mapper.writeValueAsString(request), 2);
 	}
 	
@@ -163,7 +163,7 @@ public class RegisterUserActivity extends BaseActivity {
 				else if ( requestCode == 2 )
 				{
 					Button btnRandomID = (Button) findViewById(R.id.btnRandomID);
-					btnRandomID.setText("임시아이디 " + getLoginUser().getUserID() + "로 시작하기");
+					btnRandomID.setText("임시아이디 " + application.getLoginUser().getUserID() + "로 시작하기");
 					btnRandomID.setEnabled(true);
 				}
 			}

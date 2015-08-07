@@ -88,7 +88,7 @@ public class TermsAgreementActivity extends BaseActivity {
 			setProgressBarIndeterminateVisibility(true);
 
 			HashMap hash = new HashMap();
-			hash.put("userID", getLoginUser().getUserID());
+			hash.put("userID", application.getLoginUser().getUserID());
 			hash.put("nearhere_ver", "1.0");
 			hash.put("personal_ver", "1.0");
 			hash.put("location_ver", "1.0");

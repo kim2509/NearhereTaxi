@@ -21,6 +21,7 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.Toast;
 
 public class NearhereApplication extends Application{
 
@@ -141,5 +142,10 @@ public class NearhereApplication extends Application{
 			return false;
 		}
 		return true;
+	}
+	
+	public void showToastMessage( String message )
+	{
+		Toast.makeText(this, message, Toast.LENGTH_LONG).show();
 	}
 }
