@@ -1,5 +1,6 @@
 package com.tessoft.nearhere;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -16,8 +17,11 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -147,5 +151,35 @@ public class NearhereApplication extends Application{
 	public void showToastMessage( String message )
 	{
 		Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+	}
+	
+	public HashMap getDefaultRequest()
+	{
+		HashMap request = new HashMap();
+		request.put("OSVersion", getOSVersion());
+		request.put("AppVersion", getPackageVersion());
+		request.put("UUID", getUniqueDeviceID());
+		return request;
+	}
+	
+	public String getOSVersion()
+	{
+		return Build.VERSION.RELEASE;
+	}
+	
+	public String getPackageVersion()
+	{
+		PackageInfo pInfo;
+		try {
+			
+			pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+			
+			return pInfo.versionName;
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return "";
 	}
 }

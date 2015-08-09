@@ -157,7 +157,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 			MainActivity.active = true;
 			
-			HashMap hash = getDefaultRequest();
+			HashMap hash = application.getDefaultRequest();
 			hash.put("os", "Android");
 			sendHttp("/app/appInfo.do", mapper.writeValueAsString( hash ), Constants.HTTP_APP_INFO );
 		}
@@ -317,7 +317,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 	public  void getUnreadCount() throws Exception 
 	{
-		HashMap hash = getDefaultRequest();
+		HashMap hash = application.getDefaultRequest();
 		hash.put("userID", application.getLoginUser().getUserID() );
 		hash.put("lastNoticeID", getMetaInfoString("lastNoticeID"));
 		sendHttp("/taxi/getUnreadCount.do", mapper.writeValueAsString(hash), GET_UNREAD_COUNT );
@@ -781,7 +781,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 					
 					if ( appInfo == null || !appInfo.containsKey("version") || !appInfo.containsKey("forceUpdate") ) return;
 					
-					if ( !getPackageVersion().equals( appInfo.get("version") ) )
+					if ( !application.getPackageVersion().equals( appInfo.get("version") ) )
 					{
 						if ("Y".equals( appInfo.get("forceUpdate") ) )
 							showOKDialog("알림","이근처 합승이 업데이트 되었습니다.\r\n확인을 누르시면 업데이트 화면으로 이동합니다." , UPDATE_NOTICE );

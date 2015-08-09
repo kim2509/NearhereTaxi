@@ -160,7 +160,7 @@ public class UserProfileActivity extends BaseActivity {
 		findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
 		listMain.setVisibility(ViewGroup.GONE);
 		
-		HashMap hash = getDefaultRequest();
+		HashMap hash = application.getDefaultRequest();
 		hash.put("userID", application.getLoginUser().getUserID() );
 		hash.put("userIDToInquiry", getIntent().getExtras().getString("userID"));
 		sendHttp("/taxi/getUserInfoV2.do", mapper.writeValueAsString( hash ), 1);

@@ -44,7 +44,7 @@ public class IntroActivity extends BaseActivity {
 		{
 			super.onCreate(savedInstanceState);
 			
-			HashMap hash = getDefaultRequest();
+			HashMap hash = application.getDefaultRequest();
 			hash.put("os", "Android");
 			sendHttp("/app/appInfo.do", mapper.writeValueAsString( hash ), HTTP_APP_INFO );
 		}
@@ -85,7 +85,7 @@ public class IntroActivity extends BaseActivity {
 		}
 		else
 		{
-			HashMap request = getDefaultRequest();
+			HashMap request = application.getDefaultRequest();
 			request.put("user", application.getLoginUser());
 			sendHttp("/taxi/login_bg.do", mapper.writeValueAsString(request), HTTP_LOGIN_BACKGROUND);
 		}
@@ -183,7 +183,7 @@ public class IntroActivity extends BaseActivity {
 				
 				if ( appInfo != null && appInfo.containsKey("version") && appInfo.containsKey("forceUpdate") )
 				{
-					if ( !getPackageVersion().equals( appInfo.get("version") ) )
+					if ( !application.getPackageVersion().equals( appInfo.get("version") ) )
 					{
 						if ("Y".equals( appInfo.get("forceUpdate") ) )
 							showOKDialog("알림","이근처 합승이 업데이트 되었습니다.\r\n확인을 누르시면 업데이트 화면으로 이동합니다." , UPDATE_NOTICE );

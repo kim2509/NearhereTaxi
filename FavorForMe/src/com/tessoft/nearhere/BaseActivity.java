@@ -48,36 +48,6 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		initImageLoader();
 	}
 
-	public String getOSVersion()
-	{
-		return Build.VERSION.RELEASE;
-	}
-	
-	public String getPackageVersion()
-	{
-		PackageInfo pInfo;
-		try {
-			
-			pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-			
-			return pInfo.versionName;
-		} catch (NameNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return "";
-	}
-	
-	public HashMap getDefaultRequest()
-	{
-		HashMap request = new HashMap();
-		request.put("OSVersion", getOSVersion());
-		request.put("AppVersion", getPackageVersion());
-		request.put("UUID", application.getUniqueDeviceID());
-		return request;
-	}
-	
 	public void showOKDialog( String message, final Object param )
 	{
 		showOKDialog("확인", message, param);

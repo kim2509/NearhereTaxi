@@ -45,7 +45,7 @@ public class RegisterUserActivity extends BaseActivity {
 	private void getRandomIDV2() throws IOException, JsonGenerationException,
 			JsonMappingException {
 		setProgressBarIndeterminateVisibility(true);
-		HashMap request = getDefaultRequest();
+		HashMap request = application.getDefaultRequest();
 		request.put("user", application.getLoginUser());
 		sendHttp("/taxi/getRandomIDV2.do", mapper.writeValueAsString(request), 2);
 	}

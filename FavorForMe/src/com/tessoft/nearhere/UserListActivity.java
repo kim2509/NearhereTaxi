@@ -109,7 +109,7 @@ public class UserListActivity extends BaseActivity implements OnItemClickListene
 	
 	private void inquiryList() throws IOException, JsonGenerationException,
 			JsonMappingException {
-		HashMap hash = getDefaultRequest();
+		HashMap hash = application.getDefaultRequest();
 		hash.put("fromLatitude", getIntent().getExtras().getString("latitude"));
 		hash.put("fromLongitude", getIntent().getExtras().getString("longitude"));
 		hash.put("userID", application.getLoginUser().getUserID() );
