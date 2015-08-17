@@ -10,6 +10,7 @@ import com.tessoft.common.HttpTransactionReturningString;
 import com.tessoft.common.TransactionDelegate;
 import com.tessoft.common.Util;
 import com.tessoft.domain.User;
+import com.tessoft.nearhere.NearhereApplication;
 import com.tessoft.nearhere.R;
 import com.tessoft.nearhere.R.id;
 import com.tessoft.nearhere.R.layout;
@@ -20,6 +21,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnShowListener;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -36,6 +38,14 @@ import android.widget.Toast;
 public class BaseFragment extends Fragment implements AdapterDelegate, TransactionDelegate{
 
 	ObjectMapper mapper = new ObjectMapper();
+	protected NearhereApplication application = null;
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		application = (NearhereApplication) getActivity().getApplication();
+	}
 	
 	public void showToastMessage( String message )
 	{
@@ -129,55 +139,6 @@ public class BaseFragment extends Fragment implements AdapterDelegate, Transacti
 		String loginUserInfo = mapper.writeValueAsString(user);
 		loginUserInfo = Util.encodeBase64(loginUserInfo);
 		setMetaInfo("loginUserInfo", loginUserInfo );
-	}
-	
-	public User getLoginUser()
-	{
-		try
-		{
-			try
-			{
-				String result = getMetaInfoString("loginUserInfo");
-				
-				User user = new User();
-				
-				if ( Util.isEmptyString( result ) )
-				{
-					// 전환
-					user.setUserNo( getMetaInfoString("userNo") );
-					user.setUserID( getMetaInfoString("userID") );
-					user.setUserName( getMetaInfoString("userName") );
-					user.setProfileImageURL( getMetaInfoString("profileImageURL"));
-					user.setUuid( getUniqueDeviceID() );
-					
-					setLoginUser( user );
-					
-					setMetaInfo("userNo", "");
-					setMetaInfo("userID", "");
-					setMetaInfo("userName", "");
-					setMetaInfo("profileImageURL", "");
-					
-					return user;
-				}
-				else
-				{
-					result = Util.decodeBase64( result );
-					user = mapper.readValue( result , new TypeReference<User>(){});	
-				}
-				
-				return user;
-			}
-			catch( Exception ex )
-			{
-				catchException(this, ex);
-				return new User();
-			}
-		}
-		catch( Exception ex )
-		{
-			catchException(this, ex);
-			return new User();
-		}
 	}
 	
 	public String getUniqueDeviceID()

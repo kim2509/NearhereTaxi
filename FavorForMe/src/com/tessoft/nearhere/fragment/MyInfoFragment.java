@@ -129,7 +129,7 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 	
 	private void inquiryUserInfo() throws IOException, JsonGenerationException,
 	JsonMappingException {
-		User user = getLoginUser();
+		User user = application.getLoginUser();
 		sendHttp("/taxi/getUserInfo.do", mapper.writeValueAsString( user ), 1);
 		
 		listMain.setVisibility(ViewGroup.GONE);
@@ -193,7 +193,7 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 				try
 				{
 					EditText edtJobTitle = (EditText) header.findViewById(R.id.edtJobTitle);
-					User user = getLoginUser();
+					User user = application.getLoginUser();
 					user.setJobTitle( edtJobTitle.getText().toString() );
 					getActivity().setProgressBarIndeterminateVisibility(true);
 					sendHttp("/taxi/updateUserJobTitle.do", mapper.writeValueAsString(user), 1);		
@@ -251,7 +251,7 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 					DatePicker dp = (DatePicker) header.findViewById(R.id.datepicker);
 					Date date = new Date( dp.getYear()-1900, dp.getMonth(), dp.getDayOfMonth());
 
-					User user = getLoginUser();
+					User user = application.getLoginUser();
 					user.setBirthday(Util.getDateStringFromDate(date, "yyyy-MM-dd"));
 					txtBirthday.setText( user.getBirthday() );
 
@@ -536,7 +536,7 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 					TextView txtHomeLocation = (TextView) header.findViewById(R.id.txtHomeLocation);
 					txtHomeLocation.setText( selectedAddress );
 
-					User user = getLoginUser();
+					User user = application.getLoginUser();
 					UserLocation userLocation = new UserLocation();
 					userLocation.setUser( user );
 					userLocation.setLocationName("집");
@@ -551,7 +551,7 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 					TextView txtOfficeLocation = (TextView) header.findViewById(R.id.txtOfficeLocation);
 					txtOfficeLocation.setText( selectedAddress );
 
-					User user = getLoginUser();
+					User user = application.getLoginUser();
 					UserLocation userLocation = new UserLocation();
 					userLocation.setUser( user );
 					userLocation.setLocationName("직장");
@@ -719,7 +719,7 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 	}
 
 	private void sendPhoto(Bitmap f) throws Exception {
-		User user = getLoginUser();
+		User user = application.getLoginUser();
 		new UploadTask( getActivity(), user.getUserID() , PROFILE_IMAGE_UPLOAD, this ).execute(f);
 	}
 

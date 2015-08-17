@@ -181,7 +181,7 @@ public class MainFragment extends BaseFragment {
             {
             	switch (msg.what) {
                 case READY:
-                	String userID = getLoginUser().getUserID();
+                	String userID = application.getLoginUser().getUserID();
     				webView.loadUrl("javascript:getMainInfo('" + userID + "');");	
                     break;
                      

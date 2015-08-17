@@ -127,8 +127,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 			initLeftMenu();
 
-			currentFragment = new MainFragment();
-//			currentFragment = new TaxiFragment();
+//			currentFragment = new MainFragment();
+			currentFragment = new TaxiFragment();
 
 			// Insert the fragment by replacing any existing fragment
 			FragmentManager fragmentManager = getFragmentManager();

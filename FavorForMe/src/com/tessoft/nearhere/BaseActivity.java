@@ -24,6 +24,7 @@ import com.tessoft.domain.User;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -144,13 +145,6 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 			Log.e("이근처", "exception", ex);
 	}
 	
-	public void setLoginUser( User user ) throws Exception
-	{
-		String loginUserInfo = mapper.writeValueAsString(user);
-		loginUserInfo = Util.encodeBase64(loginUserInfo);
-		application.setMetaInfo("loginUserInfo", loginUserInfo );
-	}
-	
 	@Override
 	public void doAction(String actionName, Object param) {
 		// TODO Auto-generated method stub
@@ -200,6 +194,21 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 			.build();
 			ImageLoader.getInstance().init(config);
 			BaseActivity.bInitImageLoader = true;
+		}
+	}
+	
+	public void goMainActivity()
+	{
+		try
+		{
+			Intent intent = new Intent( this, MainActivity.class);
+			startActivity(intent);
+			overridePendingTransition(android.R.anim.fade_in, 
+					android.R.anim.fade_out);
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
 		}
 	}
 }

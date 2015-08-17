@@ -155,7 +155,7 @@ public class PushMessageListFragment extends BaseListFragment {
 		rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
 		listMain.setVisibility(ViewGroup.GONE);
 		
-		User user = getLoginUser();
+		User user = application.getLoginUser();
 		sendHttp("/taxi/getUserPushMessage.do", mapper.writeValueAsString(user), 1);
 	}
 
@@ -220,7 +220,7 @@ public class PushMessageListFragment extends BaseListFragment {
 		{
 			HashMap hash = new HashMap();
 			hash.put("fromUserID",  fromUserID );
-			hash.put("userID",  getLoginUser().getUserID() );
+			hash.put("userID",  application.getLoginUser().getUserID() );
 			Intent intent = new Intent( getActivity(), UserMessageActivity.class);
 			intent.putExtra("messageInfo", hash );
 			startActivity(intent);

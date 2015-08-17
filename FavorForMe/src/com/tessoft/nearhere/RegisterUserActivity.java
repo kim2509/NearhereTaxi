@@ -154,7 +154,7 @@ public class RegisterUserActivity extends BaseActivity {
 				String userString = mapper.writeValueAsString( response.getData() );
 				User user = mapper.readValue( userString, new TypeReference<User>(){});
 
-				setLoginUser( user );
+				application.setLoginUser( user );
 
 				if ( requestCode == 1 )
 				{

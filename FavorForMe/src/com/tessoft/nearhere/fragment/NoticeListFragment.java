@@ -129,7 +129,7 @@ public class NoticeListFragment extends BaseFragment {
 		rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
 		listMain.setVisibility(ViewGroup.GONE);
 		
-		sendHttp("/taxi/getNoticeList.do", mapper.writeValueAsString( getLoginUser() ), 1 );
+		sendHttp("/taxi/getNoticeList.do", mapper.writeValueAsString( application.getLoginUser() ), 1 );
 	}
 
 	@Override

@@ -89,7 +89,7 @@ public class KakaoSignupActivity extends SampleSignupActivity{
 		setProgressBarIndeterminateVisibility(true);
 		HashMap request = application.getDefaultRequest();
 		
-		final User user = new User();
+		final User user = application.getLoginUser();
 		user.setKakaoID(kakaoID);
 		user.setUserName( nickName );
 		user.setKakaoThumbnailImageURL(thumbnailImageURL);
@@ -118,6 +118,26 @@ public class KakaoSignupActivity extends SampleSignupActivity{
 		APIResponse response = mapper.readValue(result, new TypeReference<APIResponse>(){}); 
 		String userString = mapper.writeValueAsString( response.getData() );
 		final User user = mapper.readValue(userString, new TypeReference<User>(){}); 
+		application.setLoginUser(user);
+		
+		HashMap addInfo = null;
+		if ( response.getData2() != null )
+		{
+			addInfo = (HashMap) response.getData2();
+			
+			Log.d("debug", "addInfo is not null." );
+			Log.d("debug", addInfo.toString() );
+			
+			if ("Y".equals( addInfo.get("alreadyExistsYN") ) )
+			{
+				goMainActivity();
+				return;
+			}
+		}
+		else
+		{
+			Log.d("debug", "addInfo is null." );
+		}
 		
 		ImageLoader imageLoader = ImageLoader.getInstance();
 
@@ -143,6 +163,15 @@ public class KakaoSignupActivity extends SampleSignupActivity{
 			}
 		});
 	}
+
+    public void goMainActivity()
+    {
+    	Intent intent = new Intent( this, MainActivity.class);
+    	startActivity(intent);
+    	overridePendingTransition(android.R.anim.fade_in, 
+    			android.R.anim.fade_out);
+    	finish();
+    }
     
     public void goTermsAgreementActivity( View v )
 	{

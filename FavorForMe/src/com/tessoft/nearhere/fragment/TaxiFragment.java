@@ -366,7 +366,7 @@ public class TaxiFragment extends BaseFragment
 		if ( !"전체".equals(destinationDistance) && !Util.isEmptyString( destinationDistance ) )
 			hash.put("toDistance", Util.getDistanceDouble( destinationDistance ) );
 		
-		hash.put("userID", getLoginUser().getUserID() );
+		hash.put("userID", application.getLoginUser().getUserID() );
 		
 		Spinner spStatus = (Spinner) rootView.findViewById(R.id.spStatus);
 		String status = spStatus.getSelectedItem().toString();
@@ -636,7 +636,7 @@ public class TaxiFragment extends BaseFragment
 				startActivity(intent);
 				getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
 				
-				sendHttp("/taxi/statistics.do?name=safetyKeeper", mapper.writeValueAsString( getLoginUser() ), HTTP_SAFETY_KEEPER_CLICKED );
+				sendHttp("/taxi/statistics.do?name=safetyKeeper", mapper.writeValueAsString( application.getLoginUser() ), HTTP_SAFETY_KEEPER_CLICKED );
 			}
 			else if ( v.getId() == R.id.txtNumOfUsers )
 			{

@@ -170,7 +170,7 @@ public class IntroActivity extends BaseActivity {
 			{
 				String userString = mapper.writeValueAsString( response.getData() );
 				User user = mapper.readValue( userString, new TypeReference<User>(){});
-				setLoginUser(user);
+				application.setLoginUser(user);
 				Intent intent = new Intent( getApplicationContext(), MainActivity.class);
 				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);
@@ -194,7 +194,7 @@ public class IntroActivity extends BaseActivity {
 					}					
 				}
 				
-				if ( "".equals( application.getLoginUser().getUserID() ) )
+				if ( "".equals( application.getLoginUser().getUserID() ) || !"".equals( application.getLoginUser().getKakaoID() ))
 					Constants.bKakaoLogin = true;
 				else
 					Constants.bKakaoLogin = false;
@@ -251,21 +251,6 @@ public class IntroActivity extends BaseActivity {
 		}
 	}
 	
-	public void goMainActivity()
-	{
-		try
-		{
-			Intent intent = new Intent( this, MainActivity.class);
-			startActivity(intent);
-			overridePendingTransition(android.R.anim.fade_in, 
-					android.R.anim.fade_out);
-		}
-		catch( Exception ex )
-		{
-			catchException(this, ex);
-		}
-	}
-
 	public void goRegisterActivity( View v )
 	{
 		Intent intent = new Intent( this, RegisterUserActivity.class);
@@ -351,7 +336,7 @@ public class IntroActivity extends BaseActivity {
 		    User user = application.getLoginUser();
 		    user.setUserNo(userNo);
 		    user.setUserID(userID);
-		    setLoginUser(user);
+		    application.setLoginUser(user);
 		    
 		    application.setMetaInfo("registerUserFinished", "true");
 		    application.setMetaInfo("logout", "false");
