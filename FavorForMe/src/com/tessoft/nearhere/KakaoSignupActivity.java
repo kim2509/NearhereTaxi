@@ -11,8 +11,10 @@ import org.codehaus.jackson.type.TypeReference;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.kakao.APIErrorResult;
 import com.kakao.MeResponseCallback;
@@ -25,7 +27,9 @@ import com.tessoft.common.HttpTransactionReturningString;
 import com.tessoft.common.TransactionDelegate;
 import com.tessoft.common.UploadTask;
 import com.tessoft.domain.APIResponse;
+import com.tessoft.domain.MainMenuItem;
 import com.tessoft.domain.User;
+import com.tessoft.nearhere.fragment.TaxiFragment;
 
 public class KakaoSignupActivity extends SampleSignupActivity{
 
@@ -43,6 +47,9 @@ public class KakaoSignupActivity extends SampleSignupActivity{
 	}
 	
 	protected void redirectLoginActivity() {
+		
+		application.debug(this, "redirectLoginActivity");
+		
         final Intent intent = new Intent(this, KakaoLoginActivity.class);
         startActivity(intent);
         finish();
@@ -53,10 +60,16 @@ public class KakaoSignupActivity extends SampleSignupActivity{
 //        startActivity(intent);
 //        finish();
     	
+    	application.debug(this, "redirectMainActivity");
+    	
+    	application.debug(this, "starting UserManagement.requestMe ...");
+    	
     	UserManagement.requestMe(new MeResponseCallback() {
 
             @Override
             protected void onSuccess(final UserProfile userProfile) {
+            	
+            	application.debug(this, "onSuccess");
             	
             	try
             	{
@@ -71,15 +84,18 @@ public class KakaoSignupActivity extends SampleSignupActivity{
 
             @Override
             protected void onNotSignedUp() {
+            	application.debug(this, "onNotSignedUp");
             }
 
             @Override
             protected void onSessionClosedFailure(final APIErrorResult errorResult) {
+            	application.debug(this, "onSessionClosedFailure : " + errorResult );
             }
 
             @Override
             protected void onFailure(final APIErrorResult errorResult) {
                 String message = "failed to get user info. msg=" + errorResult;
+                application.debug(this, "onFailure : " + message );
             }
         });
     }
@@ -97,12 +113,16 @@ public class KakaoSignupActivity extends SampleSignupActivity{
 		
 		request.put("user", user );
 		
+		application.debug(this, "getRandomIDV2 : " + mapper.writeValueAsString( request ) );
+		
 		new HttpTransactionReturningString( new TransactionDelegate() {
 			@Override
 			public void doPostTransaction(int requestCode, Object result) {
 				// TODO Auto-generated method stub
 				try
 				{
+					application.debug(this, "getRandomIDV2 return : " + mapper.writeValueAsString( result ) );
+					
 					uploadProfileImage( result.toString() );
 				}
 				catch( Exception ex )
@@ -115,10 +135,11 @@ public class KakaoSignupActivity extends SampleSignupActivity{
     
     public void uploadProfileImage( String result ) throws Exception 
 	{
+    	application.debug(this, "uploadProfileImage" );
+    	
 		APIResponse response = mapper.readValue(result, new TypeReference<APIResponse>(){}); 
 		String userString = mapper.writeValueAsString( response.getData() );
 		final User user = mapper.readValue(userString, new TypeReference<User>(){}); 
-		application.setLoginUser(user);
 		
 		HashMap addInfo = null;
 		if ( response.getData2() != null )
@@ -128,40 +149,54 @@ public class KakaoSignupActivity extends SampleSignupActivity{
 			Log.d("debug", "addInfo is not null." );
 			Log.d("debug", addInfo.toString() );
 			
-			if ("Y".equals( addInfo.get("alreadyExistsYN") ) )
+			if ("Y".equals( addInfo.get("alreadyExistsYN") ) && "Y".equals( addInfo.get("registerUserFinished") ) )
 			{
 				goMainActivity();
+				application.setLoginUser(user);
 				return;
 			}
+			
+			if ( addInfo.containsKey("hash") )
+				application.setMetaInfo("hash", addInfo.get("hash").toString());
+			
+			ImageLoader imageLoader = ImageLoader.getInstance();
+
+			imageLoader.loadImage( user.getKakaoProfileImageURL(), new SimpleImageLoadingListener() {
+				@Override
+				public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+
+					if (loadedImage != null )
+					{
+						Log.d("imageResult", "image loaded.");
+						new UploadTask( getApplicationContext(), user.getUserID() , PROFILE_IMAGE_UPLOAD, 
+								new TransactionDelegate() {
+							
+							@Override
+							public void doPostTransaction(int requestCode, Object result) {
+								// TODO Auto-generated method stub
+							
+								try
+								{
+									APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){}); 
+									String userString = mapper.writeValueAsString( response.getData2() );
+									User user = mapper.readValue(userString, new TypeReference<User>(){});
+									application.setLoginUser(user);
+									goTermsAgreementActivity( null );
+								}
+								catch( Exception ex )
+								{
+									application.catchException(KakaoSignupActivity.this, ex);
+								}
+							}
+						}).execute( loadedImage );
+					}
+				}
+			});
 		}
 		else
 		{
 			Log.d("debug", "addInfo is null." );
 		}
-		
-		ImageLoader imageLoader = ImageLoader.getInstance();
-
-		imageLoader.loadImage( user.getKakaoProfileImageURL(), new SimpleImageLoadingListener() {
-			@Override
-			public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-
-				if (loadedImage != null )
-				{
-					Log.d("imageResult", "image loaded.");
-					new UploadTask( getApplicationContext(), user.getUserID() , PROFILE_IMAGE_UPLOAD, 
-							new TransactionDelegate() {
-						
-						@Override
-						public void doPostTransaction(int requestCode, Object result) {
-							// TODO Auto-generated method stub
-						
-							goTermsAgreementActivity( null );
-							
-						}
-					}).execute( loadedImage );
-				}
-			}
-		});
 	}
 
     public void goMainActivity()

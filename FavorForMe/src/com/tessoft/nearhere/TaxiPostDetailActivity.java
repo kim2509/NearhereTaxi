@@ -155,7 +155,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		Button btnFinish = (Button) header.findViewById(R.id.btnFinish);
 		btnFinish.setOnClickListener(this);
 		
-		if ( "true".equals( getMetaInfoString("hideMapOnPostDetail") ) )
+		if ( "true".equals( application.getMetaInfoString("hideMapOnPostDetail") ) )
 		{
 			findViewById(R.id.map_layout).setVisibility(ViewGroup.GONE);
 			Button btnHideMap = (Button)findViewById(R.id.btnHideMap);

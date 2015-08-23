@@ -183,7 +183,7 @@ public class RegisterUserActivity extends BaseActivity {
 	{
 		try
 		{
-			if ( "true".equals( getMetaInfoString("logout") ) )
+			if ( "true".equals( application.getMetaInfoString("logout") ) )
 			{
 				application.setMetaInfo("logout", "false");
 				goMainActivity();

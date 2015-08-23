@@ -20,6 +20,9 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.kakao.APIErrorResult;
+import com.kakao.LogoutResponseCallback;
+import com.kakao.UserManagement;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -145,7 +148,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 			// 푸시 토큰을 생성한다.
 			gcm = GoogleCloudMessaging.getInstance(this);
-			regid = getMetaInfoString("registrationID");
+			regid = application.getMetaInfoString("registrationID");
 //			if ( Util.isEmptyString( regid ))
 			registerInBackground();
 
@@ -319,7 +322,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	{
 		HashMap hash = application.getDefaultRequest();
 		hash.put("userID", application.getLoginUser().getUserID() );
-		hash.put("lastNoticeID", getMetaInfoString("lastNoticeID"));
+		hash.put("lastNoticeID", application.getMetaInfoString("lastNoticeID"));
 		sendHttp("/taxi/getUnreadCount.do", mapper.writeValueAsString(hash), GET_UNREAD_COUNT );
 	}
 
@@ -434,7 +437,6 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			{
 				setProgressBarIndeterminateVisibility(true);
 				sendHttp("/taxi/logout.do", mapper.writeValueAsString( application.getLoginUser() ), 2 );
-				KakaoLoginActivity.onClickLogout();
 			}
 			else if ( UPDATE_NOTICE.equals( param ) )
 			{
@@ -588,11 +590,11 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		Date lastLocationUpdatedDt = new Date();
 
 		boolean bShouldUpdate = false;
-		if ( Util.isEmptyString( getMetaInfoString("lastLocationUpdatedDt")))
+		if ( Util.isEmptyString( application.getMetaInfoString("lastLocationUpdatedDt")))
 			bShouldUpdate = true;
 		else
 		{
-			lastLocationUpdatedDt.setTime( Long.parseLong( getMetaInfoString("lastLocationUpdatedDt") ) );
+			lastLocationUpdatedDt.setTime( Long.parseLong( application.getMetaInfoString("lastLocationUpdatedDt") ) );
 
 			Calendar c = Calendar.getInstance(); 
 			c.setTime(lastLocationUpdatedDt); 
@@ -727,12 +729,24 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 					application.setMetaInfo("profileImageURL", "");
 					application.setMetaInfo("registrationID", "");
 
-					Intent intent = null;
-					intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
-					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					startActivity(intent);
-					finish();
+					// ID, NO 외엔 모두 삭제
+					User user = new User();
+					user.setUserNo( application.getLoginUser().getUserNo() );
+					user.setUserID( application.getLoginUser().getUserID() );
+					application.setLoginUser( user );
+					
+					UserManagement.requestLogout(new LogoutResponseCallback() {
+						@Override
+						protected void onSuccess(final long userId) {
+							goKaKaoLoginActivity();
+						}
 
+						@Override
+						protected void onFailure(final APIErrorResult apiErrorResult) {
+							goKaKaoLoginActivity();
+						}
+					});
+					
 					overridePendingTransition(android.R.anim.fade_in, 
 							android.R.anim.fade_out);
 				}
@@ -828,6 +842,13 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	@Override
 	public void onBackPressed() {
 
+		try {
+			application.debug( this, mapper.writeValueAsString( application.getLoginUser() ) );
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		if ( currentFragment instanceof TaxiFragment == false )
 		{
 			reloadProfile();

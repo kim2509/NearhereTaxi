@@ -98,8 +98,14 @@ public class NearhereApplication extends Application{
 				else
 				{
 					result = Util.decodeBase64( result );
+					
+//					debug( this, "loginUser[decoded]:" + result );
+					
 					user = mapper.readValue( result , new TypeReference<User>(){});	
 				}
+				
+				if ( user == null )
+					user = new User();
 				
 				return user;
 			}
@@ -121,12 +127,17 @@ public class NearhereApplication extends Application{
 		if ( ex == null )
 			writeLog( "[" + target.getClass().getName() + "] NullPointerException!!!" );
 		else
-			Log.e("이근처", "exception", ex);
+			Log.e("error", "exception", ex);
 	}
 	
 	public void writeLog( String log )
 	{
-		Log.e("NearHereHelp", log );
+		Log.e("debug", log );
+	}
+	
+	public void debug( Object obj, String log )
+	{
+		Log.e("debug", "[" + obj.getClass().getName() + "] " + log );
 	}
 	
 	public void sendHttp( String url, Object request, int requestCode, TransactionDelegate listener )

@@ -3,6 +3,10 @@ package com.tessoft.nearhere;
 import org.apache.http.util.TextUtils;
 import org.codehaus.jackson.type.TypeReference;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import com.tessoft.common.Constants;
 import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.User;
 
@@ -12,14 +16,17 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 
 public class MoreUserInfoActivity extends BaseActivity {
 
 	private static final int UPDATE_USER_INFO = 1;
+	DisplayImageOptions options = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +37,17 @@ public class MoreUserInfoActivity extends BaseActivity {
 			
 			supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 			
-			setContentView(R.layout.activity_more_user_info);			
+			setContentView(R.layout.activity_more_user_info);		
+			
+			options = new DisplayImageOptions.Builder()
+			.resetViewBeforeLoading(true)
+			.cacheInMemory(true)
+			.showImageOnLoading(R.drawable.no_image)
+			.showImageForEmptyUri(R.drawable.no_image)
+			.showImageOnFail(R.drawable.no_image)
+			.displayer(new RoundedBitmapDisplayer(50))
+			.delayBeforeLoading(100)
+			.build();
 			
 			Spinner spSex = (Spinner) findViewById(R.id.spSex);
 			ArrayAdapter<CharSequence> sexAdapter = ArrayAdapter.createFromResource( this,
@@ -38,6 +55,20 @@ public class MoreUserInfoActivity extends BaseActivity {
 			sexAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 			spSex.setAdapter(sexAdapter);
 			
+			if ( !"".equals( application.getLoginUser().getUserName() ) )
+			{
+				EditText edtUserName = (EditText) findViewById(R.id.edtUserName);
+				edtUserName.setText( application.getLoginUser().getUserName() );
+			}
+			
+			if ( !"".equals( application.getLoginUser().getProfileImageURL() ) )
+			{
+				findViewById(R.id.layoutProfileImage).setVisibility(ViewGroup.VISIBLE);
+				ImageView imgProfile = (ImageView) findViewById(R.id.imgProfile);
+				ImageLoader.getInstance().displayImage(Constants.thumbnailImageURL + application.getLoginUser().getProfileImageURL(), imgProfile, options );
+			}
+			else
+				findViewById(R.id.layoutProfileImage).setVisibility(ViewGroup.GONE);
 		}
 		catch( Exception ex )
 		{

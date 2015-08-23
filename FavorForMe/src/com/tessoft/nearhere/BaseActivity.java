@@ -105,14 +105,6 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		
 	}
 	
-	public String getMetaInfoString( String key )
-	{
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences( this );
-		if ( settings.contains(key) )
-			return settings.getString(key, "");
-		else return "";
-	}
-	
 	public double getMetaInfoDouble( String key )
 	{
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences( this );
@@ -210,5 +202,14 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		{
 			catchException(this, ex);
 		}
+	}
+	
+	public void goKaKaoLoginActivity() {
+		Intent intent = new Intent( getApplicationContext(), KakaoLoginActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(intent);
+		finish();
+		overridePendingTransition(android.R.anim.fade_in, 
+				android.R.anim.fade_out);
 	}
 }

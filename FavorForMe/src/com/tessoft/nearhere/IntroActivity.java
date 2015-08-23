@@ -24,6 +24,7 @@ import android.widget.RelativeLayout;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.kakao.Session;
 import com.tessoft.common.Constants;
 import com.tessoft.common.Util;
 import com.tessoft.domain.APIResponse;
@@ -44,6 +45,9 @@ public class IntroActivity extends BaseActivity {
 		{
 			super.onCreate(savedInstanceState);
 			
+			// 카카오톡 세션을 초기화 한다.
+			Session.initialize(this);
+						
 			HashMap hash = application.getDefaultRequest();
 			hash.put("os", "Android");
 			sendHttp("/app/appInfo.do", mapper.writeValueAsString( hash ), HTTP_APP_INFO );
@@ -56,42 +60,6 @@ public class IntroActivity extends BaseActivity {
 		
 	}
 
-	private void login( HashMap appInfo ) throws Exception{
-
-		if ( Constants.bKakaoLogin == false )
-			checkIfAdminUser();
-		
-		if ( Constants.bKakaoLogin )
-		{
-			Intent intent = new Intent( getApplicationContext(), KakaoLoginActivity.class);
-			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			startActivity(intent);
-			finish();
-			overridePendingTransition(android.R.anim.fade_in, 
-					android.R.anim.fade_out);
-		}
-		else if ( application.getLoginUser() == null || "".equals( application.getLoginUser().getUserID() ) || 
-				!"true".equals( getMetaInfoString("registerUserFinished")) 
-				|| "true".equals( getMetaInfoString("logout")) )
-		{
-			Intent intent = null;
-			intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
-			
-			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			startActivity(intent);
-			finish();
-			overridePendingTransition(android.R.anim.fade_in, 
-					android.R.anim.fade_out);
-		}
-		else
-		{
-			HashMap request = application.getDefaultRequest();
-			request.put("user", application.getLoginUser());
-			sendHttp("/taxi/login_bg.do", mapper.writeValueAsString(request), HTTP_LOGIN_BACKGROUND);
-		}
-
-	}
-	
 	/*
 	public void login( View v )
 	{
@@ -134,6 +102,8 @@ public class IntroActivity extends BaseActivity {
 		// TODO Auto-generated method stub
 		try
 		{
+			application.debug(this, "doPostTransaction[" + requestCode + "]:" + result );
+			
 			if ( Constants.FAIL.equals(result) )
 			{
 				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
@@ -166,15 +136,23 @@ public class IntroActivity extends BaseActivity {
 					return;
 				}
 			}
-			else if ( requestCode == HTTP_LOGIN_BACKGROUND )
+			else if ( requestCode == Constants.HTTP_LOGIN_BACKGROUND2 )
 			{
 				String userString = mapper.writeValueAsString( response.getData() );
 				User user = mapper.readValue( userString, new TypeReference<User>(){});
-				application.setLoginUser(user);
-				Intent intent = new Intent( getApplicationContext(), MainActivity.class);
-				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				startActivity(intent);
-				finish();
+				
+				HashMap addInfo = (HashMap) response.getData2();
+				
+				if ( "Y".equals( addInfo.get("registerUserFinished") ) )
+				{
+					application.setLoginUser(user);
+					Intent intent = new Intent( getApplicationContext(), MainActivity.class);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(intent);
+					finish();
+				}
+				else
+					goKaKaoLoginActivity();
 			}
 			else if ( requestCode == HTTP_APP_INFO )
 			{
@@ -194,17 +172,45 @@ public class IntroActivity extends BaseActivity {
 					}					
 				}
 				
-				if ( "".equals( application.getLoginUser().getUserID() ) || !"".equals( application.getLoginUser().getKakaoID() ))
-					Constants.bKakaoLogin = true;
-				else
-					Constants.bKakaoLogin = false;
-				
-				login( appInfo );
+				login();
 			}
 		}
 		catch( Exception ex )
 		{
 			catchException(this, ex);
+		}
+	}
+	
+	private void login() throws Exception{
+
+		Log.d("debug", "login");
+		Log.d("debug", "login user : " + mapper.writeValueAsString( application.getLoginUser() ) );
+		
+		if ( "".equals( application.getLoginUser().getUserID() ) || !Util.isEmptyString( application.getLoginUser().getKakaoID() ) )
+			Constants.bKakaoLogin = true;
+		else
+		{
+			Constants.bKakaoLogin = false;
+//			checkIfAdminUser();
+		}
+		
+		Log.d("debug", "bKakaoLogin : " + Constants.bKakaoLogin );
+			
+		if ( Util.isEmptyString( application.getLoginUser().getKakaoID() ) )
+		{
+			// 회원가입
+			goKaKaoLoginActivity();
+		}
+		else
+		{
+			// 로그아웃 했을 경우 다시 로그인 하기 위함
+			HashMap request = application.getDefaultRequest();
+			request.put("userID", application.getLoginUser().getUserID());
+			request.put("hash", application.getMetaInfoString("hash") );
+			
+			Log.d("debug", "login_bg2 : " + mapper.writeValueAsString( request ) );
+			
+			sendHttp("/taxi/login_bg2.do", mapper.writeValueAsString(request), Constants.HTTP_LOGIN_BACKGROUND2 );
 		}
 	}
 	
