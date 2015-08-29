@@ -136,6 +136,19 @@ public class IntroActivity extends BaseActivity {
 					return;
 				}
 			}
+			else if ( requestCode == HTTP_LOGIN_BACKGROUND )
+			{
+				String userString = mapper.writeValueAsString( response.getData() );
+				User user = mapper.readValue( userString, new TypeReference<User>(){});
+				
+				application.setLoginUser(user);
+				application.setMetaInfo("logout", "false");
+				
+				Intent intent = new Intent( getApplicationContext(), MainActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intent);
+				finish();
+			}
 			else if ( requestCode == Constants.HTTP_LOGIN_BACKGROUND2 )
 			{
 				String userString = mapper.writeValueAsString( response.getData() );
@@ -146,6 +159,8 @@ public class IntroActivity extends BaseActivity {
 				if ( "Y".equals( addInfo.get("registerUserFinished") ) )
 				{
 					application.setLoginUser(user);
+					application.setMetaInfo("logout", "false");
+					
 					Intent intent = new Intent( getApplicationContext(), MainActivity.class);
 					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 					startActivity(intent);
@@ -182,11 +197,17 @@ public class IntroActivity extends BaseActivity {
 	}
 	
 	private void login() throws Exception{
+		
+//		User u = new User();
+//		u.setUserID("user27");
+//		u.setUserNo("27");
+//		application.setLoginUser(u);
 
 		Log.d("debug", "login");
 		Log.d("debug", "login user : " + mapper.writeValueAsString( application.getLoginUser() ) );
 		
-		if ( "".equals( application.getLoginUser().getUserID() ) || !Util.isEmptyString( application.getLoginUser().getKakaoID() ) )
+		if ( "true".equals( application.getMetaInfoString("logout") ) || 
+				"".equals( application.getLoginUser().getUserID() ) || !Util.isEmptyString( application.getLoginUser().getKakaoID() ) )
 			Constants.bKakaoLogin = true;
 		else
 		{
@@ -196,12 +217,12 @@ public class IntroActivity extends BaseActivity {
 		
 		Log.d("debug", "bKakaoLogin : " + Constants.bKakaoLogin );
 			
-		if ( Util.isEmptyString( application.getLoginUser().getKakaoID() ) )
+		if ( Util.isEmptyString( application.getLoginUser().getKakaoID() ) && Constants.bKakaoLogin )
 		{
 			// 회원가입
 			goKaKaoLoginActivity();
 		}
-		else
+		else if ( Constants.bKakaoLogin )
 		{
 			// 로그아웃 했을 경우 다시 로그인 하기 위함
 			HashMap request = application.getDefaultRequest();
@@ -211,6 +232,16 @@ public class IntroActivity extends BaseActivity {
 			Log.d("debug", "login_bg2 : " + mapper.writeValueAsString( request ) );
 			
 			sendHttp("/taxi/login_bg2.do", mapper.writeValueAsString(request), Constants.HTTP_LOGIN_BACKGROUND2 );
+		}
+		else
+		{
+			// 로그아웃 했을 경우 다시 로그인 하기 위함
+			HashMap request = application.getDefaultRequest();
+			request.put("user", application.getLoginUser());
+
+			Log.d("debug", "login_bg : " + mapper.writeValueAsString( request ) );
+
+			sendHttp("/taxi/login_bg.do", mapper.writeValueAsString(request), HTTP_LOGIN_BACKGROUND );
 		}
 	}
 	

@@ -492,6 +492,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		// TODO Auto-generated method stub
 		try
 		{
+			application.debug("[MainActivity] onLocationChanged: " + location );
+			
 			MainActivity.latitude = String.valueOf( location.getLatitude() );
 			MainActivity.longitude = String.valueOf( location.getLongitude() );
 
@@ -563,6 +565,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		// TODO Auto-generated method stub
 		try
 		{
+			application.debug("[MainActivity] playservice is connected.[onConnected]");
 			startLocationUpdates();
 		}
 		catch( Exception ex )
@@ -604,6 +607,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			if(lastLocationUpdatedDt.before(now))
 				bShouldUpdate = true;
 		}
+		
+		application.debug("[MainActivity] bShouldUpdateLocation: " + bShouldUpdate );
 
 		if ( bShouldUpdate )
 		{
@@ -843,7 +848,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	public void onBackPressed() {
 
 		try {
-			application.debug( this, mapper.writeValueAsString( application.getLoginUser() ) );
+//			application.debug( this, mapper.writeValueAsString( application.getLoginUser() ) );
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

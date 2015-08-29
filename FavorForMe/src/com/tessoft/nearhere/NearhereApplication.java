@@ -140,6 +140,11 @@ public class NearhereApplication extends Application{
 		Log.e("debug", "[" + obj.getClass().getName() + "] " + log );
 	}
 	
+	public void debug( String log )
+	{
+		Log.e("debug", log );
+	}
+	
 	public void sendHttp( String url, Object request, int requestCode, TransactionDelegate listener )
 	{
 		new HttpTransactionReturningString( listener, url, requestCode ).execute( request );

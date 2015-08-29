@@ -7,16 +7,16 @@ public class Constants {
 	public static String protocol = "http://";
 	
 	public static String serverURL = bReal ? 
-			"http://www.hereby.co.kr/nearhere" : "http://192.168.10.100:8080/nearhere";
+			"http://www.hereby.co.kr/nearhere" : "http://192.168.43.137:8080/nearhere";
 	
 	public static String serverSSLURL = bReal ? 
-			"https://www.hereby.co.kr/nearhere" : "http://192.168.10.100:8080/nearhere";
+			"https://www.hereby.co.kr/nearhere" : "http://192.168.43.137:8080/nearhere";
 	
 	public static String thumbnailImageURL = bReal ? 
-			"http://www.hereby.co.kr/thumbnail/" : "http://192.168.10.100/thumbnail/";
+			"http://www.hereby.co.kr/thumbnail/" : "http://192.168.43.137/thumbnail/";
 	
 	public static String imageURL = bReal ? 
-			"http://www.hereby.co.kr/image/" : "http://192.168.10.100/image/";
+			"http://www.hereby.co.kr/image/" : "http://192.168.43.137/image/";
 	
 	public static String FAIL = "9999";
 	

@@ -129,10 +129,10 @@ public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> implements
 			TextView txtCreatedDate = (TextView) row.findViewById(R.id.txtCreatedDate);
 			txtCreatedDate.setText( Util.getFormattedDateString( item.getCreatedDate(), "HH:mm"));
 			
-			if ( item.getUser().getUserID().equals( loginUser.getUserID() ) )
-				txtDeleteReply.setVisibility(ViewGroup.VISIBLE);
-			else
-				txtDeleteReply.setVisibility(ViewGroup.INVISIBLE);
+//			if ( item.getUser().getUserID().equals( loginUser.getUserID() ) )
+//				txtDeleteReply.setVisibility(ViewGroup.VISIBLE);
+//			else
+//				txtDeleteReply.setVisibility(ViewGroup.INVISIBLE);
 			
 			row.setTag( item );
 		}

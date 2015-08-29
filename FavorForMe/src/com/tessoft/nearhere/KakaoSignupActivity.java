@@ -149,15 +149,15 @@ public class KakaoSignupActivity extends SampleSignupActivity{
 			Log.d("debug", "addInfo is not null." );
 			Log.d("debug", addInfo.toString() );
 			
+			if ( addInfo.containsKey("hash") )
+				application.setMetaInfo("hash", addInfo.get("hash").toString());
+			
 			if ("Y".equals( addInfo.get("alreadyExistsYN") ) && "Y".equals( addInfo.get("registerUserFinished") ) )
 			{
 				goMainActivity();
 				application.setLoginUser(user);
 				return;
 			}
-			
-			if ( addInfo.containsKey("hash") )
-				application.setMetaInfo("hash", addInfo.get("hash").toString());
 			
 			ImageLoader imageLoader = ImageLoader.getInstance();
 

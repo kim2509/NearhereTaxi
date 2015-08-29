@@ -306,6 +306,7 @@
                 style="@style/btn_style"
                 android:layout_width="wrap_content"
                 android:layout_marginLeft="10dp"
+                android:visibility="gone"
                 android:text="삭제하기" />
 
             <Button
