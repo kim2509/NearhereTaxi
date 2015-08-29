@@ -13,10 +13,10 @@ public class Constants {
 			"https://www.hereby.co.kr/nearhere" : "http://192.168.43.137:8080/nearhere";
 	
 	public static String thumbnailImageURL = bReal ? 
-			"http://www.hereby.co.kr/thumbnail/" : "http://192.168.43.137:8090/thumbnail/";
+			"http://www.hereby.co.kr/thumbnail/" : "http://192.168.43.137/thumbnail/";
 	
 	public static String imageURL = bReal ? 
-			"http://www.hereby.co.kr/image/" : "http://192.168.43.137:8090/image/";
+			"http://www.hereby.co.kr/image/" : "http://192.168.43.137/image/";
 	
 	public static String FAIL = "9999";
 	
