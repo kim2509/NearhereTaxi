@@ -203,6 +203,8 @@ public class IntroActivity extends BaseActivity {
 //		u.setUserNo("27");
 //		application.setLoginUser(u);
 
+//		checkIfAdminUser();
+		
 		Log.d("debug", "login");
 		Log.d("debug", "login user : " + mapper.writeValueAsString( application.getLoginUser() ) );
 		
@@ -212,7 +214,6 @@ public class IntroActivity extends BaseActivity {
 		else
 		{
 			Constants.bKakaoLogin = false;
-//			checkIfAdminUser();
 		}
 		
 		Log.d("debug", "bKakaoLogin : " + Constants.bKakaoLogin );

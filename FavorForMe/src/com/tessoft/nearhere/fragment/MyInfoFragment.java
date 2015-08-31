@@ -386,7 +386,7 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 
 					user = mapper.readValue(userString, new TypeReference<User>(){});
 					
-					setLoginUser( user );
+					application.setLoginUser( user );
 					
 					List<UserLocation> locationList = mapper.readValue(locationListString, new TypeReference<List<UserLocation>>(){});
 					List<Post> userPosts = mapper.readValue(userPostString, new TypeReference<List<Post>>(){});

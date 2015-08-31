@@ -106,6 +106,11 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 			else
 				txtUserName.setText( item.getUser().getUserName() );
 			
+			if ( !Util.isEmptyString( item.getUser().getKakaoID() ) )
+				row.findViewById(R.id.imgKakaoIcon).setVisibility(ViewGroup.VISIBLE);
+			else
+				row.findViewById(R.id.imgKakaoIcon).setVisibility(ViewGroup.GONE);
+			
 			TextView txtTitle = (TextView) row.findViewById(R.id.txtTitle);
 			txtTitle.setText( item.getMessage() );
 

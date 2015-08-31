@@ -134,13 +134,6 @@ public class BaseFragment extends Fragment implements AdapterDelegate, Transacti
 		new HttpTransactionReturningString( this, url, requestCode ).execute( request );
 	}
 	
-	public void setLoginUser( User user ) throws Exception
-	{
-		String loginUserInfo = mapper.writeValueAsString(user);
-		loginUserInfo = Util.encodeBase64(loginUserInfo);
-		setMetaInfo("loginUserInfo", loginUserInfo );
-	}
-	
 	public String getUniqueDeviceID()
 	{
 		final TelephonyManager tm = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);

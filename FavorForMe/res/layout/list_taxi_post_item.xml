@@ -75,6 +75,13 @@
                 android:text="..."
                 android:textSize="12sp"
                 android:textColor="#3B5D98" />
+            
+            <ImageView 
+                android:id="@+id/imgKakaoIcon"
+                android:layout_width="18dp" android:layout_height="18dp"
+                android:layout_marginLeft="5dp"
+                android:visibility="gone"
+                android:src="@drawable/kakaotalk_icon" />
         </LinearLayout>
 
         <TextView
