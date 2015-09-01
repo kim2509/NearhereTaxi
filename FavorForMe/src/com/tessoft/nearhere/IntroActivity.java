@@ -203,7 +203,7 @@ public class IntroActivity extends BaseActivity {
 //		u.setUserNo("27");
 //		application.setLoginUser(u);
 
-//		checkIfAdminUser();
+		checkIfAdminUser();
 		
 		Log.d("debug", "login");
 		Log.d("debug", "login user : " + mapper.writeValueAsString( application.getLoginUser() ) );
