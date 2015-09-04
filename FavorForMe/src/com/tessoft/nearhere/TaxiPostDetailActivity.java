@@ -557,6 +557,11 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 						btnFinish.setVisibility(ViewGroup.GONE);
 					}
 					
+					if ( !Util.isEmptyString( post.getUser().getKakaoID() ) )
+						findViewById(R.id.imgKakaoIcon).setVisibility(ViewGroup.VISIBLE);
+					else
+						findViewById(R.id.imgKakaoIcon).setVisibility(ViewGroup.GONE);
+					
 					setControlsVisibility( post );
 				}
 				else if ( requestCode == INSERT_POST_REPLY )
