@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kakao.APIErrorResult;
@@ -43,7 +45,18 @@ public class KakaoSignupActivity extends SampleSignupActivity{
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
+		setContentView(R.layout.activity_kakao_signup);
+		
 		application = (NearhereApplication) getApplication();
+		
+		setTitle("카카오계정 로그인");
+		findViewById(R.id.btnRefresh).setVisibility(ViewGroup.GONE);
+	}
+	
+	protected void setTitle( String title ) {
+		TextView txtTitle = (TextView) findViewById(R.id.txtTitle);
+		findViewById(R.id.txtTitle).setVisibility(ViewGroup.VISIBLE);
+		txtTitle.setText( title );
 	}
 	
 	protected void redirectLoginActivity() {

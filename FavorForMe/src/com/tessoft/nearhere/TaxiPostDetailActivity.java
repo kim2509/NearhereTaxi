@@ -51,6 +51,7 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -144,7 +145,9 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 
 		imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
 		imgProfile.setImageResource(R.drawable.no_image);
-		imgProfile.setOnClickListener( this );
+		
+		FrameLayout flImgProfile = (FrameLayout) header.findViewById(R.id.flImgProfile);
+		flImgProfile.setOnClickListener( this );
 
 		txtUserName = (TextView) header.findViewById(R.id.txtUserName);
 		txtUserName.setOnClickListener( this );
@@ -464,15 +467,10 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 								post.getUser().getProfileImageURL() , imgProfile, options );
 					}
 
-					String age = "";
-
-					if ( post.getUser().getAge() != null && !"".equals( post.getUser().getAge() ) )
-						age = " (" + post.getUser().getAge() + ")";
-
 					if ( Util.isEmptyString( post.getUser().getUserName() ) )
-						txtUserName.setText( post.getUser().getUserID() + age );
+						txtUserName.setText( post.getUser().getUserID() );
 					else
-						txtUserName.setText( post.getUser().getUserName() + age );
+						txtUserName.setText( post.getUser().getUserName() );
 
 					ImageView imgSex = (ImageView) header.findViewById(R.id.imgSex);
 					imgSex.setVisibility(ViewGroup.VISIBLE);
@@ -693,7 +691,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		{
 			int id = v.getId();
 
-			if ( id == R.id.txtUserName || id == R.id.imgProfile )
+			if ( id == R.id.txtUserName || id == R.id.flImgProfile )
 			{
 				goUserProfileActivity( post.getUser().getUserID() );
 			}

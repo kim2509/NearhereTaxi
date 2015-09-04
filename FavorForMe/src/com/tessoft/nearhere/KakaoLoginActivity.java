@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Base64;
 import android.util.Log;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kakao.APIErrorResult;
@@ -38,6 +40,9 @@ public class KakaoLoginActivity extends SampleLoginActivity{
 			getAppKeyHash();
 			
 			application = (NearhereApplication) getApplication();
+			
+			setTitle("회원가입");
+			findViewById(R.id.btnRefresh).setVisibility(ViewGroup.GONE);
 		}
 		catch( Exception ex )
 		{
@@ -45,6 +50,12 @@ public class KakaoLoginActivity extends SampleLoginActivity{
 		}
 	}
 
+	protected void setTitle( String title ) {
+		TextView txtTitle = (TextView) findViewById(R.id.txtTitle);
+		findViewById(R.id.txtTitle).setVisibility(ViewGroup.VISIBLE);
+		txtTitle.setText( title );
+	}
+	
 	private void getAppKeyHash() {
 		try {
 			PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);

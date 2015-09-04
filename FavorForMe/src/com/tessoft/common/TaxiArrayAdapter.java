@@ -24,6 +24,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -80,7 +81,8 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 				imgStatus.setOnTouchListener( this );
 
 				imageView = (ImageView) row.findViewById(R.id.imgProfile);
-				imageView.setOnClickListener( this );
+				FrameLayout flImgProfile = (FrameLayout) row.findViewById(R.id.flImgProfile);
+				flImgProfile.setOnClickListener( this );
 			}
 			else
 			{
@@ -229,7 +231,7 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 		// TODO Auto-generated method stub
 		try
 		{
-			if ( v != null && v.getId() == R.id.imgProfile )
+			if ( v != null && v.getId() == R.id.flImgProfile )
 			{
 				Post post = (Post) ( (View) v.getParent().getParent() ).getTag();
 				delegate.doAction("userProfile", post.getUser().getUserID() );	

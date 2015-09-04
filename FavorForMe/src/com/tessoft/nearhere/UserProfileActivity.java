@@ -293,6 +293,11 @@ public class UserProfileActivity extends BaseActivity {
 						TextView txtJobTitle = (TextView) header.findViewById(R.id.txtJobTitle);
 						txtJobTitle.setText( user.getJobTitle() );
 					}
+					
+					if ( !Util.isEmptyString( user.getKakaoID() ) )
+						findViewById(R.id.imgKakaoIcon).setVisibility(ViewGroup.VISIBLE);
+					else
+						findViewById(R.id.imgKakaoIcon).setVisibility(ViewGroup.GONE);
 
 					adapter.clear();
 					adapter.addAll(postList);

@@ -11,10 +11,29 @@
         android:paddingRight="10dp"
         android:paddingTop="10dp" >
 
-        <com.tessoft.common.CustomImageView
-            android:id="@+id/imgProfile"
+        <FrameLayout
+            android:id="@+id/flImgProfile"
             android:layout_width="60dp"
-            android:layout_height="60dp" />
+            android:layout_height="60dp" >
+
+            <com.tessoft.common.CustomImageView
+                android:id="@+id/imgProfile"
+                android:layout_width="60dp"
+                android:layout_height="60dp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <ImageView
+                    android:id="@+id/imgKakaoIcon"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/kakaotalk_icon" />
+            </RelativeLayout>
+        </FrameLayout>
 
         <TextView
             android:id="@+id/txtTitle"
@@ -22,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_toLeftOf="@+id/layoutComment"
-            android:layout_toRightOf="@+id/imgProfile"
+            android:layout_toRightOf="@+id/flImgProfile"
             android:singleLine="true"
             android:text="제목"
             android:textColor="@android:color/black"
@@ -73,36 +92,30 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:text="..."
-                android:textSize="12sp"
-                android:textColor="#3B5D98" />
-            
-            <ImageView 
-                android:id="@+id/imgKakaoIcon"
-                android:layout_width="18dp" android:layout_height="18dp"
-                android:layout_marginLeft="5dp"
-                android:visibility="gone"
-                android:src="@drawable/kakaotalk_icon" />
+                android:textColor="#3B5D98"
+                android:textSize="12sp" />
+
         </LinearLayout>
 
         <TextView
             android:id="@+id/txtDepartureDateTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/layoutUserInfo"
             android:layout_alignParentRight="true"
             android:layout_alignTop="@+id/layoutUserInfo"
-            android:layout_alignBaseline="@+id/layoutUserInfo"
             android:layout_below="@+id/txtTitle"
             android:text="출발예정시간"
+            android:textColor="@android:color/black"
             android:textSize="12sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black" />
+            android:textStyle="bold" />
 
         <LinearLayout
             android:id="@+id/layoutAddInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/layoutUserInfo"
             android:layout_alignParentRight="true"
+            android:layout_below="@+id/layoutUserInfo"
             android:layout_marginRight="5dp"
             android:layout_marginTop="10dp"
             android:orientation="horizontal" >
@@ -116,10 +129,10 @@
                 android:background="#F66C3C"
                 android:padding="2dp"
                 android:text="택시합승"
-                android:visibility="gone"
                 android:textColor="#FFFFFF"
                 android:textSize="10sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/txtFareOption"
@@ -130,10 +143,10 @@
                 android:background="#F66C3C"
                 android:padding="2dp"
                 android:text="나눠서 분담"
-                android:visibility="gone"
                 android:textColor="#FFFFFF"
                 android:textSize="10sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/txtSex"
@@ -144,10 +157,10 @@
                 android:background="#F66C3C"
                 android:padding="2dp"
                 android:text="여자만"
-                android:visibility="gone"
                 android:textColor="#FFFFFF"
                 android:textSize="10sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/txtNOP"
@@ -158,10 +171,10 @@
                 android:background="#F66C3C"
                 android:padding="2dp"
                 android:text="3명"
-                android:visibility="gone"
                 android:textColor="#FFFFFF"
                 android:textSize="10sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/txtRepeat"
@@ -170,12 +183,12 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="3dp"
                 android:background="#F66C3C"
-                android:visibility="gone"
                 android:padding="2dp"
                 android:text="반복"
                 android:textColor="#FFFFFF"
                 android:textSize="10sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
         </LinearLayout>
 
         <TextView

@@ -34,6 +34,8 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class BaseActivity extends ActionBarActivity implements TransactionDelegate, AdapterDelegate {
@@ -211,5 +213,11 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		finish();
 		overridePendingTransition(android.R.anim.fade_in, 
 				android.R.anim.fade_out);
+	}
+	
+	protected void setTitle( String title ) {
+		TextView txtTitle = (TextView) findViewById(R.id.txtTitle);
+		findViewById(R.id.txtTitle).setVisibility(ViewGroup.VISIBLE);
+		txtTitle.setText( title );
 	}
 }
