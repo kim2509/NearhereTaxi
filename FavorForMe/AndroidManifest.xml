@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.tessoft.nearhere"
-    android:versionCode="13"
-    android:versionName="1.38" >
+    android:versionCode="14"
+    android:versionName="1.39" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -41,6 +41,11 @@
         android:largeHeap="true"
         android:theme="@style/BaseTheme"
         android:name="com.tessoft.nearhere.NearhereApplication">
+        
+        <meta-data
+            android:name="com.kakao.sdk.AppKey"
+            android:value="@string/kakao_app_key" />
+
         <activity
             android:name=".IntroActivity"
             android:label="@string/app_name"
@@ -48,7 +53,6 @@
             android:theme="@style/IntroTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -58,18 +62,11 @@
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-
                 <category android:name="com.tessoft.nearhere" />
             </intent-filter>
         </receiver>
 
         <service android:name=".GcmIntentService" />
-
-        <activity
-            android:name=".PostDetailActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" >
-        </activity>
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -81,8 +78,8 @@
         <activity
             android:name=".UserProfileActivity"
             android:label="@string/title_activity_user_profile"
-            android:screenOrientation="portrait" 
-            android:theme="@style/NoTitleBarTheme">
+            android:screenOrientation="portrait"
+            android:theme="@style/NoTitleBarTheme" >
         </activity>
         <activity
             android:name=".RegisterUserActivity"
@@ -111,8 +108,8 @@
         <activity
             android:name=".TaxiPostDetailActivity"
             android:label="@string/title_activity_taxi_post_detail"
-            android:screenOrientation="portrait" 
-            android:theme="@style/NoTitleBarTheme">
+            android:screenOrientation="portrait"
+            android:theme="@style/NoTitleBarTheme" >
         </activity>
         <activity
             android:name=".UserMessageActivity"
@@ -143,7 +140,7 @@
             android:label="@string/title_activity_main"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/NoTitleBarTheme">
+            android:theme="@style/NoTitleBarTheme" >
         </activity>
         <activity
             android:name=".NewTaxiPostActivity"
@@ -180,16 +177,28 @@
         </activity>
         <activity
             android:name=".UserListActivity"
-            android:label="@string/title_activity_user_list" 
-            android:theme="@style/NoTitleBarTheme">
+            android:label="@string/title_activity_user_list"
+            android:theme="@style/NoTitleBarTheme" >
         </activity>
         <activity
             android:name=".PhotoViewer"
             android:label="@string/title_activity_photo_viewer"
-            android:theme="@style/NoTitleBarTheme">
+            android:theme="@style/NoTitleBarTheme" >
         </activity>
         <activity
             android:name=".HybridActivity"
+            android:theme="@style/NoTitleBarTheme" >
+        </activity>
+        <activity
+            android:name=".KakaoLoginActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
+            android:theme="@style/NoTitleBarTheme">
+        </activity>
+        <activity
+            android:name=".KakaoSignupActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
             android:theme="@style/NoTitleBarTheme">
         </activity>
     </application>

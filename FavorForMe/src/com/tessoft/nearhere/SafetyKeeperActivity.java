@@ -109,7 +109,8 @@ public class SafetyKeeperActivity extends BaseActivity implements OnClickListene
 				public void onTextChanged(CharSequence s, int start, int before, int count) {
 					// TODO Auto-generated method stub
 					
-					String msg = "[이근처 합승-" + getLoginUser().getUserName() + "님] " + s + " [" + address.replaceAll("\\|", " ") + "]";
+					String msg = "[이근처 합승-" + application.getLoginUser().getUserName() + "님] " + s + 
+							" [" + address.replaceAll("\\|", " ") + "]";
 
 					txtPreview.setText( msg );
 					txtPreviewLabel.setText("미리보기(" + msg.length() + "글자)");
@@ -129,7 +130,8 @@ public class SafetyKeeperActivity extends BaseActivity implements OnClickListene
 				}
 			});
 
-			txtPreview.setText( "[이근처 합승-" + getLoginUser().getUserName() + "님] [" + MainActivity.fullAddress.replaceAll("\\|", " ") + "]" );
+			txtPreview.setText( "[이근처 합승-" + application.getLoginUser().getUserName() + "님] [" + 
+					MainActivity.fullAddress.replaceAll("\\|", " ") + "]" );
 
 			spTotalCount = (Spinner) findViewById(R.id.spTotalCount);
 			adapterTotalCount = ArrayAdapter.createFromResource( this,
@@ -229,8 +231,8 @@ public class SafetyKeeperActivity extends BaseActivity implements OnClickListene
 				intent.putExtra("totalCount", spTotalCount.getSelectedItem().toString() );
 				intent.putExtra("minutes", spMinutes.getSelectedItem().toString());
 				intent.putExtra("exitHour", spExitHour.getSelectedItem().toString() );
-				intent.putExtra("userName", getLoginUser().getUserName() );
-				intent.putExtra("userID", getLoginUser().getUserID() );
+				intent.putExtra("userName", application.getLoginUser().getUserName() );
+				intent.putExtra("userID", application.getLoginUser().getUserID() );
 
 				startService(intent);
 			}
@@ -313,7 +315,7 @@ public class SafetyKeeperActivity extends BaseActivity implements OnClickListene
 			{
 				if ( "currentLocationChanged".equals( intent.getAction() ) )
 				{
-					String msg = "[이근처 합승-" + getLoginUser().getUserName() + "] " + edtMessage.getText().toString() + 
+					String msg = "[이근처 합승-" + application.getLoginUser().getUserName() + "] " + edtMessage.getText().toString() + 
 							" [" + MainActivity.fullAddress.replaceAll("\\|", " ") + "]";
 					txtPreview.setText( msg );
 				}

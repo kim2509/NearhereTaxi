@@ -24,6 +24,7 @@ import com.tessoft.domain.User;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -33,6 +34,8 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class BaseActivity extends ActionBarActivity implements TransactionDelegate, AdapterDelegate {
@@ -48,36 +51,6 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		initImageLoader();
 	}
 
-	public String getOSVersion()
-	{
-		return Build.VERSION.RELEASE;
-	}
-	
-	public String getPackageVersion()
-	{
-		PackageInfo pInfo;
-		try {
-			
-			pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-			
-			return pInfo.versionName;
-		} catch (NameNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return "";
-	}
-	
-	public HashMap getDefaultRequest()
-	{
-		HashMap request = new HashMap();
-		request.put("OSVersion", getOSVersion());
-		request.put("AppVersion", getPackageVersion());
-		request.put("UUID", application.getUniqueDeviceID());
-		return request;
-	}
-	
 	public void showOKDialog( String message, final Object param )
 	{
 		showOKDialog("확인", message, param);
@@ -134,14 +107,6 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		
 	}
 	
-	public String getMetaInfoString( String key )
-	{
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences( this );
-		if ( settings.contains(key) )
-			return settings.getString(key, "");
-		else return "";
-	}
-	
 	public double getMetaInfoDouble( String key )
 	{
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences( this );
@@ -149,11 +114,6 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 			return Double.parseDouble( settings.getString(key, "0") );
 		else
 			return 0;
-	}
-	
-	public void showToastMessage( String message )
-	{
-		Toast.makeText(this, message, Toast.LENGTH_LONG).show();
 	}
 	
 	public void writeLog( String log )
@@ -177,62 +137,6 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 			writeLog( "[" + target.getClass().getName() + "] NullPointerException!!!" );
 		else
 			Log.e("이근처", "exception", ex);
-	}
-	
-	public void setLoginUser( User user ) throws Exception
-	{
-		String loginUserInfo = mapper.writeValueAsString(user);
-		loginUserInfo = Util.encodeBase64(loginUserInfo);
-		application.setMetaInfo("loginUserInfo", loginUserInfo );
-	}
-	
-	public User getLoginUser()
-	{
-		try
-		{
-			try
-			{
-				String result = getMetaInfoString("loginUserInfo");
-				
-				User user = new User();
-				
-				if ( Util.isEmptyString( result ) )
-				{
-					// 전환
-					user.setUserNo( getMetaInfoString("userNo") );
-					user.setUserID( getMetaInfoString("userID") );
-					user.setUserName( getMetaInfoString("userName") );
-					user.setProfileImageURL( getMetaInfoString("profileImageURL"));
-					user.setUuid( application.getUniqueDeviceID() );
-					
-					setLoginUser( user );
-					
-					application.setMetaInfo("userNo", "");
-					application.setMetaInfo("userID", "");
-					application.setMetaInfo("userName", "");
-					application.setMetaInfo("profileImageURL", "");
-					
-					return user;
-				}
-				else
-				{
-					result = Util.decodeBase64( result );
-					user = mapper.readValue( result , new TypeReference<User>(){});	
-				}
-				
-				return user;
-			}
-			catch( Exception ex )
-			{
-				catchException(this, ex);
-				return new User();
-			}
-		}
-		catch( Exception ex )
-		{
-			catchException(this, ex);
-			return new User();
-		}
 	}
 	
 	@Override
@@ -285,5 +189,35 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 			ImageLoader.getInstance().init(config);
 			BaseActivity.bInitImageLoader = true;
 		}
+	}
+	
+	public void goMainActivity()
+	{
+		try
+		{
+			Intent intent = new Intent( this, MainActivity.class);
+			startActivity(intent);
+			overridePendingTransition(android.R.anim.fade_in, 
+					android.R.anim.fade_out);
+		}
+		catch( Exception ex )
+		{
+			catchException(this, ex);
+		}
+	}
+	
+	public void goKaKaoLoginActivity() {
+		Intent intent = new Intent( getApplicationContext(), KakaoLoginActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(intent);
+		finish();
+		overridePendingTransition(android.R.anim.fade_in, 
+				android.R.anim.fade_out);
+	}
+	
+	protected void setTitle( String title ) {
+		TextView txtTitle = (TextView) findViewById(R.id.txtTitle);
+		findViewById(R.id.txtTitle).setVisibility(ViewGroup.VISIBLE);
+		txtTitle.setText( title );
 	}
 }

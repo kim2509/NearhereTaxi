@@ -20,6 +20,9 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.kakao.APIErrorResult;
+import com.kakao.LogoutResponseCallback;
+import com.kakao.UserManagement;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -145,9 +148,9 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 			// 푸시 토큰을 생성한다.
 			gcm = GoogleCloudMessaging.getInstance(this);
-			regid = getMetaInfoString("registrationID");
+			regid = application.getMetaInfoString("registrationID");
 //			if ( Util.isEmptyString( regid ))
-				registerInBackground();
+			registerInBackground();
 
 			// google play sdk 설치 여부를 검사한다.
 			checkPlayServices();
@@ -157,7 +160,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 			MainActivity.active = true;
 			
-			HashMap hash = getDefaultRequest();
+			HashMap hash = application.getDefaultRequest();
 			hash.put("os", "Android");
 			sendHttp("/app/appInfo.do", mapper.writeValueAsString( hash ), Constants.HTTP_APP_INFO );
 		}
@@ -240,21 +243,21 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	public void reloadProfile() {
 		ImageView imageView = (ImageView) header.findViewById(R.id.imgProfile);
 		
-		if ( Util.isEmptyString( getLoginUser().getProfileImageURL() ))
+		if ( Util.isEmptyString( application.getLoginUser().getProfileImageURL() ))
 			imageView.setImageResource(R.drawable.no_image);
 		else
 		{
 			ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
-					getLoginUser().getProfileImageURL() , imageView, options );			
+					application.getLoginUser().getProfileImageURL() , imageView, options );			
 		}
 
 		TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
-		txtUserName.setText( getLoginUser().getUserName() );
+		txtUserName.setText( application.getLoginUser().getUserName() );
 		
 		TextView txtCreditValue = (TextView) header.findViewById(R.id.txtCreditValue);
-		txtCreditValue.setText( getLoginUser().getProfilePoint() + "%");
+		txtCreditValue.setText( application.getLoginUser().getProfilePoint() + "%");
 		ProgressBar progressCreditValue = (ProgressBar) findViewById(R.id.progressCreditValue);
-		progressCreditValue.setProgress( Integer.parseInt( getLoginUser().getProfilePoint() ) );
+		progressCreditValue.setProgress( Integer.parseInt( application.getLoginUser().getProfilePoint() ) );
 		
 		imageView.setVisibility(ViewGroup.VISIBLE);
 		imageView.invalidate();
@@ -317,9 +320,9 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 	public  void getUnreadCount() throws Exception 
 	{
-		HashMap hash = getDefaultRequest();
-		hash.put("userID", getLoginUser().getUserID() );
-		hash.put("lastNoticeID", getMetaInfoString("lastNoticeID"));
+		HashMap hash = application.getDefaultRequest();
+		hash.put("userID", application.getLoginUser().getUserID() );
+		hash.put("lastNoticeID", application.getMetaInfoString("lastNoticeID"));
 		sendHttp("/taxi/getUnreadCount.do", mapper.writeValueAsString(hash), GET_UNREAD_COUNT );
 	}
 
@@ -433,7 +436,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			if ( "logout".equals( param ) )
 			{
 				setProgressBarIndeterminateVisibility(true);
-				sendHttp("/taxi/logout.do", mapper.writeValueAsString( getLoginUser() ), 2 );
+				sendHttp("/taxi/logout.do", mapper.writeValueAsString( application.getLoginUser() ), 2 );
 			}
 			else if ( UPDATE_NOTICE.equals( param ) )
 			{
@@ -489,6 +492,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		// TODO Auto-generated method stub
 		try
 		{
+			application.debug("[MainActivity] onLocationChanged: " + location );
+			
 			MainActivity.latitude = String.valueOf( location.getLatitude() );
 			MainActivity.longitude = String.valueOf( location.getLongitude() );
 
@@ -538,7 +543,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	{
 		if ( !Util.isEmptyString( MainActivity.latitude ) && !Util.isEmptyString( MainActivity.longitude ) )
 		{
-			User user = getLoginUser();
+			User user = application.getLoginUser();
 			UserLocation userLocation = new UserLocation();
 			userLocation.setUser( user );
 			userLocation.setLocationName("현재위치");
@@ -560,6 +565,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		// TODO Auto-generated method stub
 		try
 		{
+			application.debug("[MainActivity] playservice is connected.[onConnected]");
 			startLocationUpdates();
 		}
 		catch( Exception ex )
@@ -587,11 +593,11 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		Date lastLocationUpdatedDt = new Date();
 
 		boolean bShouldUpdate = false;
-		if ( Util.isEmptyString( getMetaInfoString("lastLocationUpdatedDt")))
+		if ( Util.isEmptyString( application.getMetaInfoString("lastLocationUpdatedDt")))
 			bShouldUpdate = true;
 		else
 		{
-			lastLocationUpdatedDt.setTime( Long.parseLong( getMetaInfoString("lastLocationUpdatedDt") ) );
+			lastLocationUpdatedDt.setTime( Long.parseLong( application.getMetaInfoString("lastLocationUpdatedDt") ) );
 
 			Calendar c = Calendar.getInstance(); 
 			c.setTime(lastLocationUpdatedDt); 
@@ -601,6 +607,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			if(lastLocationUpdatedDt.before(now))
 				bShouldUpdate = true;
 		}
+		
+		application.debug("[MainActivity] bShouldUpdateLocation: " + bShouldUpdate );
 
 		if ( bShouldUpdate )
 		{
@@ -689,7 +697,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	{
 		try
 		{
-			User user = getLoginUser();
+			User user = application.getLoginUser();
 			user.setRegID(regid);
 			sendHttp("/taxi/updateUserRegID.do", mapper.writeValueAsString( user ), 1);
 		}
@@ -726,12 +734,24 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 					application.setMetaInfo("profileImageURL", "");
 					application.setMetaInfo("registrationID", "");
 
-					Intent intent = null;
-					intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
-					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					startActivity(intent);
-					finish();
+					// ID, NO 외엔 모두 삭제
+					User user = new User();
+					user.setUserNo( application.getLoginUser().getUserNo() );
+					user.setUserID( application.getLoginUser().getUserID() );
+					application.setLoginUser( user );
+					
+					UserManagement.requestLogout(new LogoutResponseCallback() {
+						@Override
+						protected void onSuccess(final long userId) {
+							goKaKaoLoginActivity();
+						}
 
+						@Override
+						protected void onFailure(final APIErrorResult apiErrorResult) {
+							goKaKaoLoginActivity();
+						}
+					});
+					
 					overridePendingTransition(android.R.anim.fade_in, 
 							android.R.anim.fade_out);
 				}
@@ -780,7 +800,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 					
 					if ( appInfo == null || !appInfo.containsKey("version") || !appInfo.containsKey("forceUpdate") ) return;
 					
-					if ( !getPackageVersion().equals( appInfo.get("version") ) )
+					if ( !application.getPackageVersion().equals( appInfo.get("version") ) )
 					{
 						if ("Y".equals( appInfo.get("forceUpdate") ) )
 							showOKDialog("알림","이근처 합승이 업데이트 되었습니다.\r\n확인을 누르시면 업데이트 화면으로 이동합니다." , UPDATE_NOTICE );
@@ -827,6 +847,13 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	@Override
 	public void onBackPressed() {
 
+		try {
+//			application.debug( this, mapper.writeValueAsString( application.getLoginUser() ) );
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		if ( currentFragment instanceof TaxiFragment == false )
 		{
 			reloadProfile();
@@ -891,7 +918,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 		try
 		{
-			sendHttp("/taxi/statistics.do?name=exit", mapper.writeValueAsString( getLoginUser() ), HTTP_LEAVE);			
+			sendHttp("/taxi/statistics.do?name=exit", mapper.writeValueAsString( application.getLoginUser() ), HTTP_LEAVE);			
 		}
 		catch( Exception ex )
 		{

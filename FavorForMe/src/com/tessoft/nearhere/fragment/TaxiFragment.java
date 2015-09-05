@@ -86,15 +86,26 @@ public class TaxiFragment extends BaseFragment
 			
 			rootView = inflater.inflate(R.layout.fragment_taxi_main, container, false);
 
-			//header = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header1, null);
+			header = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header1, null);
 			header3 = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header3, null);
 			header2 = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header2, null);
 			footer = getActivity().getLayoutInflater().inflate(R.layout.list_footer_taxi_main, null);
 
 			listMain = (ListView) rootView.findViewById(R.id.listMain);
-			//listMain.addHeaderView(header);
+			
 			listMain.addHeaderView(header3, null, false );
 			listMain.addHeaderView(header2, null, false );
+			
+			if ( !Constants.bKakaoLogin )
+			{
+				listMain.addHeaderView(header, null, false );
+				
+				Button btnKakaoLogin = (Button) header.findViewById(R.id.btnKakaoLogin);
+				btnKakaoLogin.setOnClickListener(this);
+			}
+			else
+				listMain.removeHeaderView(header);
+			
 			listMain.addFooterView(footer, null, false );
 			listMain.setHeaderDividersEnabled(true);
 			listMain.setFooterDividersEnabled(false);
@@ -366,7 +377,7 @@ public class TaxiFragment extends BaseFragment
 		if ( !"전체".equals(destinationDistance) && !Util.isEmptyString( destinationDistance ) )
 			hash.put("toDistance", Util.getDistanceDouble( destinationDistance ) );
 		
-		hash.put("userID", getLoginUser().getUserID() );
+		hash.put("userID", application.getLoginUser().getUserID() );
 		
 		Spinner spStatus = (Spinner) rootView.findViewById(R.id.spStatus);
 		String status = spStatus.getSelectedItem().toString();
@@ -636,7 +647,7 @@ public class TaxiFragment extends BaseFragment
 				startActivity(intent);
 				getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
 				
-				sendHttp("/taxi/statistics.do?name=safetyKeeper", mapper.writeValueAsString( getLoginUser() ), HTTP_SAFETY_KEEPER_CLICKED );
+				sendHttp("/taxi/statistics.do?name=safetyKeeper", mapper.writeValueAsString( application.getLoginUser() ), HTTP_SAFETY_KEEPER_CLICKED );
 			}
 			else if ( v.getId() == R.id.txtNumOfUsers )
 			{
@@ -657,6 +668,10 @@ public class TaxiFragment extends BaseFragment
 				listMain.setVisibility(ViewGroup.GONE);
 				rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
 				inquiryPosts();
+			}
+			else if ( v.getId() == R.id.btnKakaoLogin )
+			{
+				showYesNoDialog("확인", "카카오 계정으로 로그인하시겠습니까?", "kakaoLogin" );
 			}
 		}
 		catch( Exception ex )
@@ -684,5 +699,17 @@ public class TaxiFragment extends BaseFragment
 	    
 	    DialogFragment newFragment = new SearchDialogFragment( this, hash );
 	    newFragment.show(ft, "dialog");
+	}
+	
+	@Override
+	public void yesClicked(Object param) {
+		// TODO Auto-generated method stub
+		super.yesClicked(param);
+		
+		if ( "kakaoLogin".equals( param ) )
+		{
+			MainActivity mainActivity = (MainActivity) getActivity();
+			mainActivity.yesClicked("logout");
+		}
 	}
 }

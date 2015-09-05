@@ -105,7 +105,7 @@ public class SettingsFragment extends BaseListFragment {
 
 	private void inquirySettingInfo() throws IOException,
 			JsonGenerationException, JsonMappingException {
-		User user = getLoginUser();
+		User user = application.getLoginUser();
 
 		rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
 		listMain.setVisibility(ViewGroup.GONE);
@@ -187,7 +187,7 @@ public class SettingsFragment extends BaseListFragment {
 			super.doAction(actionName, param);
 
 			UserSetting setting = new UserSetting();
-			setting.setUserID( getLoginUser().getUserID() );
+			setting.setUserID( application.getLoginUser().getUserID() );
 
 			for ( int i = 0; i < adapter.getCount(); i++ )
 			{

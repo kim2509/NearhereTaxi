@@ -51,6 +51,7 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -94,7 +95,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 
 			listMain.setSelector(android.R.color.transparent);
 
-			adapter = new TaxiPostReplyListAdapter( getApplicationContext(), getLoginUser(),0 );
+			adapter = new TaxiPostReplyListAdapter( getApplicationContext(), application.getLoginUser(),0 );
 			listMain.setAdapter(adapter);
 			adapter.setDelegate(this);
 
@@ -130,7 +131,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 				hash.put("toLongitude", getIntent().getExtras().getString("toLongitude") );
 		}
 		
-		hash.put("userID", getLoginUser().getUserID() );
+		hash.put("userID", application.getLoginUser().getUserID() );
 
 		sendHttp("/taxi/getPostDetail.do", mapper.writeValueAsString(hash), POST_DETAIL );
 	}
@@ -144,7 +145,9 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 
 		imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
 		imgProfile.setImageResource(R.drawable.no_image);
-		imgProfile.setOnClickListener( this );
+		
+		FrameLayout flImgProfile = (FrameLayout) header.findViewById(R.id.flImgProfile);
+		flImgProfile.setOnClickListener( this );
 
 		txtUserName = (TextView) header.findViewById(R.id.txtUserName);
 		txtUserName.setOnClickListener( this );
@@ -155,7 +158,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		Button btnFinish = (Button) header.findViewById(R.id.btnFinish);
 		btnFinish.setOnClickListener(this);
 		
-		if ( "true".equals( getMetaInfoString("hideMapOnPostDetail") ) )
+		if ( "true".equals( application.getMetaInfoString("hideMapOnPostDetail") ) )
 		{
 			findViewById(R.id.map_layout).setVisibility(ViewGroup.GONE);
 			Button btnHideMap = (Button)findViewById(R.id.btnHideMap);
@@ -413,7 +416,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 
 			PostReply postReply = new PostReply();
 			postReply.setPostID( post.getPostID() );
-			postReply.setUser( getLoginUser() );
+			postReply.setUser( application.getLoginUser() );
 			postReply.setLatitude( MainActivity.latitude );
 			postReply.setLongitude( MainActivity.longitude );
 			postReply.setMessage( edtPostReply.getText().toString() );
@@ -464,15 +467,10 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 								post.getUser().getProfileImageURL() , imgProfile, options );
 					}
 
-					String age = "";
-
-					if ( post.getUser().getAge() != null && !"".equals( post.getUser().getAge() ) )
-						age = " (" + post.getUser().getAge() + ")";
-
 					if ( Util.isEmptyString( post.getUser().getUserName() ) )
-						txtUserName.setText( post.getUser().getUserID() + age );
+						txtUserName.setText( post.getUser().getUserID() );
 					else
-						txtUserName.setText( post.getUser().getUserName() + age );
+						txtUserName.setText( post.getUser().getUserName() );
 
 					ImageView imgSex = (ImageView) header.findViewById(R.id.imgSex);
 					imgSex.setVisibility(ViewGroup.VISIBLE);
@@ -542,7 +540,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					imgStatus.setVisibility(ViewGroup.VISIBLE);
 					Button btnFinish = (Button) header.findViewById(R.id.btnFinish);
 					
-					if ( post.getUser().getUserID().equals( getLoginUser().getUserID() ) || Constants.bAdminMode )
+					if ( post.getUser().getUserID().equals( application.getLoginUser().getUserID() ) || Constants.bAdminMode )
 						header.findViewById(R.id.layoutMyOption).setVisibility(ViewGroup.VISIBLE);
 					else
 						header.findViewById(R.id.layoutMyOption).setVisibility(ViewGroup.GONE );
@@ -550,7 +548,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					if ( "진행중".equals( post.getStatus() ) )
 					{
 						imgStatus.setImageResource(R.drawable.progressing);
-						if ( post.getUser().getUserID().equals( getLoginUser().getUserID() ))
+						if ( post.getUser().getUserID().equals( application.getLoginUser().getUserID() ))
 							btnFinish.setVisibility(ViewGroup.VISIBLE);	
 					}
 					else
@@ -558,6 +556,11 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 						imgStatus.setImageResource(R.drawable.finished);
 						btnFinish.setVisibility(ViewGroup.GONE);
 					}
+					
+					if ( !Util.isEmptyString( post.getUser().getKakaoID() ) )
+						findViewById(R.id.imgKakaoIcon).setVisibility(ViewGroup.VISIBLE);
+					else
+						findViewById(R.id.imgKakaoIcon).setVisibility(ViewGroup.GONE);
 					
 					setControlsVisibility( post );
 				}
@@ -693,7 +696,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		{
 			int id = v.getId();
 
-			if ( id == R.id.txtUserName || id == R.id.imgProfile )
+			if ( id == R.id.txtUserName || id == R.id.flImgProfile )
 			{
 				goUserProfileActivity( post.getUser().getUserID() );
 			}

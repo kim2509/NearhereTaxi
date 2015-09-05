@@ -29,6 +29,10 @@ public class User extends ListItemModel{
 	private String mobileNo;
 	private String uuid;
 	private String address;
+	private String kakaoID;
+	private String kakaoThumbnailImageURL;
+	private String kakaoProfileImageURL;
+	
 	private boolean moreFlag;
 
 	public String getUserNo() {
@@ -176,5 +180,29 @@ public class User extends ListItemModel{
 
 	public void setMoreFlag(boolean moreFlag) {
 		this.moreFlag = moreFlag;
+	}
+
+	public String getKakaoID() {
+		return kakaoID;
+	}
+
+	public void setKakaoID(String kakaoID) {
+		this.kakaoID = kakaoID;
+	}
+
+	public String getKakaoProfileImageURL() {
+		return kakaoProfileImageURL;
+	}
+
+	public void setKakaoProfileImageURL(String kakaoProfileImageURL) {
+		this.kakaoProfileImageURL = kakaoProfileImageURL;
+	}
+
+	public String getKakaoThumbnailImageURL() {
+		return kakaoThumbnailImageURL;
+	}
+
+	public void setKakaoThumbnailImageURL(String kakaoThumbnailImageURL) {
+		this.kakaoThumbnailImageURL = kakaoThumbnailImageURL;
 	}
 }

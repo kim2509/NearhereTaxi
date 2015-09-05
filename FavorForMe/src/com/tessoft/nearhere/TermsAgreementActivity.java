@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.codehaus.jackson.type.TypeReference;
 
+import com.kakao.Session;
 import com.tessoft.common.Constants;
 import com.tessoft.domain.APIResponse;
 
@@ -87,8 +88,10 @@ public class TermsAgreementActivity extends BaseActivity {
 		{
 			setProgressBarIndeterminateVisibility(true);
 
+			application.debug("profilePoint:" + application.getLoginUser().getProfilePoint());
+			
 			HashMap hash = new HashMap();
-			hash.put("userID", getLoginUser().getUserID());
+			hash.put("userID", application.getLoginUser().getUserID());
 			hash.put("nearhere_ver", "1.0");
 			hash.put("personal_ver", "1.0");
 			hash.put("location_ver", "1.0");
@@ -149,8 +152,15 @@ public class TermsAgreementActivity extends BaseActivity {
 	@Override
 	public void onBackPressed() {
 		super.onBackPressed();
-		Intent intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		startActivity(intent);
+//		Intent intent = null;
+//		
+//		if ( Constants.bKakaoLogin )
+//			intent = new Intent( getApplicationContext(), KakaoLoginActivity.class);
+//		else
+//			intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
+//		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//		startActivity(intent);
+		Session.getCurrentSession().close();
+		goKaKaoLoginActivity();
 	}
 }

@@ -95,7 +95,7 @@ public class MessageBoxFragment extends BaseListFragment {
 
 	private void inquiryMessage() throws IOException, JsonGenerationException,
 	JsonMappingException {
-		User user = getLoginUser();
+		User user = application.getLoginUser();
 
 		rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
 		listMain.setVisibility(ViewGroup.GONE);
@@ -157,7 +157,7 @@ public class MessageBoxFragment extends BaseListFragment {
 		{
 			HashMap hash = new HashMap();
 			hash.put("fromUserID",  message.getUser().getUserID() );
-			hash.put("userID",  getLoginUser().getUserID() );
+			hash.put("userID",  application.getLoginUser().getUserID() );
 			Intent intent = new Intent( getActivity(), UserMessageActivity.class);
 			intent.putExtra("messageInfo", hash );
 			startActivity(intent);

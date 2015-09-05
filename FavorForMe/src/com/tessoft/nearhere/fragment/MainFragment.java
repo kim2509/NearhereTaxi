@@ -86,6 +86,13 @@ public class MainFragment extends BaseFragment {
 
 		getActivity().registerReceiver(mMessageReceiver, new IntentFilter("currentLocationChanged"));
 	}
+	
+	@Override
+	public void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
+		getActivity().unregisterReceiver(mMessageReceiver);
+	}
 
 	//This is the handler that will manager to process the broadcast intent
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -174,7 +181,7 @@ public class MainFragment extends BaseFragment {
             {
             	switch (msg.what) {
                 case READY:
-                	String userID = getLoginUser().getUserID();
+                	String userID = application.getLoginUser().getUserID();
     				webView.loadUrl("javascript:getMainInfo('" + userID + "');");	
                     break;
                      

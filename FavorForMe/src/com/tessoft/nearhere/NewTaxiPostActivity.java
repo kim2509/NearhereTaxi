@@ -311,7 +311,7 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 			
 			Spinner spSex = (Spinner)findViewById(R.id.spSex);
 			
-			if ( "여자만".equals( spSex.getSelectedItem() ) && "M".equals( getLoginUser().getSex() ) )
+			if ( "여자만".equals( spSex.getSelectedItem() ) && "M".equals( application.getLoginUser().getSex() ) )
 			{
 				showOKDialog("경고", "남성회원은 여자만 옵션을 선택할 수 없습니다.", null);
 				return;
@@ -329,7 +329,7 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 			post.setSexInfo( spSex.getSelectedItem().toString() );
 			Spinner spNumOfUsers = (Spinner)findViewById(R.id.spNumOfUsers);
 			post.setNumOfUsers( spNumOfUsers.getSelectedItem().toString() );
-			post.setUser( getLoginUser() );
+			post.setUser( application.getLoginUser() );
 			
 			post.setVehicle( spVehicle.getSelectedItem().toString() );
 			post.setFareOption( spFareCondition.getSelectedItem().toString() );

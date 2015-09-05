@@ -1,5 +1,6 @@
 package com.tessoft.nearhere;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -16,11 +17,15 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.Toast;
 
 public class NearhereApplication extends Application{
 
@@ -93,8 +98,14 @@ public class NearhereApplication extends Application{
 				else
 				{
 					result = Util.decodeBase64( result );
+					
+//					debug( this, "loginUser[decoded]:" + result );
+					
 					user = mapper.readValue( result , new TypeReference<User>(){});	
 				}
+				
+				if ( user == null )
+					user = new User();
 				
 				return user;
 			}
@@ -116,12 +127,22 @@ public class NearhereApplication extends Application{
 		if ( ex == null )
 			writeLog( "[" + target.getClass().getName() + "] NullPointerException!!!" );
 		else
-			Log.e("이근처", "exception", ex);
+			Log.e("error", "exception", ex);
 	}
 	
 	public void writeLog( String log )
 	{
-		Log.e("NearHereHelp", log );
+		Log.e("debug", log );
+	}
+	
+	public void debug( Object obj, String log )
+	{
+		Log.e("debug", "[" + obj.getClass().getName() + "] " + log );
+	}
+	
+	public void debug( String log )
+	{
+		Log.e("debug", log );
 	}
 	
 	public void sendHttp( String url, Object request, int requestCode, TransactionDelegate listener )
@@ -141,5 +162,40 @@ public class NearhereApplication extends Application{
 			return false;
 		}
 		return true;
+	}
+	
+	public void showToastMessage( String message )
+	{
+		Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+	}
+	
+	public HashMap getDefaultRequest()
+	{
+		HashMap request = new HashMap();
+		request.put("OSVersion", getOSVersion());
+		request.put("AppVersion", getPackageVersion());
+		request.put("UUID", getUniqueDeviceID());
+		return request;
+	}
+	
+	public String getOSVersion()
+	{
+		return Build.VERSION.RELEASE;
+	}
+	
+	public String getPackageVersion()
+	{
+		PackageInfo pInfo;
+		try {
+			
+			pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+			
+			return pInfo.versionName;
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return "";
 	}
 }

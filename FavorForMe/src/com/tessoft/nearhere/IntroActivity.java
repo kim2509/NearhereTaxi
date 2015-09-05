@@ -9,6 +9,8 @@ import org.codehaus.jackson.type.TypeReference;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -22,6 +24,7 @@ import android.widget.RelativeLayout;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.kakao.Session;
 import com.tessoft.common.Constants;
 import com.tessoft.common.Util;
 import com.tessoft.domain.APIResponse;
@@ -32,6 +35,9 @@ import com.tessoft.nearhere.R;
 public class IntroActivity extends BaseActivity {
 
 	private static final int HTTP_LOGIN_BACKGROUND = 2;
+	private static final int HTTP_APP_INFO = 3;
+	private static final String UPDATE_NOTICE = "UPDATE_NOTICE";
+	
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		
@@ -39,43 +45,13 @@ public class IntroActivity extends BaseActivity {
 		{
 			super.onCreate(savedInstanceState);
 			
-			checkIfAdminUser();
+			// 카카오톡 세션을 초기화 한다.
+			Session.initialize(this);
+						
+			HashMap hash = application.getDefaultRequest();
+			hash.put("os", "Android");
 
-			// 약 2초간 인트로 화면을 출력.
-			getWindow().getDecorView().postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					
-					try
-					{
-						
-						if ( "".equals( getLoginUser().getUserID() ) || !"true".equals( getMetaInfoString("registerUserFinished")) 
-								|| "true".equals( getMetaInfoString("logout")) )
-						{
-							Intent intent = null;
-							intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
-							intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-							startActivity(intent);
-							finish();
-							// 액티비티 이동시 페이드인/아웃 효과를 보여준다. 즉, 인트로
-							//    화면에 부드럽게 사라진다.
-							overridePendingTransition(android.R.anim.fade_in, 
-									android.R.anim.fade_out);
-						}
-						else
-						{
-							HashMap request = getDefaultRequest();
-							request.put("user", getLoginUser());
-							sendHttp("/taxi/login_bg.do", mapper.writeValueAsString(request), HTTP_LOGIN_BACKGROUND);
-						}
-						
-					}
-					catch( Exception ex )
-					{
-						catchException(this, ex);
-					}
-				}
-			}, 1000);
+			login();
 		}
 		catch( Exception ex )
 		{
@@ -84,7 +60,8 @@ public class IntroActivity extends BaseActivity {
 		}
 		
 	}
-	
+
+	/*
 	public void login( View v )
 	{
 		try
@@ -119,12 +96,15 @@ public class IntroActivity extends BaseActivity {
 			catchException(this, ex);
 		}
 	}
+	*/
 
 	@Override
 	public void doPostTransaction(int requestCode, Object result) {
 		// TODO Auto-generated method stub
 		try
 		{
+			application.debug(this, "doPostTransaction[" + requestCode + "]:" + result );
+			
 			if ( Constants.FAIL.equals(result) )
 			{
 				showOKDialog("통신중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
@@ -161,11 +141,34 @@ public class IntroActivity extends BaseActivity {
 			{
 				String userString = mapper.writeValueAsString( response.getData() );
 				User user = mapper.readValue( userString, new TypeReference<User>(){});
-				setLoginUser(user);
+				
+				application.setLoginUser(user);
+				application.setMetaInfo("logout", "false");
+				
 				Intent intent = new Intent( getApplicationContext(), MainActivity.class);
 				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);
 				finish();
+			}
+			else if ( requestCode == Constants.HTTP_LOGIN_BACKGROUND2 )
+			{
+				String userString = mapper.writeValueAsString( response.getData() );
+				User user = mapper.readValue( userString, new TypeReference<User>(){});
+				
+				HashMap addInfo = (HashMap) response.getData2();
+				
+				if ( "Y".equals( addInfo.get("registerUserFinished") ) )
+				{
+					application.setLoginUser(user);
+					application.setMetaInfo("logout", "false");
+					
+					Intent intent = new Intent( getApplicationContext(), MainActivity.class);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(intent);
+					finish();
+				}
+				else
+					goKaKaoLoginActivity();
 			}
 		}
 		catch( Exception ex )
@@ -174,21 +177,107 @@ public class IntroActivity extends BaseActivity {
 		}
 	}
 	
-	public void goMainActivity()
-	{
-		try
+	private void login() throws Exception{
+		
+//		User u = new User();
+//		u.setUserID("user27");
+//		u.setUserNo("27");
+//		application.setLoginUser(u);
+
+//		if ( Constants.bReal == false )
+//			checkIfAdminUser();
+		
+		Log.d("debug", "login");
+		Log.d("debug", "login user : " + mapper.writeValueAsString( application.getLoginUser() ) );
+		
+		if ( "true".equals( application.getMetaInfoString("logout") ) || 
+				"".equals( application.getLoginUser().getUserID() ) || !Util.isEmptyString( application.getLoginUser().getKakaoID() ) )
+			Constants.bKakaoLogin = true;
+		else
 		{
-			Intent intent = new Intent( this, MainActivity.class);
-			startActivity(intent);
-			overridePendingTransition(android.R.anim.fade_in, 
-					android.R.anim.fade_out);
+			Constants.bKakaoLogin = false;
 		}
-		catch( Exception ex )
+		
+		Log.d("debug", "bKakaoLogin : " + Constants.bKakaoLogin );
+			
+		if ( Util.isEmptyString( application.getLoginUser().getKakaoID() ) && Constants.bKakaoLogin )
 		{
-			catchException(this, ex);
+			// 회원가입
+			goKaKaoLoginActivity();
+		}
+		else if ( Constants.bKakaoLogin )
+		{
+			// 로그아웃 했을 경우 다시 로그인 하기 위함
+			HashMap request = application.getDefaultRequest();
+			request.put("userID", application.getLoginUser().getUserID());
+			request.put("hash", application.getMetaInfoString("hash") );
+			
+			Log.d("debug", "login_bg2 : " + mapper.writeValueAsString( request ) );
+			
+			sendHttp("/taxi/login_bg2.do", mapper.writeValueAsString(request), Constants.HTTP_LOGIN_BACKGROUND2 );
+		}
+		else
+		{
+			// 로그아웃 했을 경우 다시 로그인 하기 위함
+			HashMap request = application.getDefaultRequest();
+			request.put("user", application.getLoginUser());
+
+			Log.d("debug", "login_bg : " + mapper.writeValueAsString( request ) );
+
+			sendHttp("/taxi/login_bg.do", mapper.writeValueAsString(request), HTTP_LOGIN_BACKGROUND );
+		}
+	}
+	
+	@Override
+	public void okClicked(Object param) {
+		// TODO Auto-generated method stub
+		super.okClicked(param);
+		
+		if ( UPDATE_NOTICE.equals( param ) )
+		{
+			goUpdate();
 		}
 	}
 
+	private void goUpdate() {
+		final String appPackageName = getPackageName();
+		try {
+		    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+		} catch (android.content.ActivityNotFoundException anfe) {
+		    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+		}
+	}
+	
+	@Override
+	public void yesClicked(Object param) {
+		// TODO Auto-generated method stub
+		super.yesClicked(param);
+		
+		if ( UPDATE_NOTICE.equals( param ) )
+		{
+			goUpdate();
+			finish();
+		}
+	}
+	
+	@Override
+	public void noClicked(Object param) {
+		// TODO Auto-generated method stub
+		super.noClicked(param);
+		
+		try
+		{
+			if ( UPDATE_NOTICE.equals( param ) )
+			{
+				login();
+			}			
+		}
+		catch( Exception ex )
+		{
+			
+		}
+	}
+	
 	public void goRegisterActivity( View v )
 	{
 		Intent intent = new Intent( this, RegisterUserActivity.class);
@@ -271,10 +360,13 @@ public class IntroActivity extends BaseActivity {
 		    
 		    Constants.bAdminMode = true;
 		    
-		    User user = getLoginUser();
+		    User user = application.getLoginUser();
 		    user.setUserNo(userNo);
 		    user.setUserID(userID);
-		    setLoginUser(user);
+		    application.setLoginUser(user);
+		    
+		    application.setMetaInfo("registerUserFinished", "true");
+		    application.setMetaInfo("logout", "false");
 		}
 		catch( Exception ex )
 		{
