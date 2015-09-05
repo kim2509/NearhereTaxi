@@ -50,7 +50,8 @@ public class IntroActivity extends BaseActivity {
 						
 			HashMap hash = application.getDefaultRequest();
 			hash.put("os", "Android");
-			sendHttp("/app/appInfo.do", mapper.writeValueAsString( hash ), HTTP_APP_INFO );
+
+			login();
 		}
 		catch( Exception ex )
 		{
@@ -169,26 +170,6 @@ public class IntroActivity extends BaseActivity {
 				else
 					goKaKaoLoginActivity();
 			}
-			else if ( requestCode == HTTP_APP_INFO )
-			{
-				String appInfoString = mapper.writeValueAsString( response.getData() );
-				HashMap appInfo = mapper.readValue( appInfoString, new TypeReference<HashMap>(){});
-				
-				if ( appInfo != null && appInfo.containsKey("version") && appInfo.containsKey("forceUpdate") )
-				{
-					if ( !application.getPackageVersion().equals( appInfo.get("version") ) )
-					{
-						if ("Y".equals( appInfo.get("forceUpdate") ) )
-							showOKDialog("알림","이근처 합승이 업데이트 되었습니다.\r\n확인을 누르시면 업데이트 화면으로 이동합니다." , UPDATE_NOTICE );
-						else
-							showYesNoDialog("알림", "이근처 합승이 업데이트 되었습니다.\r\n지금 업데이트 하시겠습니까?", UPDATE_NOTICE );
-						
-						return;
-					}					
-				}
-				
-				login();
-			}
 		}
 		catch( Exception ex )
 		{
@@ -203,7 +184,8 @@ public class IntroActivity extends BaseActivity {
 //		u.setUserNo("27");
 //		application.setLoginUser(u);
 
-//		checkIfAdminUser();
+//		if ( Constants.bReal == false )
+//			checkIfAdminUser();
 		
 		Log.d("debug", "login");
 		Log.d("debug", "login user : " + mapper.writeValueAsString( application.getLoginUser() ) );
@@ -283,9 +265,16 @@ public class IntroActivity extends BaseActivity {
 		// TODO Auto-generated method stub
 		super.noClicked(param);
 		
-		if ( UPDATE_NOTICE.equals( param ) )
+		try
 		{
-			finish();
+			if ( UPDATE_NOTICE.equals( param ) )
+			{
+				login();
+			}			
+		}
+		catch( Exception ex )
+		{
+			
 		}
 	}
 	

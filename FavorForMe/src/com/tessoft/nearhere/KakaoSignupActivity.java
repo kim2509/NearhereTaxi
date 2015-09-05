@@ -24,6 +24,8 @@ import com.kakao.UserManagement;
 import com.kakao.UserProfile;
 import com.kakao.template.loginbase.SampleSignupActivity;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.tessoft.common.HttpTransactionReturningString;
 import com.tessoft.common.TransactionDelegate;
@@ -140,7 +142,7 @@ public class KakaoSignupActivity extends SampleSignupActivity{
 				}
 				catch( Exception ex )
 				{
-					
+					Log.e("error", "uploadProfileImage", ex );
 				}
 			}
 		}, "/taxi/getRandomIDV2.do", HTTP_REQUEST_GET_RANDOM_ID_V2 ).execute( mapper.writeValueAsString(request) );
@@ -172,15 +174,19 @@ public class KakaoSignupActivity extends SampleSignupActivity{
 				return;
 			}
 			
+			Log.d("debug", "starting profile image downloading...." );
+			
 			ImageLoader imageLoader = ImageLoader.getInstance();
 
-			imageLoader.loadImage( user.getKakaoProfileImageURL(), new SimpleImageLoadingListener() {
+			ImageSize targetSize = new ImageSize(640, 640);
+			imageLoader.loadImage( user.getKakaoProfileImageURL(), targetSize, new SimpleImageLoadingListener() {
 				@Override
 				public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
 
 					if (loadedImage != null )
 					{
-						Log.d("imageResult", "image loaded.");
+						Log.d("imageResult", "image loaded. " + loadedImage.getWidth() + " " + loadedImage.getHeight() );
+						
 						new UploadTask( getApplicationContext(), user.getUserID() , PROFILE_IMAGE_UPLOAD, 
 								new TransactionDelegate() {
 							
@@ -203,6 +209,19 @@ public class KakaoSignupActivity extends SampleSignupActivity{
 							}
 						}).execute( loadedImage );
 					}
+					else
+					{
+						Log.d("debug", "downloaded image is null." );
+					}
+				}
+				
+				@Override
+				public void onLoadingFailed(String imageUri, View view,
+						FailReason failReason) {
+					// TODO Auto-generated method stub
+					super.onLoadingFailed(imageUri, view, failReason);
+					
+					Log.d("debug", "onLoadingFailed:" + failReason );
 				}
 			});
 		}
