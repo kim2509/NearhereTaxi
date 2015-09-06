@@ -147,6 +147,7 @@ public class MoreUserInfoActivity extends BaseActivity {
 			{
 				application.setMetaInfo("logout", "false");
 				application.setMetaInfo("registerUserFinished", "true");
+				Constants.bKakaoLogin = true;
 				
 				goTaxiTutorialActivity();
 			}
