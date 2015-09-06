@@ -8,6 +8,8 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -20,6 +22,7 @@ import android.widget.Toast;
 
 import com.kakao.APIErrorResult;
 import com.kakao.MeResponseCallback;
+import com.kakao.Session;
 import com.kakao.UserManagement;
 import com.kakao.UserProfile;
 import com.kakao.template.loginbase.SampleSignupActivity;
@@ -28,6 +31,7 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.tessoft.common.HttpTransactionReturningString;
+import com.tessoft.common.OKDialogListener;
 import com.tessoft.common.TransactionDelegate;
 import com.tessoft.common.UploadTask;
 import com.tessoft.domain.APIResponse;
@@ -197,10 +201,30 @@ public class KakaoSignupActivity extends SampleSignupActivity{
 								try
 								{
 									APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){}); 
-									String userString = mapper.writeValueAsString( response.getData2() );
-									User user = mapper.readValue(userString, new TypeReference<User>(){});
-									application.setLoginUser(user);
-									goTermsAgreementActivity( null );
+									
+									application.debug( "upload result :" + result.toString() );
+
+									application.debug( "upload result code :" + response.getResCode() );
+									
+									if ( "0000".equals( response.getResCode() ) )
+									{
+										String userString = mapper.writeValueAsString( response.getData2() );
+										User user = mapper.readValue(userString, new TypeReference<User>(){});
+										application.setLoginUser(user);
+										goTermsAgreementActivity( null );	
+									}
+									else
+									{
+										showOKDialog("오류", "카카오 로그인 도중 오류가 발생했습니다.", new OKDialogListener() {
+											
+											@Override
+											public void okClicked(Object param) {
+												// TODO Auto-generated method stub
+												Session.getCurrentSession().close();
+												redirectLoginActivity();
+											}
+										}, null );
+									}
 								}
 								catch( Exception ex )
 								{
@@ -231,6 +255,23 @@ public class KakaoSignupActivity extends SampleSignupActivity{
 		}
 	}
 
+    public void showOKDialog( String title, String message, final OKDialogListener listener, final Object param )
+	{
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		
+		builder.setTitle( title )
+			   .setMessage( message )
+		       .setCancelable(false)
+		       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		        	   if ( listener != null )
+		        		   listener.okClicked( param );
+		           }
+		       });
+		AlertDialog alert = builder.create();
+		alert.show();
+	}
+    
     public void goMainActivity()
     {
     	Intent intent = new Intent( this, MainActivity.class);
