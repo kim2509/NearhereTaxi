@@ -800,13 +800,23 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 					
 					if ( appInfo == null || !appInfo.containsKey("version") || !appInfo.containsKey("forceUpdate") ) return;
 					
-					if ( !application.getPackageVersion().equals( appInfo.get("version") ) )
+					try
 					{
-						if ("Y".equals( appInfo.get("forceUpdate") ) )
-							showOKDialog("알림","이근처 합승이 업데이트 되었습니다.\r\n확인을 누르시면 업데이트 화면으로 이동합니다." , UPDATE_NOTICE );
-						else
-							showYesNoDialog("알림", "이근처 합승이 업데이트 되었습니다.\r\n지금 업데이트 하시겠습니까?", UPDATE_NOTICE );
+						double latestVersion = Double.parseDouble( appInfo.get("version").toString() );
+						double installedVersion = Double.parseDouble( application.getPackageVersion() );
 						
+						if ( installedVersion < latestVersion )
+						{
+							if ("Y".equals( appInfo.get("forceUpdate") ) )
+								showOKDialog("알림","이근처 합승이 업데이트 되었습니다.\r\n확인을 누르시면 업데이트 화면으로 이동합니다." , UPDATE_NOTICE );
+							else
+								showYesNoDialog("알림", "이근처 합승이 업데이트 되었습니다.\r\n지금 업데이트 하시겠습니까?", UPDATE_NOTICE );
+							
+							return;
+						}						
+					}
+					catch( Exception ex )
+					{
 						return;
 					}
 				}
