@@ -96,6 +96,9 @@ public class TaxiFragment extends BaseFragment
 			listMain.addHeaderView(header3, null, false );
 			listMain.addHeaderView(header2, null, false );
 			
+			if ( application.getLoginUser() != null && 
+					Util.isEmptyString( application.getLoginUser().getKakaoID() ) ) Constants.bKakaoLogin = true;
+			
 			if ( !Constants.bKakaoLogin )
 			{
 				listMain.addHeaderView(header, null, false );

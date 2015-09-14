@@ -46,7 +46,11 @@ public class LocationUpdateService extends Service
 			
 			application = (NearhereApplication) getApplication();
 			
-			if ( application.isGooglePlayServicesAvailable() == false || application.checkIfGPSEnabled() == false ) return;
+			if ( application.isGooglePlayServicesAvailable() == false || application.checkIfGPSEnabled() == false )
+			{
+				stopSelf();
+				return;
+			}
 			
 	        buildGoogleApiClient();
 	        
