@@ -96,8 +96,10 @@ public class TaxiFragment extends BaseFragment
 			listMain.addHeaderView(header3, null, false );
 			listMain.addHeaderView(header2, null, false );
 			
-			if ( application.getLoginUser() != null && 
-					Util.isEmptyString( application.getLoginUser().getKakaoID() ) ) Constants.bKakaoLogin = true;
+			if ( application.getLoginUser() != null &&
+					!Util.isEmptyString( application.getLoginUser().getKakaoID() ) ) Constants.bKakaoLogin = true;
+			
+			if ( "Guest".equals(application.getLoginUser().getType() ) ) Constants.bKakaoLogin = false;
 			
 			if ( !Constants.bKakaoLogin )
 			{
@@ -203,15 +205,28 @@ public class TaxiFragment extends BaseFragment
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent( getActivity(), NewTaxiPostActivity.class);
-				if ( departure != null )
+				try
 				{
-					intent.putExtra("address", departureAddress );
-					intent.putExtra("departure", departure);
-				}
+					if ( "Guest".equals( application.getLoginUser().getType()))
+					{
+						showYesNoDialog("확인", "카카오연동 후에 등록하실 수 있습니다.\r\n\r\n카카오연동하시겠습니까?\r\n", "kakaoLoginCheck" );
+						return;
+					}
+					
+					Intent intent = new Intent( getActivity(), NewTaxiPostActivity.class);
+					if ( departure != null )
+					{
+						intent.putExtra("address", departureAddress );
+						intent.putExtra("departure", departure);
+					}
 
-				startActivityForResult(intent, REQUEST_NEW_POST );
-				getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
+					startActivityForResult(intent, REQUEST_NEW_POST );
+					getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);	
+				}
+				catch( Exception ex )
+				{
+					application.catchException(TaxiFragment.this, ex);
+				}
 			}
 		});
 		
@@ -713,6 +728,11 @@ public class TaxiFragment extends BaseFragment
 		{
 			MainActivity mainActivity = (MainActivity) getActivity();
 			mainActivity.yesClicked("logout");
+		}
+		else if ("kakaoLoginCheck".equals( param ) )
+		{
+			MainActivity mainActivity = (MainActivity) getActivity();
+			mainActivity.kakaoLogout();
 		}
 	}
 }

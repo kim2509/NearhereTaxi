@@ -210,7 +210,6 @@ public class BaseActivity extends ActionBarActivity implements TransactionDelega
 		Intent intent = new Intent( getApplicationContext(), KakaoLoginActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(intent);
-		finish();
 		overridePendingTransition(android.R.anim.fade_in, 
 				android.R.anim.fade_out);
 	}

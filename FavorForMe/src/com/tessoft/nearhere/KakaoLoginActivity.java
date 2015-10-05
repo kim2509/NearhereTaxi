@@ -99,32 +99,4 @@ public class KakaoLoginActivity extends SampleLoginActivity{
 			}
 		});
 	}
-	
-	boolean doubleBackToExitPressedOnce = false;
-	@Override
-	public void onBackPressed() {
-
-		try {
-			application.debug( this, mapper.writeValueAsString( application.getLoginUser() ) );
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		if (doubleBackToExitPressedOnce) {
-			super.onBackPressed();
-			return;
-		}
-
-		this.doubleBackToExitPressedOnce = true;
-		Toast.makeText(this, "이전 버튼을 한번 더 누르면 종료합니다.", Toast.LENGTH_SHORT).show();
-
-		new Handler().postDelayed(new Runnable() {
-
-			@Override
-			public void run() {
-				doubleBackToExitPressedOnce=false;                       
-			}
-		}, 2000);
-	}
 }

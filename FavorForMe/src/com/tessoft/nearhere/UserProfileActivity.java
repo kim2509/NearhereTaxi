@@ -168,6 +168,13 @@ public class UserProfileActivity extends BaseActivity {
 
 	@SuppressWarnings({ "rawtypes", "unchecked"})
 	public void goUserMessageActivity( View v ) {
+		
+		if ( "Guest".equals( application.getLoginUser().getType()))
+		{
+			showOKDialog("확인", "카카오연동 후에 등록하실 수 있습니다.\r\n\r\n메인 화면에서 카카오연동을 할 수 있습니다.", "kakaoLoginCheck" );
+			return;
+		}
+		
 		HashMap hash = new HashMap();
 		hash.put("fromUserID", getIntent().getExtras().getString("userID") );
 		hash.put("userID",  application.getLoginUser().getUserID() );

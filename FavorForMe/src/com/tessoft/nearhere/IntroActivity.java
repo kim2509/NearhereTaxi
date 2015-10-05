@@ -51,7 +51,31 @@ public class IntroActivity extends BaseActivity {
 			HashMap hash = application.getDefaultRequest();
 			hash.put("os", "Android");
 
-			login();
+			application.debug("application.getLoginUser().getUserID() :" + application.getLoginUser().getUserID() );
+			application.debug("application.getLoginUser().getType() :" + application.getLoginUser().getType() );
+			
+			if ( Util.isEmptyString( application.getLoginUser().getUserID() ) )
+			{
+				//Guest 최초로그인
+				HashMap request = application.getDefaultRequest();
+				User user = application.getLoginUser();
+				request.put("user", user );
+				sendHttp("/taxi/getRandomIDForGuest.do", mapper.writeValueAsString(request), Constants.HTTP_GET_RANDOM_ID_FOR_GUEST );
+			}
+			else if ( !Util.isEmptyString( application.getLoginUser().getUserID() ) && "Guest".equals( application.getLoginUser().getType() ) )
+			{
+				// 게스트로 로그인 한 경우
+				HashMap request = application.getDefaultRequest();
+				request.put("user", application.getLoginUser());
+
+				Log.d("debug", "login_bg : " + mapper.writeValueAsString( request ) );
+
+				sendHttp("/taxi/login_bg.do", mapper.writeValueAsString(request), HTTP_LOGIN_BACKGROUND );
+			}
+			else
+			{
+				login();
+			}
 		}
 		catch( Exception ex )
 		{
@@ -115,39 +139,14 @@ public class IntroActivity extends BaseActivity {
 			
 			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
 			
-			if ( requestCode == 1 )
-			{
-				if ( "0000".equals( response.getResCode() ) )
-				{
-					String postData = mapper.writeValueAsString( response.getData() );
-					User user = mapper.readValue( postData, new TypeReference<User>(){});
-					application.setMetaInfo("userID", user.getUserID() );
-					application.setMetaInfo("userName", user.getUserName() );
-					goMainActivity();
-					finish();
-				}
-				else
-				{
-					findViewById(R.id.edtUserID).setEnabled(true);
-					findViewById(R.id.edtPassword).setEnabled(true);
-					findViewById(R.id.btnRegisterUser).setEnabled(true);
-					findViewById(R.id.btnLogin).setEnabled(true);
-					
-					showOKDialog("오류", response.getResMsg(), null);
-					return;
-				}
-			}
-			else if ( requestCode == HTTP_LOGIN_BACKGROUND )
+			if ( requestCode == Constants.HTTP_GET_RANDOM_ID_FOR_GUEST || requestCode == HTTP_LOGIN_BACKGROUND )
 			{
 				String userString = mapper.writeValueAsString( response.getData() );
 				User user = mapper.readValue( userString, new TypeReference<User>(){});
+
+				application.setLoginUser( user );
 				
-				application.setLoginUser(user);
-				application.setMetaInfo("logout", "false");
-				
-				Intent intent = new Intent( getApplicationContext(), MainActivity.class);
-				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				startActivity(intent);
+				goMainActivity();
 				finish();
 			}
 			else if ( requestCode == Constants.HTTP_LOGIN_BACKGROUND2 )
@@ -168,7 +167,10 @@ public class IntroActivity extends BaseActivity {
 					finish();
 				}
 				else
+				{
 					goKaKaoLoginActivity();
+					finish();
+				}
 			}
 		}
 		catch( Exception ex )
@@ -204,6 +206,7 @@ public class IntroActivity extends BaseActivity {
 		{
 			// 회원가입
 			goKaKaoLoginActivity();
+			finish();
 		}
 		else if ( Constants.bKakaoLogin )
 		{

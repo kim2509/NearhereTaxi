@@ -2,7 +2,7 @@ package com.tessoft.common;
 
 public class Constants {
 
-	public static boolean bReal = true;
+	public static boolean bReal = false;
 	
 	public static String protocol = "http://";
 	
@@ -28,4 +28,6 @@ public class Constants {
 	public static final int HTTP_UPDATE_LOCATION = 20;
 	public static final int HTTP_APP_INFO = 1010;
 	public static final int HTTP_LOGIN_BACKGROUND2 = 1020;
+	public static final int HTTP_GET_RANDOM_ID_FOR_GUEST = 1030;
+	public static final int HTTP_LOGOUT = 1040;
 }

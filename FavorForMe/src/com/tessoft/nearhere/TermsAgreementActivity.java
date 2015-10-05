@@ -162,5 +162,6 @@ public class TermsAgreementActivity extends BaseActivity {
 //		startActivity(intent);
 		Session.getCurrentSession().close();
 		goKaKaoLoginActivity();
+		finish();
 	}
 }

@@ -31,6 +31,14 @@ public class NearhereApplication extends Application{
 
 	ObjectMapper mapper = new ObjectMapper();
 	
+	public int getMetaInfoInt( String key )
+	{
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences( this );
+		if ( settings.contains(key) )
+			return Util.getInt( settings.getString(key, "") );
+		return 0;
+	}
+	
 	public String getMetaInfoString( String key )
 	{
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences( this );

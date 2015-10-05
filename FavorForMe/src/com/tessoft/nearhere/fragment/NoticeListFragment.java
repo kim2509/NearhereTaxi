@@ -82,6 +82,7 @@ public class NoticeListFragment extends BaseFragment {
 					adapter.notifyDataSetChanged();
 					
 					int noticeID = getMetaInfoInt("lastNoticeID");
+					
 					if ( noticeID < Integer.parseInt( item.getNoticeID() ) )
 						setMetaInfo("lastNoticeID", item.getNoticeID() );
 					
@@ -194,7 +195,7 @@ public class NoticeListFragment extends BaseFragment {
 			for ( int i = 0; i < noticeList.size(); i++ )
 			{
 				Notice noticeItem = noticeList.get(i);
-				if ( noticeID >= Integer.parseInt( noticeItem.getNoticeID() ) )
+				if ( noticeID == 0 || noticeID >= Integer.parseInt( noticeItem.getNoticeID() ) )
 					noticeItem.setRead(true);
 			}	
 		}

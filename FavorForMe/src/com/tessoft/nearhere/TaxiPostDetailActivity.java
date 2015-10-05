@@ -408,6 +408,12 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		{
 			EditText edtPostReply = (EditText) footer.findViewById(R.id.edtPostReply);
 
+			if ( "Guest".equals( application.getLoginUser().getType()))
+			{
+				showOKDialog("확인", "카카오연동 후에 등록하실 수 있습니다.\r\n\r\n메인 화면에서 카카오연동을 할 수 있습니다.", "kakaoLoginCheck" );
+				return;
+			}
+			
 			if ( TextUtils.isEmpty(edtPostReply.getText()) )
 			{
 				edtPostReply.setError("댓글을 입력해 주시기 바랍니다.");

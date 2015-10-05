@@ -116,6 +116,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	DisplayImageOptions options = null;
 	
 	View header = null;
+	
+	boolean bUpdateUnreadCountFinished = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -172,14 +174,14 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 	private void initLeftMenu() throws Exception 
 	{
-
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
 		header = getLayoutInflater().inflate(R.layout.list_my_info_header, null);
 		header.setTag(new MainMenuItem("header"));
+		
 		mDrawerList.addHeaderView(header);
-
+		
 		options = new DisplayImageOptions.Builder()
 		.resetViewBeforeLoading(true)
 		.cacheInMemory(true)
@@ -195,10 +197,15 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		adapter.add(new MainMenuItem("홈"));
 		//		adapter.add(new MainMenuItem("내 정보"));
 		adapter.add(new MainMenuItem("알림메시지"));
-		adapter.add(new MainMenuItem("쪽지함"));
+		
+		if ( !"Guest".equals( application.getLoginUser().getType() ) )
+			adapter.add(new MainMenuItem("쪽지함"));
+		
 		adapter.add(new MainMenuItem("공지사항"));
 		adapter.add(new MainMenuItem("설정"));
-		adapter.add(new MainMenuItem("로그아웃"));
+		
+		if ( !"Guest".equals( application.getLoginUser().getType() ) )
+			adapter.add(new MainMenuItem("로그아웃"));
 
 		mDrawerList.setAdapter( adapter );
 		
@@ -241,28 +248,42 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	}
 
 	public void reloadProfile() {
+		
 		ImageView imageView = (ImageView) header.findViewById(R.id.imgProfile);
 		
-		if ( Util.isEmptyString( application.getLoginUser().getProfileImageURL() ))
-			imageView.setImageResource(R.drawable.no_image);
-		else
-		{
-			ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
-					application.getLoginUser().getProfileImageURL() , imageView, options );			
-		}
+		imageView.setImageResource(R.drawable.no_image);
 
 		TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
-		txtUserName.setText( application.getLoginUser().getUserName() );
-		
 		TextView txtCreditValue = (TextView) header.findViewById(R.id.txtCreditValue);
-		txtCreditValue.setText( application.getLoginUser().getProfilePoint() + "%");
 		ProgressBar progressCreditValue = (ProgressBar) findViewById(R.id.progressCreditValue);
-		progressCreditValue.setProgress( Integer.parseInt( application.getLoginUser().getProfilePoint() ) );
+		TextView txtCreditGuide1 = (TextView) header.findViewById(R.id.txtCreditGuide1);
 		
+		if ("Guest".equals( application.getLoginUser().getType()))
+		{
+			txtUserName.setText("게스트");
+			txtCreditValue.setVisibility(ViewGroup.GONE);
+			txtCreditGuide1.setVisibility(ViewGroup.GONE);
+			progressCreditValue.setVisibility(ViewGroup.GONE);
+		}
+		else
+		{
+			if ( !Util.isEmptyString( application.getLoginUser().getProfileImageURL() ))
+			{
+				ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
+						application.getLoginUser().getProfileImageURL() , imageView, options );
+			}
+			
+			txtUserName.setText( application.getLoginUser().getUserName() );
+			txtCreditValue.setText( application.getLoginUser().getProfilePoint() + "%");
+			
+			progressCreditValue.setProgress( Integer.parseInt( application.getLoginUser().getProfilePoint() ) );
+			progressCreditValue.setVisibility(ViewGroup.VISIBLE);
+			txtCreditValue.setVisibility(View.VISIBLE);
+			txtCreditGuide1.setVisibility(ViewGroup.VISIBLE);
+			txtCreditValue.invalidate();
+		}
 		imageView.setVisibility(ViewGroup.VISIBLE);
 		imageView.invalidate();
-		txtCreditValue.setVisibility(View.VISIBLE);
-		txtCreditValue.invalidate();
 	}
 
 	@Override
@@ -320,6 +341,11 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 	public  void getUnreadCount() throws Exception 
 	{
+		// 두번 연달아 요청이 있을 경우 lastNoticeID 가 업데이트 되기 전 값이 날아감을 방지하기 위해 mutex flag 를 넣음.
+		if ( bUpdateUnreadCountFinished == false ) return;
+		
+		bUpdateUnreadCountFinished = false;
+		
 		HashMap hash = application.getDefaultRequest();
 		hash.put("userID", application.getLoginUser().getUserID() );
 		hash.put("lastNoticeID", application.getMetaInfoString("lastNoticeID"));
@@ -383,7 +409,12 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		if ( "홈".equals( item.getMenuName() ) )
 			currentFragment = new TaxiFragment();
 		else if ( "header".equals( item.getMenuName() ) || "내 정보".equals( item.getMenuName() ) )
+		{
+			if ( "Guest".equals( application.getLoginUser().getType() ) )
+				return;
+			
 			currentFragment = new MyInfoFragment( this );
+		}
 		else if ( "알림메시지".equals( item.getMenuName() ) )
 			currentFragment = new PushMessageListFragment();
 		else if ( "쪽지함".equals( item.getMenuName() ) )
@@ -436,7 +467,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 			if ( "logout".equals( param ) )
 			{
 				setProgressBarIndeterminateVisibility(true);
-				sendHttp("/taxi/logout.do", mapper.writeValueAsString( application.getLoginUser() ), 2 );
+				sendHttp("/taxi/logout.do", mapper.writeValueAsString( application.getLoginUser() ), Constants.HTTP_LOGOUT );
 			}
 			else if ( UPDATE_NOTICE.equals( param ) )
 			{
@@ -724,33 +755,14 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 			if ( "0000".equals( response.getResCode() ) )
 			{
-				if ( requestCode == 2 )
+				if ( requestCode == Constants.HTTP_LOGOUT )
 				{
-					//					setMetaInfo("userNo", "");
-					//					setMetaInfo("registerUserFinished", "");
-					application.setMetaInfo("logout", "true");
-					application.setMetaInfo("userID", "");
-					application.setMetaInfo("userName", "");
-					application.setMetaInfo("profileImageURL", "");
-					application.setMetaInfo("registrationID", "");
-
-					// ID, NO 외엔 모두 삭제
-					User user = new User();
-					user.setUserNo( application.getLoginUser().getUserNo() );
-					user.setUserID( application.getLoginUser().getUserID() );
+					String userString = mapper.writeValueAsString( response.getData2() );
+					User user = mapper.readValue( userString, new TypeReference<User>(){});
 					application.setLoginUser( user );
 					
-					UserManagement.requestLogout(new LogoutResponseCallback() {
-						@Override
-						protected void onSuccess(final long userId) {
-							goKaKaoLoginActivity();
-						}
-
-						@Override
-						protected void onFailure(final APIErrorResult apiErrorResult) {
-							goKaKaoLoginActivity();
-						}
-					});
+					kakaoLogout();
+					finish();
 					
 					overridePendingTransition(android.R.anim.fade_in, 
 							android.R.anim.fade_out);
@@ -767,6 +779,14 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 					{
 						noticeCount = hash.get("noticeCount");
 					}
+					
+					if ( application.getMetaInfoInt("lastNoticeID") == 0 || Util.isEmptyString( application.getMetaInfoString("lastNoticeID") ) )
+					{
+						noticeCount = 0;
+						application.setMetaInfo("lastNoticeID", hash.get("lastNoticeID").toString());
+					}
+					
+					application.debug("noticeCount : " + noticeCount + " lastNoticeID :" + hash.get("lastNoticeID") );
 
 					for ( int i = 0; i < adapter.getCount(); i++ )
 					{
@@ -790,6 +810,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 					}
 
 					adapter.notifyDataSetChanged();
+					
+					bUpdateUnreadCountFinished = true;
 				}
 				else if ( requestCode == Constants.HTTP_UPDATE_LOCATION )
 					bMyLocationUpdated = true;
@@ -831,6 +853,20 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		{
 			catchException(this, ex);
 		}
+	}
+
+	public void kakaoLogout() {
+		UserManagement.requestLogout(new LogoutResponseCallback() {
+			@Override
+			protected void onSuccess(final long userId) {
+				goKaKaoLoginActivity();
+			}
+
+			@Override
+			protected void onFailure(final APIErrorResult apiErrorResult) {
+				goKaKaoLoginActivity();
+			}
+		});
 	}
 	
 	@Override

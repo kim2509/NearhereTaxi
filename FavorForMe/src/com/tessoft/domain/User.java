@@ -32,6 +32,7 @@ public class User extends ListItemModel{
 	private String kakaoID;
 	private String kakaoThumbnailImageURL;
 	private String kakaoProfileImageURL;
+	private String type;
 	
 	private boolean moreFlag;
 
@@ -204,5 +205,13 @@ public class User extends ListItemModel{
 
 	public void setKakaoThumbnailImageURL(String kakaoThumbnailImageURL) {
 		this.kakaoThumbnailImageURL = kakaoThumbnailImageURL;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 }
