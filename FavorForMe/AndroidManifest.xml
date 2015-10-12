@@ -43,6 +43,10 @@
         android:name="com.tessoft.nearhere.NearhereApplication">
         
         <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+        
+        <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_app_key" />
 
@@ -201,6 +205,13 @@
             android:launchMode="singleTask"
             android:theme="@style/NoTitleBarTheme">
         </activity>
+        
+        <activity android:name="com.facebook.FacebookActivity"
+          android:configChanges=
+                 "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+          android:theme="@android:style/Theme.Translucent.NoTitleBar"
+          android:label="@string/app_name" />
+        
     </application>
 
 </manifest>

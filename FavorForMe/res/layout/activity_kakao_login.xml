@@ -4,7 +4,7 @@
     android:layout_height="match_parent" >
 
     <include layout="@layout/titlebar_for_activity" />
-    
+
     <LinearLayout
         android:id="@+id/layoutRandom"
         android:layout_width="match_parent"
@@ -17,15 +17,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="이근처 합승에 오신걸 환영합니다." />
-
     </LinearLayout>
+
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/com_kakao_login"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="30dp" />
 
     <com.kakao.widget.LoginButton
         android:id="@+id/com_kakao_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_weight="1" />

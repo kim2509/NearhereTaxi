@@ -11,3 +11,5 @@ sdk/bin
 sdk/bin/*
 loginbase-template/bin
 loginbase-template/bin/*
+facebook/bin
+facebook/bin/*

@@ -149,4 +149,6 @@
     <string name="title_activity_user_list">사용자 목록</string>
     <string name="title_activity_photo_viewer">PhotoViewer</string>
 
+    <string name="facebook_app_id">430538990470464</string>
+    
 </resources>

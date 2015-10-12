@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.FacebookSdk;
 import com.kakao.APIErrorResult;
 import com.kakao.LogoutResponseCallback;
 import com.kakao.Session;
@@ -34,6 +35,9 @@ public class KakaoLoginActivity extends SampleLoginActivity{
 		try
 		{
 			super.onCreate(savedInstanceState);
+			
+			FacebookSdk.sdkInitialize(getApplicationContext());
+			
 			setContentView(R.layout.activity_kakao_login);
 
 			// 카카오 로그인에 필요한 해쉬키 알아내기 위해
