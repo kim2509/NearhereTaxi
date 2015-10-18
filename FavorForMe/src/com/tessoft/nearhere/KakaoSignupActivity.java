@@ -93,7 +93,7 @@ public class KakaoSignupActivity extends SampleSignupActivity{
             	try
             	{
                     getRandomIDV2( userProfile.getId() + "", userProfile.getNickname(),
-                    		userProfile.getThumbnailImagePath(), userProfile.getProfileImagePath() );            		
+                    		userProfile.getThumbnailImagePath(), userProfile.getProfileImagePath() );
             	}
             	catch( Exception ex )
             	{

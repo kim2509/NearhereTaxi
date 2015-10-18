@@ -9,6 +9,8 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.type.TypeReference;
 
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -760,7 +762,8 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 					String userString = mapper.writeValueAsString( response.getData2() );
 					User user = mapper.readValue( userString, new TypeReference<User>(){});
 					application.setLoginUser( user );
-					
+
+					LoginManager.getInstance().logOut();
 					kakaoLogout();
 					finish();
 					

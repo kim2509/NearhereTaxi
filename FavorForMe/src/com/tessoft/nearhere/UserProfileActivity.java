@@ -15,6 +15,7 @@ import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -28,6 +29,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -246,10 +248,8 @@ public class UserProfileActivity extends BaseActivity {
 
 					TextView txtUserName = (TextView) header.findViewById(R.id.txtUserName);
 
-					if ( Util.isEmptyString( user.getUserName() ) )
-						txtUserName.setText( user.getUserID() );
-					else
-						txtUserName.setText( user.getUserName() + " (" + user.getUserID() + ")" );
+					if ( !Util.isEmptyString( user.getUserName() ) )
+						txtUserName.setText( user.getUserName() );
 
 					TextView txtCreditValue = (TextView) header.findViewById(R.id.txtCreditValue);
 					txtCreditValue.setText( user.getProfilePoint() + "%" );
@@ -305,6 +305,11 @@ public class UserProfileActivity extends BaseActivity {
 						findViewById(R.id.imgKakaoIcon).setVisibility(ViewGroup.VISIBLE);
 					else
 						findViewById(R.id.imgKakaoIcon).setVisibility(ViewGroup.GONE);
+					
+					if ( !Util.isEmptyString( user.getFacebookID() ) )
+						findViewById(R.id.imgFacebookIcon).setVisibility(ViewGroup.VISIBLE);
+					else
+						findViewById(R.id.imgFacebookIcon).setVisibility(ViewGroup.GONE);
 
 					adapter.clear();
 					adapter.addAll(postList);
@@ -312,6 +317,16 @@ public class UserProfileActivity extends BaseActivity {
 
 					if ( postList.size() == 0 )
 						footer.findViewById(R.id.txtNone).setVisibility(ViewGroup.VISIBLE);
+					
+					LinearLayout layoutFacebook = (LinearLayout) header.findViewById(R.id.layoutFacebook);
+					if ( Util.isEmptyString( user.getFacebookID() ) )
+						layoutFacebook.setVisibility(ViewGroup.GONE);
+					else
+					{
+						layoutFacebook.setVisibility(ViewGroup.VISIBLE);
+						TextView txtFacebookURL = (TextView) header.findViewById(R.id.txtFacebookURL);
+						txtFacebookURL.setTag( user.getFacebookURL() );
+					}
 				}
 			}
 			else
@@ -336,6 +351,23 @@ public class UserProfileActivity extends BaseActivity {
 		{
 			Intent intent = new Intent(this, MainActivity.class);
 			startActivity(intent);			
+		}
+	}
+	
+	public void goFacebook( View v )
+	{
+		if ( v != null && v.getTag() != null )
+		{
+			try
+			{
+				String facebookURL = v.getTag().toString();
+				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse( facebookURL ));
+				startActivity(browserIntent);
+			}
+			catch( Exception ex )
+			{
+				
+			}
 		}
 	}
 }

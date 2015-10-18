@@ -22,6 +22,7 @@ import android.view.Window;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
+import com.facebook.FacebookSdk;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.kakao.Session;
@@ -44,10 +45,16 @@ public class IntroActivity extends BaseActivity {
 		try
 		{
 			super.onCreate(savedInstanceState);
+
+			// 어드민 설정을 읽는다.
+			checkIfAdminUser();
 			
 			// 카카오톡 세션을 초기화 한다.
 			Session.initialize(this);
-						
+			
+			// 페이스북 sdk 를 초기화한다.
+			FacebookSdk.sdkInitialize(getApplicationContext());
+			
 			HashMap hash = application.getDefaultRequest();
 			hash.put("os", "Android");
 

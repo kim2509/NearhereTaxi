@@ -73,6 +73,15 @@
                         android:visibility="gone"
                         android:src="@drawable/kakaotalk_icon" />
                     
+                    <ImageView
+                        android:id="@+id/imgFacebookIcon"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="5dp"
+                        android:visibility="gone"
+                        android:src="@drawable/facebook_icon" />
+                    
                 </LinearLayout>
 
                 <LinearLayout
@@ -110,6 +119,35 @@
             </LinearLayout>
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/layoutFacebook"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="68"
+                android:gravity="left"
+                android:text="Facebook"
+                android:textColor="#848383"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/txtFacebookURL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="32"
+                android:gravity="left"
+                android:text="@string/go_facebook"
+                android:textColor="#425F9B"
+                android:onClick="goFacebook"
+                android:textSize="15sp" />
+        </LinearLayout>
+        
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

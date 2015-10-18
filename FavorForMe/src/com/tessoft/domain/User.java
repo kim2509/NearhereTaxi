@@ -33,6 +33,9 @@ public class User extends ListItemModel{
 	private String kakaoThumbnailImageURL;
 	private String kakaoProfileImageURL;
 	private String type;
+	private String facebookID;
+	private String facebookProfileImageURL;
+	private String facebookURL;
 	
 	private boolean moreFlag;
 
@@ -213,5 +216,29 @@ public class User extends ListItemModel{
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getFacebookID() {
+		return facebookID;
+	}
+
+	public void setFacebookID(String facebookID) {
+		this.facebookID = facebookID;
+	}
+
+	public String getFacebookProfileImageURL() {
+		return facebookProfileImageURL;
+	}
+
+	public void setFacebookProfileImageURL(String facebookProfileImageURL) {
+		this.facebookProfileImageURL = facebookProfileImageURL;
+	}
+
+	public String getFacebookURL() {
+		return facebookURL;
+	}
+
+	public void setFacebookURL(String facebookURL) {
+		this.facebookURL = facebookURL;
 	}
 }

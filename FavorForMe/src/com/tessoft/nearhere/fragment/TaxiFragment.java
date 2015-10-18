@@ -65,6 +65,7 @@ public class TaxiFragment extends BaseFragment
 	
 	View rootView = null;
 	ListView listMain = null;
+	View fbHeader = null;
 	View header = null;
 	View footer = null;
 	ObjectMapper mapper = new ObjectMapper();
@@ -86,6 +87,8 @@ public class TaxiFragment extends BaseFragment
 			
 			rootView = inflater.inflate(R.layout.fragment_taxi_main, container, false);
 
+			fbHeader = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header_fb, null);
+			header = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header1, null);
 			header = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header1, null);
 			header3 = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header3, null);
 			header2 = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header2, null);
@@ -109,7 +112,21 @@ public class TaxiFragment extends BaseFragment
 				btnKakaoLogin.setOnClickListener(this);
 			}
 			else
+			{
 				listMain.removeHeaderView(header);
+				
+				if ( Util.isEmptyString( application.getLoginUser().getFacebookID() ) )
+				{
+					listMain.addHeaderView(fbHeader, null, false );
+					
+					Button btnFbLogin = (Button) fbHeader.findViewById(R.id.btnFbLogin);
+					btnFbLogin.setOnClickListener(this);
+				}
+				else
+				{
+					listMain.removeHeaderView(fbHeader);
+				}
+			}
 			
 			listMain.addFooterView(footer, null, false );
 			listMain.setHeaderDividersEnabled(true);
@@ -691,6 +708,10 @@ public class TaxiFragment extends BaseFragment
 			{
 				showYesNoDialog("확인", "카카오 계정으로 로그인하시겠습니까?", "kakaoLogin" );
 			}
+			else if ( v.getId() == R.id.btnFbLogin )
+			{
+				showYesNoDialog("확인", "Facebook 계정으로 로그인하시겠습니까?", "facebookLogin" );
+			}
 		}
 		catch( Exception ex )
 		{
@@ -724,7 +745,7 @@ public class TaxiFragment extends BaseFragment
 		// TODO Auto-generated method stub
 		super.yesClicked(param);
 		
-		if ( "kakaoLogin".equals( param ) )
+		if ( "kakaoLogin".equals( param ) || "facebookLogin".equals( param ) )
 		{
 			MainActivity mainActivity = (MainActivity) getActivity();
 			mainActivity.yesClicked("logout");

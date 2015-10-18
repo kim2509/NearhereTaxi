@@ -69,6 +69,11 @@ public class MoreUserInfoActivity extends BaseActivity {
 			}
 			else
 				findViewById(R.id.layoutProfileImage).setVisibility(ViewGroup.GONE);
+			
+			if ( "M".equals( application.getLoginUser().getSex() ) )
+				spSex.setSelection( 1 );
+			else if ( "F".equals( application.getLoginUser().getSex() ) )
+				spSex.setSelection( 2 );
 		}
 		catch( Exception ex )
 		{
@@ -149,7 +154,9 @@ public class MoreUserInfoActivity extends BaseActivity {
 				application.setMetaInfo("registerUserFinished", "true");
 				Constants.bKakaoLogin = true;
 				
-				goTaxiTutorialActivity();
+//				goTaxiTutorialActivity();
+				
+				goMainActivity();
 			}
 			else
 			{

@@ -34,7 +34,6 @@
 	<string name="refresh">refresh</string>
 	<string name="input_post_reply">댓글을 입력하세요.</string>
 	<string name="facebook_authorized">페이스북 인증</string>
-	<string name="go_facebook">페이스북 가기</string>
 
 	<string name="input_user_id">아이디를 입력해 주십시오.</string>
     <string name="input_user_name">이름을 입력해 주십시오.</string>

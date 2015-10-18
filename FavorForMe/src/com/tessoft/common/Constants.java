@@ -30,4 +30,6 @@ public class Constants {
 	public static final int HTTP_LOGIN_BACKGROUND2 = 1020;
 	public static final int HTTP_GET_RANDOM_ID_FOR_GUEST = 1030;
 	public static final int HTTP_LOGOUT = 1040;
+	public static final int HTTP_GET_RANDOM_ID_V2 = 1050;
+	public static final int HTTP_PROFILE_IMAGE_UPLOAD = 1060;
 }
