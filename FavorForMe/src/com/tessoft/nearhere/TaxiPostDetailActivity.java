@@ -75,6 +75,8 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 	int ZoomLevel = 13;
 	ImageView imgProfile = null;
 	TextView txtUserName = null;
+	View footer2 = null;
+	View footerPadding = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -82,15 +84,19 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		{
 			super.onCreate(savedInstanceState);
 
-			header = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_header1, null);
+			header = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_header_person, null);
+//			header = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_header1, null);
 			header2 = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_header2, null);
 			footer = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_footer, null);
+			footer2 = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_footer_2, null);
+			footerPadding = getLayoutInflater().inflate(R.layout.padding_bottom_50, null);
 
 			listMain = (ListView) findViewById(R.id.listMain);
 			listMain.addHeaderView(header, null, false );
 			listMain.addHeaderView(header2 );
 			listMain.setHeaderDividersEnabled( false );
 			listMain.addFooterView(footer, null, false );
+			listMain.addFooterView(footerPadding, null, false );
 			listMain.setFooterDividersEnabled(false);
 
 			listMain.setSelector(android.R.color.transparent);
@@ -145,17 +151,11 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 
 		imgProfile = (ImageView) header.findViewById(R.id.imgProfile);
 		imgProfile.setImageResource(R.drawable.no_image);
+		imgProfile.setOnClickListener( this );
 		
-		FrameLayout flImgProfile = (FrameLayout) header.findViewById(R.id.flImgProfile);
-		flImgProfile.setOnClickListener( this );
-
 		txtUserName = (TextView) header.findViewById(R.id.txtUserName);
-		txtUserName.setOnClickListener( this );
 		
-		Button btnDelete = (Button) header.findViewById(R.id.btnDelete);
-		btnDelete.setOnClickListener(this);
-		
-		Button btnFinish = (Button) header.findViewById(R.id.btnFinish);
+		Button btnFinish = (Button) footer2.findViewById(R.id.btnFinish);
 		btnFinish.setOnClickListener(this);
 		
 		if ( "true".equals( application.getMetaInfoString("hideMapOnPostDetail") ) )
@@ -467,108 +467,21 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 
 					drawPostOnMap();
 					
-					if ( !Util.isEmptyString(post.getUser().getProfileImageURL()))
-					{
-						ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
-								post.getUser().getProfileImageURL() , imgProfile, options );
-					}
+					setUserData();
 
-					if ( Util.isEmptyString( post.getUser().getUserName() ) )
-						txtUserName.setText( post.getUser().getUserID() );
-					else
-						txtUserName.setText( post.getUser().getUserName() );
-
-					ImageView imgSex = (ImageView) header.findViewById(R.id.imgSex);
-					imgSex.setVisibility(ViewGroup.VISIBLE);
-					
-					if ( "M".equals( post.getUser().getSex() ))
-					{
-						imgSex.setImageResource(R.drawable.ic_male);
-					}
-					else if ( "F".equals( post.getUser().getSex() ))
-					{
-						imgSex.setImageResource(R.drawable.ic_female);
-					}
-					else
-						imgSex.setVisibility(ViewGroup.GONE);
-
-					TextView txtTitle = (TextView) header.findViewById(R.id.txtTitle);
-					txtTitle.setText( post.getMessage() );
-
-					TextView txtDeparture = (TextView) header.findViewById(R.id.txtDeparture);
-					txtDeparture.setText( post.getFromAddress() );
-
-					TextView txtDestination = (TextView) header.findViewById(R.id.txtDestination);
-					txtDestination.setText( post.getToAddress() );
-//
-//					TextView txtFromDistance = (TextView) header.findViewById(R.id.txtFromDistance);
-//					if ( Util.isEmptyString( post.getFromDistance() ) == false )
-//					{
-//						txtFromDistance.setText( Util.getDistance( post.getFromDistance() ) );
-//						txtFromDistance.setVisibility(ViewGroup.VISIBLE);
-//					}
-//					else
-//						txtFromDistance.setVisibility(ViewGroup.INVISIBLE);
-					
-//					TextView txtToDistance = (TextView) header.findViewById(R.id.txtToDistance);
-//					if ( Util.isEmptyString( post.getToDistance() ) == false )
-//					{
-//						txtToDistance.setText( Util.getDistance( post.getToDistance() ) );
-//						txtToDistance.setVisibility(ViewGroup.VISIBLE);
-//					}
-//					else
-//						txtToDistance.setVisibility(ViewGroup.INVISIBLE);
-
-					if ( post.getDepartureDate() != null )
-					{
-						TextView txtDepartureDateTime = (TextView) header.findViewById(R.id.txtDepartureDateTime);
-						txtDepartureDateTime.setText( post.getDepartureDate() + " " + post.getDepartureTime());	
-					}
-
-					TextView txtCreatedDate = (TextView) header.findViewById(R.id.txtCreatedDate);
-					txtCreatedDate.setText( Util.getFormattedDateString(post.getCreatedDate(), "MM-dd HH:mm") );
+					setPostData();
 
 					adapter.setItemList( post.getPostReplies() );
 					adapter.notifyDataSetChanged();
 
-//					if ( "true".equals( getMetaInfoString("admin") ) || post.getUser().getUserID().equals( getLoginUser().getUserID() ))
-//					{
-//						menu.findItem(R.id.action_edit).setVisible(true);
-//						menu.findItem(R.id.action_delete).setVisible(true);	
-//					}
-//					else
-//					{
-//						menu.findItem(R.id.action_edit).setVisible(false);
-//						menu.findItem(R.id.action_delete).setVisible(false);
-//					}
-					
-					ImageView imgStatus = (ImageView) header.findViewById(R.id.imgStatus);
-					imgStatus.setVisibility(ViewGroup.VISIBLE);
-					Button btnFinish = (Button) header.findViewById(R.id.btnFinish);
-					
 					if ( post.getUser().getUserID().equals( application.getLoginUser().getUserID() ) || Constants.bAdminMode )
-						header.findViewById(R.id.layoutMyOption).setVisibility(ViewGroup.VISIBLE);
-					else
-						header.findViewById(R.id.layoutMyOption).setVisibility(ViewGroup.GONE );
-					
-					if ( "진행중".equals( post.getStatus() ) )
 					{
-						imgStatus.setImageResource(R.drawable.progressing);
-						if ( post.getUser().getUserID().equals( application.getLoginUser().getUserID() ))
-							btnFinish.setVisibility(ViewGroup.VISIBLE);	
+						listMain.addFooterView(footer2, null, false );
 					}
 					else
 					{
-						imgStatus.setImageResource(R.drawable.finished);
-						btnFinish.setVisibility(ViewGroup.GONE);
+						listMain.removeFooterView(footer2);
 					}
-					
-					if ( !Util.isEmptyString( post.getUser().getKakaoID() ) )
-						findViewById(R.id.imgKakaoIcon).setVisibility(ViewGroup.VISIBLE);
-					else
-						findViewById(R.id.imgKakaoIcon).setVisibility(ViewGroup.GONE);
-					
-					setControlsVisibility( post );
 				}
 				else if ( requestCode == INSERT_POST_REPLY )
 				{
@@ -597,6 +510,77 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		{
 			catchException(this, ex);
 		}
+	}
+
+	private void setPostData() throws Exception {
+		TextView txtTitle = (TextView) header.findViewById(R.id.txtTitle);
+		txtTitle.setText( post.getMessage() );
+
+		TextView txtDeparture = (TextView) header.findViewById(R.id.txtDeparture);
+		txtDeparture.setText( post.getFromAddress() );
+
+		TextView txtDestination = (TextView) header.findViewById(R.id.txtDestination);
+		txtDestination.setText( post.getToAddress() );
+
+		if ( post.getDepartureDate() != null )
+		{
+			TextView txtDepartureDateTime = (TextView) header.findViewById(R.id.txtDepartureDateTime);
+			txtDepartureDateTime.setText( post.getDepartureDate() + " " + post.getDepartureTime());	
+		}
+
+		TextView txtCreatedDate = (TextView) header.findViewById(R.id.txtCreatedDate);
+		txtCreatedDate.setText( Util.getFormattedDateString(post.getCreatedDate(), "MM-dd HH:mm") );
+		
+		ImageView imgStatus = (ImageView) header.findViewById(R.id.imgStatus);
+		imgStatus.setVisibility(ViewGroup.VISIBLE);
+		Button btnFinish = (Button) footer2.findViewById(R.id.btnFinish);
+		if ( "진행중".equals( post.getStatus() ) )
+		{
+			imgStatus.setImageResource(R.drawable.progressing);
+			if ( post.getUser().getUserID().equals( application.getLoginUser().getUserID() ))
+				btnFinish.setVisibility(ViewGroup.VISIBLE);	
+		}
+		else
+		{
+			imgStatus.setImageResource(R.drawable.finished);
+			btnFinish.setVisibility(ViewGroup.GONE);
+		}
+		
+		setControlsVisibility( post );
+	}
+
+	private void setUserData() {
+		if ( !Util.isEmptyString(post.getUser().getProfileImageURL()))
+		{
+			ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
+					post.getUser().getProfileImageURL() , imgProfile, options );
+		}
+
+		txtUserName.setText( post.getUser().getUserName() );
+
+		ImageView imgSex = (ImageView) header.findViewById(R.id.imgSex);
+		imgSex.setVisibility(ViewGroup.VISIBLE);
+		
+		if ( "M".equals( post.getUser().getSex() ))
+		{
+			imgSex.setImageResource(R.drawable.ic_male);
+		}
+		else if ( "F".equals( post.getUser().getSex() ))
+		{
+			imgSex.setImageResource(R.drawable.ic_female);
+		}
+		else
+			imgSex.setVisibility(ViewGroup.GONE);
+		
+		if ( !Util.isEmptyString( post.getUser().getKakaoID() ) )
+			findViewById(R.id.imgKakaoIcon).setVisibility(ViewGroup.VISIBLE);
+		else
+			findViewById(R.id.imgKakaoIcon).setVisibility(ViewGroup.GONE);
+		
+		if ( !Util.isEmptyString( post.getUser().getFacebookURL() ) )
+			findViewById(R.id.imgFacebookIcon).setVisibility(ViewGroup.VISIBLE);
+		else
+			findViewById(R.id.imgFacebookIcon).setVisibility(ViewGroup.GONE);
 	}
 	
 	private void setControlsVisibility( Post item ) {
@@ -702,20 +686,23 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		{
 			int id = v.getId();
 
-			if ( id == R.id.txtUserName || id == R.id.flImgProfile )
+			if ( id == R.id.txtUserName || id == R.id.imgProfile )
 			{
 				goUserProfileActivity( post.getUser().getUserID() );
-			}
-			else if ( id == R.id.btnDelete )
-			{
-				showYesNoDialog("확인", "정말 삭제하시겠습니까?", "postDelete");
-				return;
 			}
 			else if ( id == R.id.btnFinish )
 			{
 				showYesNoDialog("확인", "정말 종료하시겠습니까?", "DIALOG_FINISH_POST");
 				return;
 			}
+			/*
+			else if ( id == R.id.btnDelete )
+			{
+				showYesNoDialog("확인", "정말 삭제하시겠습니까?", "postDelete");
+				return;
+			}
+			*/
+			
 		}
 		catch( Exception ex )
 		{

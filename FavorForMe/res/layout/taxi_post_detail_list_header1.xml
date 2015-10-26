@@ -298,43 +298,6 @@
             </LinearLayout>
         </RelativeLayout>
 
-        <LinearLayout
-            android:id="@+id/layoutMyOption"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:gravity="right|center_vertical"
-            android:orientation="horizontal"
-            android:visibility="gone" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="출발일시에서 특정기간(1~2일)이 지나면\n자동 종료처리됩니다."
-                android:visibility="gone" />
-
-            <Button
-                android:id="@+id/btnModify"
-                style="@style/btn_style"
-                android:layout_width="wrap_content"
-                android:onClick="modifyPost"
-                android:text="수정하기" />
-
-            <Button
-                android:id="@+id/btnDelete"
-                style="@style/btn_style"
-                android:layout_width="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:text="삭제하기"
-                android:visibility="gone" />
-
-            <Button
-                android:id="@+id/btnFinish"
-                style="@style/btn_style"
-                android:layout_width="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:text="지금종료" />
-        </LinearLayout>
     </LinearLayout>
 
     <ImageView
