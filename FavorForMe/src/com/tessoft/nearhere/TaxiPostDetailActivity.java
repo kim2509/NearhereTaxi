@@ -40,6 +40,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -71,13 +72,15 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 	TaxiPostReplyListAdapter adapter = null;
 	Post post = null;
 	View header2 = null;
+	View headerPost = null;
 	GoogleMap map = null;
 	int ZoomLevel = 13;
 	ImageView imgProfile = null;
 	TextView txtUserName = null;
 	View footer2 = null;
 	View footerPadding = null;
-
+	Button btnFinish = null;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		try
@@ -85,6 +88,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			super.onCreate(savedInstanceState);
 
 			header = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_header_person, null);
+			headerPost = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_header_post, null);
 //			header = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_header1, null);
 			header2 = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_header2, null);
 			footer = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_footer, null);
@@ -93,6 +97,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 
 			listMain = (ListView) findViewById(R.id.listMain);
 			listMain.addHeaderView(header, null, false );
+			listMain.addHeaderView(headerPost, null, false );
 			listMain.addHeaderView(header2 );
 			listMain.setHeaderDividersEnabled( false );
 			listMain.addFooterView(footer, null, false );
@@ -155,7 +160,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		
 		txtUserName = (TextView) header.findViewById(R.id.txtUserName);
 		
-		Button btnFinish = (Button) footer2.findViewById(R.id.btnFinish);
+		btnFinish = (Button) footer2.findViewById(R.id.btnFinish);
 		btnFinish.setOnClickListener(this);
 		
 		if ( "true".equals( application.getMetaInfoString("hideMapOnPostDetail") ) )
@@ -513,40 +518,40 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 	}
 
 	private void setPostData() throws Exception {
-		TextView txtTitle = (TextView) header.findViewById(R.id.txtTitle);
+		TextView txtTitle = (TextView) headerPost.findViewById(R.id.txtTitle);
 		txtTitle.setText( post.getMessage() );
-
-		TextView txtDeparture = (TextView) header.findViewById(R.id.txtDeparture);
-		txtDeparture.setText( post.getFromAddress() );
-
-		TextView txtDestination = (TextView) header.findViewById(R.id.txtDestination);
-		txtDestination.setText( post.getToAddress() );
-
-		if ( post.getDepartureDate() != null )
-		{
-			TextView txtDepartureDateTime = (TextView) header.findViewById(R.id.txtDepartureDateTime);
-			txtDepartureDateTime.setText( post.getDepartureDate() + " " + post.getDepartureTime());	
-		}
-
-		TextView txtCreatedDate = (TextView) header.findViewById(R.id.txtCreatedDate);
-		txtCreatedDate.setText( Util.getFormattedDateString(post.getCreatedDate(), "MM-dd HH:mm") );
 		
-		ImageView imgStatus = (ImageView) header.findViewById(R.id.imgStatus);
-		imgStatus.setVisibility(ViewGroup.VISIBLE);
-		Button btnFinish = (Button) footer2.findViewById(R.id.btnFinish);
+		TextView txtStatus = (TextView) headerPost.findViewById(R.id.txtStatus);
 		if ( "진행중".equals( post.getStatus() ) )
 		{
-			imgStatus.setImageResource(R.drawable.progressing);
+			txtStatus.setText( post.getStatus() );
+			txtStatus.setBackgroundColor(Color.parseColor("#fe6f2b"));
 			if ( post.getUser().getUserID().equals( application.getLoginUser().getUserID() ))
 				btnFinish.setVisibility(ViewGroup.VISIBLE);	
 		}
 		else
 		{
-			imgStatus.setImageResource(R.drawable.finished);
+			txtStatus.setBackgroundColor(Color.parseColor("#6f6f6f"));
+			txtStatus.setText( post.getStatus() );
 			btnFinish.setVisibility(ViewGroup.GONE);
 		}
+
+		TextView txtDeparture = (TextView) headerPost.findViewById(R.id.txtDeparture);
+		txtDeparture.setText( post.getFromAddress() );
+
+		TextView txtDestination = (TextView) headerPost.findViewById(R.id.txtDestination);
+		txtDestination.setText( post.getToAddress() );
+
+		if ( post.getDepartureDate() != null )
+		{
+			TextView txtDepartureDateTime = (TextView) headerPost.findViewById(R.id.txtDepartureDateTime);
+			txtDepartureDateTime.setText( post.getDepartureDate() + " " + post.getDepartureTime());	
+		}
+
+		TextView txtCreatedDate = (TextView) headerPost.findViewById(R.id.txtCreatedDate);
+		txtCreatedDate.setText( Util.getFormattedDateString(post.getCreatedDate(), "MM-dd HH:mm") );
 		
-		setControlsVisibility( post );
+//		setControlsVisibility( post );
 	}
 
 	private void setUserData() {
