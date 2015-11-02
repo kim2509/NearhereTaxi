@@ -41,6 +41,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -56,6 +57,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ImageView.ScaleType;
@@ -73,6 +75,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 	Post post = null;
 	View header2 = null;
 	View headerPost = null;
+	View headerButtons = null;
 	GoogleMap map = null;
 	int ZoomLevel = 13;
 	ImageView imgProfile = null;
@@ -89,6 +92,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 
 			header = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_header_person, null);
 			headerPost = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_header_post, null);
+			headerButtons = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_buttons, null);
 //			header = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_header1, null);
 			header2 = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_header2, null);
 			footer = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_footer, null);
@@ -98,6 +102,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			listMain = (ListView) findViewById(R.id.listMain);
 			listMain.addHeaderView(header, null, false );
 			listMain.addHeaderView(headerPost, null, false );
+			listMain.addHeaderView(headerButtons, null, false );
 			listMain.addHeaderView(header2 );
 			listMain.setHeaderDividersEnabled( false );
 			listMain.addFooterView(footer, null, false );
@@ -200,6 +205,8 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		.displayer(new RoundedBitmapDisplayer(20))
 		.delayBeforeLoading(100)
 		.build();
+		
+		findViewById(R.id.btnViewProfile).setOnClickListener(this);
 	}
 
 	DisplayImageOptions options = null;
@@ -479,13 +486,24 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					adapter.setItemList( post.getPostReplies() );
 					adapter.notifyDataSetChanged();
 
-					if ( post.getUser().getUserID().equals( application.getLoginUser().getUserID() ) || Constants.bAdminMode )
+					boolean bAddedFooterButon = false;
+					if ( post.getUser().getUserID().equals( application.getLoginUser().getUserID() ) )
 					{
+						listMain.removeFooterView(footer2);
 						listMain.addFooterView(footer2, null, false );
+						bAddedFooterButon = true;
+						findViewById(R.id.btnSendMessage).setVisibility(ViewGroup.GONE);						
 					}
 					else
 					{
 						listMain.removeFooterView(footer2);
+						findViewById(R.id.btnSendMessage).setVisibility(ViewGroup.VISIBLE);
+					}
+					
+					if ( bAddedFooterButon == false && Constants.bAdminMode )
+					{
+						listMain.removeFooterView(footer2);
+						listMain.addFooterView(footer2, null, false );
 					}
 				}
 				else if ( requestCode == INSERT_POST_REPLY )
@@ -545,13 +563,31 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		if ( post.getDepartureDate() != null )
 		{
 			TextView txtDepartureDateTime = (TextView) headerPost.findViewById(R.id.txtDepartureDateTime);
-			txtDepartureDateTime.setText( post.getDepartureDate() + " " + post.getDepartureTime());	
+			
+			String departureDateTime = "";
+			
+			if ( post.getDepartureDate().indexOf("오늘") >= 0 )
+			{
+				if ( post.getDepartureTime().indexOf("지금") >= 0 )
+					departureDateTime = Util.getFormattedDateString(post.getCreatedDate(), "MM-dd HH:mm") + " 출발";
+				else
+					departureDateTime = post.getDepartureDate() + " " + post.getDepartureTime() + " 출발";
+			}
+			else
+			{
+				if ( post.getDepartureTime().indexOf("지금") >= 0 )
+					departureDateTime = Util.getFormattedDateString(post.getDepartureDate() , "MM-dd") + " " + Util.getFormattedDateString(post.getCreatedDate(), "HH:mm") + " 출발";
+				else
+					departureDateTime = Util.getFormattedDateString(post.getDepartureDate() + " " + post.getDepartureTime() + ":00", "MM-dd HH:mm") + " 출발";	
+			}
+				
+			txtDepartureDateTime.setText( departureDateTime );
 		}
 
 		TextView txtCreatedDate = (TextView) headerPost.findViewById(R.id.txtCreatedDate);
-		txtCreatedDate.setText( Util.getFormattedDateString(post.getCreatedDate(), "MM-dd HH:mm") );
+		txtCreatedDate.setText( Util.getFormattedDateString(post.getCreatedDate(), "MM-dd HH:mm") + " 등록");
 		
-//		setControlsVisibility( post );
+		setControlsVisibility( post );
 	}
 
 	private void setUserData() {
@@ -583,9 +619,20 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			findViewById(R.id.imgKakaoIcon).setVisibility(ViewGroup.GONE);
 		
 		if ( !Util.isEmptyString( post.getUser().getFacebookURL() ) )
+		{
 			findViewById(R.id.imgFacebookIcon).setVisibility(ViewGroup.VISIBLE);
+			findViewById(R.id.btnGoFacebook).setVisibility(ViewGroup.VISIBLE);
+		}
 		else
+		{
 			findViewById(R.id.imgFacebookIcon).setVisibility(ViewGroup.GONE);
+			findViewById(R.id.btnGoFacebook).setVisibility(ViewGroup.GONE);
+		}
+		
+		TextView txtCreditValue = (TextView) header.findViewById(R.id.txtCreditValue);
+		txtCreditValue.setText( post.getUser().getProfilePoint() + "%" );
+		ProgressBar progressCreditValue = (ProgressBar) header.findViewById(R.id.progressCreditValue);
+		progressCreditValue.setProgress( Integer.parseInt( post.getUser().getProfilePoint() ));
 	}
 	
 	private void setControlsVisibility( Post item ) {
@@ -691,7 +738,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		{
 			int id = v.getId();
 
-			if ( id == R.id.txtUserName || id == R.id.imgProfile )
+			if ( id == R.id.txtUserName || id == R.id.imgProfile || id == R.id.btnViewProfile )
 			{
 				goUserProfileActivity( post.getUser().getUserID() );
 			}
@@ -808,5 +855,39 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			btn.setText("경로 보기");
 			application.setMetaInfo("hideMapOnPostDetail", "true");
 		}
+	}
+	
+	public void goFacebook( View v )
+	{
+		try
+		{
+			String facebookURL = post.getUser().getFacebookURL();
+			if ( Util.isEmptyString( facebookURL ) ) return;
+			
+			Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse( facebookURL ));
+			startActivity(browserIntent);
+		}
+		catch( Exception ex )
+		{
+			
+		}
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked"})
+	public void goUserMessageActivity( View v ) {
+		
+		if ( "Guest".equals( application.getLoginUser().getType()))
+		{
+			showOKDialog("확인", "카카오연동 후에 등록하실 수 있습니다.\r\n\r\n메인 화면에서 카카오연동을 할 수 있습니다.", "kakaoLoginCheck" );
+			return;
+		}
+		
+		HashMap hash = new HashMap();
+		hash.put("fromUserID", post.getUser().getUserID() );
+		hash.put("userID",  application.getLoginUser().getUserID() );
+		Intent intent = new Intent( this, UserMessageActivity.class);
+		intent.putExtra("messageInfo", hash );
+		startActivity(intent);
+		overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 	}
 }

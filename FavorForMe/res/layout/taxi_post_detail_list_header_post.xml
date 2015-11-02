@@ -43,13 +43,108 @@
         </LinearLayout>
 
         <RelativeLayout
+            android:id="@+id/layoutTags"
+            android:layout_below="@+id/layoutTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="60dp"
+            android:layout_marginTop="10dp" >
+
+            <TextView
+                android:id="@+id/txtReadCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:textColor="@android:color/black"
+                android:textSize="12dp" />
+
+            <LinearLayout
+                android:id="@+id/layoutAddInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/txtVehicle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="3dp"
+                    android:background="#F66C3C"
+                    android:padding="2dp"
+                    android:text="택시합승"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/txtFareOption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="3dp"
+                    android:background="#F66C3C"
+                    android:padding="2dp"
+                    android:text="나눠서 분담"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/txtSex"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="3dp"
+                    android:background="#F66C3C"
+                    android:padding="2dp"
+                    android:text="여자만"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/txtNOP"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="3dp"
+                    android:background="#F66C3C"
+                    android:padding="2dp"
+                    android:text="3명"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/txtRepeat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="3dp"
+                    android:background="#F66C3C"
+                    android:padding="2dp"
+                    android:text="반복"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </RelativeLayout>
+        
+        <RelativeLayout
             android:id="@+id/layoutDirection"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/layoutTitle"
+            android:layout_below="@+id/layoutTags"
             android:layout_alignParentLeft="true"
             android:layout_toLeftOf="@+id/layoutTime"
-            android:background="#ff0000"
             android:layout_marginTop="10dp" >
 
             <TextView
@@ -57,6 +152,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
+                android:gravity="center_horizontal"
                 android:singleLine="false"
                 android:textColor="@android:color/black" />
 
@@ -75,32 +171,36 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/imgDirectionArrow"
                 android:layout_centerHorizontal="true"
+                android:gravity="center_horizontal"
                 android:singleLine="false"
                 android:textColor="@android:color/black" />
         </RelativeLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/layoutTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:background="#00ff00"
-            android:layout_alignParentBottom="true">
+            android:layout_alignParentBottom="true"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:gravity="right"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/txtDepartureDateTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2015-11-02 08:00 출발" />
+                android:textColor="#3B5D98"
+                android:textStyle="bold"
+                android:textSize="16sp"/>
 
             <TextView
                 android:id="@+id/txtCreatedDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/txtDepartureDateTime"
-                android:layout_marginTop="20dp"
-                android:text="2015-11-02 08:00" />
-        </RelativeLayout>
+                android:layout_marginTop="20dp" />
+        </LinearLayout>
         
     </RelativeLayout>
 

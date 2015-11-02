@@ -62,6 +62,8 @@ public class Util {
 
 	public static String getFormattedDateString( String origin, String format ) throws Exception
 	{
+		if ( origin.length() == 10 ) origin += " 00:00:00";
+		
 		Date d = getDateFromString(origin, "yyyy-MM-dd HH:mm:ss");
 		return getDateStringFromDate(d, format);
 	}

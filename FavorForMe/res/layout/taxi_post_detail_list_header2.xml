@@ -10,7 +10,6 @@
         android:layout_height="250dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
         android:layout_marginBottom="5dp"
         android:padding="1dp"
         android:layout_above="@+id/txtGuide1"
@@ -31,26 +30,13 @@
         
     </RelativeLayout>
     
-    <Button 
-        android:id="@+id/btnHideMap"
-        android:layout_width="wrap_content"
-        android:layout_height="35dp"
-        android:layout_gravity="right"
-        android:background="@drawable/bt_gray"
-        android:text="경로 보기"
-        android:textSize="13sp"
-        android:onClick="toggleMapVisibility"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="40dp"/>
-    
     <TextView android:id="@+id/txtGuide1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:paddingTop="20dp"
         android:paddingBottom="5dp"
+        android:layout_marginTop="40dp"
         android:layout_alignParentBottom="true"
         android:text="댓글"
         android:textSize="16sp"

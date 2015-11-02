@@ -45,6 +45,7 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 	Spinner spNumOfUsers = null;
 	Spinner spVehicle = null;
 	Spinner spFareCondition = null;
+	Spinner spStatus = null;
 	EditText edtMessage = null;
 	String mode = "new";
 	
@@ -96,12 +97,20 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 			fareAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 			spFareCondition.setAdapter(fareAdapter);
 			
+			spStatus = (Spinner) findViewById(R.id.spStatus);
+			ArrayAdapter<String> statusAdapter = new ArrayAdapter<String>(this, R.layout.spinner_item, 
+					getResources().getStringArray(R.array.status_list2) );
+			statusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			spStatus.setAdapter(statusAdapter);
+			
 			txtDepartureDate = (TextView) findViewById(R.id.txtDepartureDate);
 			txtDepartureTime = (TextView) findViewById(R.id.txtDepartureTime);
 			
 			edtMessage = (EditText) findViewById(R.id.edtMessage);
 			
 			Button btnSend = (Button) findViewById(R.id.btnSend);
+			
+			findViewById(R.id.btnRefresh).setVisibility(ViewGroup.GONE);
 			
 			if ( getIntent().getExtras() != null && getIntent().getExtras().containsKey("mode"))
 			{
@@ -132,6 +141,8 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 					departure = new LatLng(latitude, longitude);
 					txtDeparture.setText( MainActivity.address );
 				}	
+				
+				spStatus.setEnabled(false);
 				
 				btnSend.setText("등록하기");
 				
@@ -333,6 +344,7 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 			
 			post.setVehicle( spVehicle.getSelectedItem().toString() );
 			post.setFareOption( spFareCondition.getSelectedItem().toString() );
+			post.setStatus( spStatus.getSelectedItem().toString() );
 			
 			boolean bRepetitive = ((CheckBox)findViewById(R.id.chkRepetitive) ).isChecked();
 			post.setRepetitiveYN( bRepetitive ? "Y":"N" );
@@ -422,6 +434,9 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 			ArrayAdapter<CharSequence> fareOptionAdapter = (ArrayAdapter<CharSequence>) spFareCondition.getAdapter();
 			spFareCondition.setSelection(fareOptionAdapter.getPosition( post.getFareOption() ));	
 		}
+		
+		ArrayAdapter<CharSequence> spStatusAdapter = (ArrayAdapter<CharSequence>) spStatus.getAdapter();
+		spStatus.setSelection( spStatusAdapter.getPosition( post.getStatus() ) );
 		
 		CheckBox chkRepetitive = (CheckBox) findViewById(R.id.chkRepetitive);
 		if ( "Y".equals( post.getRepetitiveYN() ) )
