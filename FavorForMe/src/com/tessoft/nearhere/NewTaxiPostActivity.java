@@ -129,6 +129,8 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 			else
 			{
 				// 신규
+				setTitle("합승정보등록");
+				
 				if ( getIntent().getExtras() != null && getIntent().getExtras().containsKey("departure") )
 				{
 					departure = (LatLng) getIntent().getExtras().get("departure");

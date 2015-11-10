@@ -195,21 +195,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		.build();
 
 		// Set the adapter for the list view
-		adapter = new MainMenuArrayAdapter( getApplicationContext(), 0);
-		adapter.add(new MainMenuItem("홈"));
-		//		adapter.add(new MainMenuItem("내 정보"));
-		adapter.add(new MainMenuItem("알림메시지"));
-		
-		if ( !"Guest".equals( application.getLoginUser().getType() ) )
-			adapter.add(new MainMenuItem("쪽지함"));
-		
-		adapter.add(new MainMenuItem("공지사항"));
-		adapter.add(new MainMenuItem("설정"));
-		
-		if ( !"Guest".equals( application.getLoginUser().getType() ) )
-			adapter.add(new MainMenuItem("로그아웃"));
-
-		mDrawerList.setAdapter( adapter );
+		loadMenuItems();
 		
 		reloadProfile();
 
@@ -247,6 +233,24 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 
 		// Set the drawer toggle as the DrawerListener
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
+	}
+
+	public void loadMenuItems() {
+		adapter = new MainMenuArrayAdapter( getApplicationContext(), 0);
+		adapter.add(new MainMenuItem("홈"));
+		//		adapter.add(new MainMenuItem("내 정보"));
+		adapter.add(new MainMenuItem("알림메시지"));
+		
+		if ( !"Guest".equals( application.getLoginUser().getType() ) )
+			adapter.add(new MainMenuItem("쪽지함"));
+		
+		adapter.add(new MainMenuItem("공지사항"));
+		adapter.add(new MainMenuItem("설정"));
+		
+		if ( !"Guest".equals( application.getLoginUser().getType() ) )
+			adapter.add(new MainMenuItem("로그아웃"));
+
+		mDrawerList.setAdapter( adapter );
 	}
 
 	public void reloadProfile() {

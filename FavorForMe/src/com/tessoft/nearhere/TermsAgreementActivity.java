@@ -7,6 +7,8 @@ import org.codehaus.jackson.type.TypeReference;
 import com.kakao.Session;
 import com.tessoft.common.Constants;
 import com.tessoft.domain.APIResponse;
+import com.tessoft.domain.MainMenuItem;
+import com.tessoft.nearhere.fragment.TaxiFragment;
 
 import android.support.v7.app.ActionBarActivity;
 import android.content.Intent;
@@ -123,9 +125,7 @@ public class TermsAgreementActivity extends BaseActivity {
 			{
 				if ( requestCode == INSERT_USER_TERMS_AGREEMENT )
 				{
-					Intent intent = new Intent( this, MoreUserInfoActivity.class);
-					startActivity(intent);
-					overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
+					goMainActivity();
 					super.finish();
 				}
 			}
@@ -145,23 +145,26 @@ public class TermsAgreementActivity extends BaseActivity {
 	public void finish() {
 		// TODO Auto-generated method stub
 		super.finish();
-
-		overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
 	}
 
+	boolean doubleBackToExitPressedOnce = false;
 	@Override
 	public void onBackPressed() {
-		super.onBackPressed();
-//		Intent intent = null;
-//		
-//		if ( Constants.bKakaoLogin )
-//			intent = new Intent( getApplicationContext(), KakaoLoginActivity.class);
-//		else
-//			intent = new Intent( getApplicationContext(), RegisterUserActivity.class);
-//		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//		startActivity(intent);
-		Session.getCurrentSession().close();
-		goKaKaoLoginActivity();
-		finish();
+
+		if (doubleBackToExitPressedOnce) {
+			super.onBackPressed();
+			return;
+		}
+
+		this.doubleBackToExitPressedOnce = true;
+		Toast.makeText(this, "이전 버튼을 한번 더 누르면 종료합니다.", Toast.LENGTH_SHORT).show();
+
+		new Handler().postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				doubleBackToExitPressedOnce=false;                       
+			}
+		}, 2000);
 	}
 }

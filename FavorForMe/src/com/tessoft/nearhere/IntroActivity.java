@@ -47,7 +47,7 @@ public class IntroActivity extends BaseActivity {
 			super.onCreate(savedInstanceState);
 
 			// 어드민 설정을 읽는다.
-			checkIfAdminUser();
+//			checkIfAdminUser();
 			
 			// 카카오톡 세션을 초기화 한다.
 			Session.initialize(this);
@@ -78,6 +78,16 @@ public class IntroActivity extends BaseActivity {
 				Log.d("debug", "login_bg : " + mapper.writeValueAsString( request ) );
 
 				sendHttp("/taxi/login_bg.do", mapper.writeValueAsString(request), HTTP_LOGIN_BACKGROUND );
+			}
+			else if ( !Util.isEmptyString( application.getLoginUser().getKakaoID() ) && !Util.isEmptyString( application.getMetaInfoString("hash") ) )
+			{
+				HashMap request = application.getDefaultRequest();
+				request.put("userID", application.getLoginUser().getUserID());
+				request.put("hash", application.getMetaInfoString("hash") );
+				
+				Log.d("debug", "login_bg2 : " + mapper.writeValueAsString( request ) );
+				
+				sendHttp("/taxi/login_bg2.do", mapper.writeValueAsString(request), Constants.HTTP_LOGIN_BACKGROUND2 );
 			}
 			else
 			{
@@ -153,7 +163,19 @@ public class IntroActivity extends BaseActivity {
 
 				application.setLoginUser( user );
 				
-				goMainActivity();
+				if ( requestCode == HTTP_LOGIN_BACKGROUND )
+				{
+					String addInfoString = mapper.writeValueAsString( response.getData2() );
+					HashMap<String,String> addInfo = mapper.readValue( addInfoString, new TypeReference<HashMap<String,String>>(){});
+					
+					if ( addInfo != null && addInfo.containsKey("UserAgreed") && "Y".equals( addInfo.get("UserAgreed") ) )
+						goMainActivity();
+					else
+						goTermsAgreementActivity();
+				}
+				else if ( requestCode == Constants.HTTP_GET_RANDOM_ID_FOR_GUEST )
+					goTermsAgreementActivity();
+					
 				finish();
 			}
 			else if ( requestCode == Constants.HTTP_LOGIN_BACKGROUND2 )
@@ -175,7 +197,7 @@ public class IntroActivity extends BaseActivity {
 				}
 				else
 				{
-					goKaKaoLoginActivity();
+					goMainActivity();
 					finish();
 				}
 			}
@@ -187,14 +209,6 @@ public class IntroActivity extends BaseActivity {
 	}
 	
 	private void login() throws Exception{
-		
-//		User u = new User();
-//		u.setUserID("user27");
-//		u.setUserNo("27");
-//		application.setLoginUser(u);
-
-//		if ( Constants.bReal == false )
-//			checkIfAdminUser();
 		
 		Log.d("debug", "login");
 		Log.d("debug", "login user : " + mapper.writeValueAsString( application.getLoginUser() ) );
@@ -295,6 +309,14 @@ public class IntroActivity extends BaseActivity {
 		overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 	}
 
+	public void goTermsAgreementActivity()
+	{
+		Intent intent = new Intent( this, TermsAgreementActivity.class);
+		startActivity(intent);
+		overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
+		finish();
+	}
+	
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 	private boolean checkPlayServices() {
 		int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);

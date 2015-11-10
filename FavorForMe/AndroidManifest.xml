@@ -35,17 +35,15 @@
         android:required="true" />
 
     <application
+        android:name=".NearhereApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:theme="@style/BaseTheme"
-        android:name="com.tessoft.nearhere.NearhereApplication">
-        
+        android:theme="@style/BaseTheme" >
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
-        
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_app_key" />
@@ -57,6 +55,7 @@
             android:theme="@style/IntroTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -66,6 +65,7 @@
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+
                 <category android:name="com.tessoft.nearhere" />
             </intent-filter>
         </receiver>
@@ -128,15 +128,15 @@
             android:theme="@style/NoTitleBarTheme" >
         </activity>
         <activity
-            android:name="com.tessoft.nearhere.fragment.MessageBoxFragment"
+            android:name=".fragment.MessageBoxFragment"
             android:label="@string/title_activity_message_box" >
         </activity>
         <activity
-            android:name="com.tessoft.nearhere.fragment.NoticeListFragment"
+            android:name=".fragment.NoticeListFragment"
             android:label="@string/title_activity_notice_list" >
         </activity>
         <activity
-            android:name="com.tessoft.nearhere.fragment.PushMessageListFragment"
+            android:name=".fragment.PushMessageListFragment"
             android:label="@string/title_activity_push_message_list" >
         </activity>
         <activity
@@ -149,8 +149,8 @@
         <activity
             android:name=".NewTaxiPostActivity"
             android:label="@string/title_activity_new_taxi_post"
-            android:screenOrientation="portrait" 
-            android:theme="@style/NoTitleBarTheme">
+            android:screenOrientation="portrait"
+            android:theme="@style/NoTitleBarTheme" >
         </activity>
         <activity
             android:name=".MoreUserInfoActivity"
@@ -169,7 +169,6 @@
                 <action android:name="com.tessoft.nearhere.safetyKeeperService" />
             </intent-filter>
         </service>
-        
         <service android:name=".LocationUpdateService" >
             <intent-filter>
                 <action android:name="com.tessoft.nearhere.locationUpdateService" />
@@ -196,23 +195,27 @@
         </activity>
         <activity
             android:name=".KakaoLoginActivity"
-            android:screenOrientation="portrait"
             android:launchMode="singleTask"
-            android:theme="@style/NoTitleBarTheme">
+            android:screenOrientation="portrait"
+            android:theme="@style/NoTitleBarTheme" >
         </activity>
         <activity
             android:name=".KakaoSignupActivity"
-            android:screenOrientation="portrait"
             android:launchMode="singleTask"
-            android:theme="@style/NoTitleBarTheme">
+            android:screenOrientation="portrait"
+            android:theme="@style/NoTitleBarTheme" >
         </activity>
-        
-        <activity android:name="com.facebook.FacebookActivity"
-          android:configChanges=
-                 "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-          android:theme="@android:style/Theme.Translucent.NoTitleBar"
-          android:label="@string/app_name" />
-        
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name=".FacebookConnect"
+            android:label="@string/title_activity_facebook_connect"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoTitleBarTheme" >
+        </activity>
     </application>
 
 </manifest>

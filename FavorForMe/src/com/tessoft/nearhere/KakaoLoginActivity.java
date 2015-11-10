@@ -73,7 +73,7 @@ public class KakaoLoginActivity extends SampleLoginActivity{
 			
 			application = (NearhereApplication) getApplication();
 			
-			setTitle("회원가입");
+			setTitle("SNS 계정 로그인");
 			findViewById(R.id.btnRefresh).setVisibility(ViewGroup.GONE);
 			
 			setupFacebookLogin();
@@ -333,7 +333,7 @@ public class KakaoLoginActivity extends SampleLoginActivity{
 										String userString = mapper.writeValueAsString( response.getData2() );
 										User user = mapper.readValue(userString, new TypeReference<User>(){});
 										application.setLoginUser(user);
-										goTermsAgreementActivity( null );
+										goMoreUserInfoActivity( null );	
 									}
 									else
 									{
@@ -384,9 +384,9 @@ public class KakaoLoginActivity extends SampleLoginActivity{
     	finish();
     }
 	
-	public void goTermsAgreementActivity( View v )
+	public void goMoreUserInfoActivity( View v )
 	{
-		Intent intent = new Intent( this, TermsAgreementActivity.class);
+		Intent intent = new Intent( this, MoreUserInfoActivity.class);
 		startActivity(intent);
 		overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 		finish();

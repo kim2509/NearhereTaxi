@@ -87,7 +87,7 @@ public class TaxiFragment extends BaseFragment
 			
 			rootView = inflater.inflate(R.layout.fragment_taxi_main, container, false);
 
-			fbHeader = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header_fb, null);
+//			fbHeader = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header_fb, null);
 			header = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header1, null);
 			header = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header1, null);
 			header3 = getActivity().getLayoutInflater().inflate(R.layout.taxi_main_list_header3, null);
@@ -99,33 +99,16 @@ public class TaxiFragment extends BaseFragment
 			listMain.addHeaderView(header3, null, false );
 			listMain.addHeaderView(header2, null, false );
 			
-			if ( application.getLoginUser() != null &&
-					!Util.isEmptyString( application.getLoginUser().getKakaoID() ) ) Constants.bKakaoLogin = true;
-			
-			if ( "Guest".equals(application.getLoginUser().getType() ) ) Constants.bKakaoLogin = false;
-			
-			if ( !Constants.bKakaoLogin )
+			if ( "Guest".equals(application.getLoginUser().getType() ) )
 			{
 				listMain.addHeaderView(header, null, false );
 				
-				Button btnKakaoLogin = (Button) header.findViewById(R.id.btnKakaoLogin);
-				btnKakaoLogin.setOnClickListener(this);
+				header.findViewById(R.id.btnKakaoLogin).setOnClickListener(this);
+				header.findViewById(R.id.btnFBLogin).setOnClickListener(this);
 			}
 			else
 			{
 				listMain.removeHeaderView(header);
-				
-				if ( Util.isEmptyString( application.getLoginUser().getFacebookID() ) )
-				{
-					listMain.addHeaderView(fbHeader, null, false );
-					
-					Button btnFbLogin = (Button) fbHeader.findViewById(R.id.btnFbLogin);
-					btnFbLogin.setOnClickListener(this);
-				}
-				else
-				{
-					listMain.removeHeaderView(fbHeader);
-				}
 			}
 			
 			listMain.addFooterView(footer, null, false );
@@ -226,7 +209,7 @@ public class TaxiFragment extends BaseFragment
 				{
 					if ( "Guest".equals( application.getLoginUser().getType()))
 					{
-						showYesNoDialog("확인", "카카오연동 후에 등록하실 수 있습니다.\r\n\r\n카카오연동하시겠습니까?\r\n", "kakaoLoginCheck" );
+						showYesNoDialog("확인", "SNS 계정연동 후에 등록하실 수 있습니다.\r\n\r\nSNS계정연동하시겠습니까?\r\n", "kakaoLoginCheck" );
 						return;
 					}
 					
@@ -277,7 +260,11 @@ public class TaxiFragment extends BaseFragment
 						rootView.findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
 						adapter.clear();
 						pageNo = 1;
+						
 						inquiryPosts();
+						MainActivity mainActivity = (MainActivity) getActivity();
+						mainActivity.loadMenuItems();
+						mainActivity.reloadProfile();
 					}
 				}
 			}
@@ -318,6 +305,18 @@ public class TaxiFragment extends BaseFragment
 					String totalCount = response.getData2().toString().split("\\|")[1];
 
 					adapter.remove(moreFlag);
+					
+					if ( "Guest".equals(application.getLoginUser().getType() ) )
+					{
+						listMain.removeHeaderView(header);
+						listMain.addHeaderView(header, null, false );
+						header.findViewById(R.id.btnKakaoLogin).setOnClickListener(this);
+						header.findViewById(R.id.btnFBLogin).setOnClickListener(this);
+					}
+					else
+					{
+						listMain.removeHeaderView(header);
+					}
 					
 					if ( "true".equals( moreFlagString ) )
 					{
@@ -708,7 +707,7 @@ public class TaxiFragment extends BaseFragment
 			{
 				showYesNoDialog("확인", "카카오 계정으로 로그인하시겠습니까?", "kakaoLogin" );
 			}
-			else if ( v.getId() == R.id.btnFbLogin )
+			else if ( v.getId() == R.id.btnFBLogin )
 			{
 				showYesNoDialog("확인", "Facebook 계정으로 로그인하시겠습니까?", "facebookLogin" );
 			}

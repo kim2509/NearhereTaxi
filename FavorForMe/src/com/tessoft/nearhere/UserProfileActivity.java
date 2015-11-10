@@ -173,7 +173,7 @@ public class UserProfileActivity extends BaseActivity {
 		
 		if ( "Guest".equals( application.getLoginUser().getType()))
 		{
-			showOKDialog("확인", "카카오연동 후에 등록하실 수 있습니다.\r\n\r\n메인 화면에서 카카오연동을 할 수 있습니다.", "kakaoLoginCheck" );
+			showOKDialog("확인", "SNS 계정연동 후에 등록하실 수 있습니다.\r\n\r\n메인 화면에서 SNS연동을 할 수 있습니다.", "kakaoLoginCheck" );
 			return;
 		}
 		

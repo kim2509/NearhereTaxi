@@ -1,5 +1,7 @@
 package com.tessoft.nearhere;
 
+import java.util.HashMap;
+
 import org.apache.http.util.TextUtils;
 import org.codehaus.jackson.type.TypeReference;
 
@@ -13,6 +15,7 @@ import com.tessoft.domain.User;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 public class MoreUserInfoActivity extends BaseActivity {
 
@@ -148,20 +152,24 @@ public class MoreUserInfoActivity extends BaseActivity {
 			
 			APIResponse response = mapper.readValue(result.toString(), new TypeReference<APIResponse>(){});
 			
-			if ( "0000".equals( response.getResCode() ) )
+			if ( requestCode == UPDATE_USER_INFO )
 			{
-				application.setMetaInfo("logout", "false");
-				application.setMetaInfo("registerUserFinished", "true");
-				Constants.bKakaoLogin = true;
-				
-//				goTaxiTutorialActivity();
-				
-				goMainActivity();
-			}
-			else
-			{
-				showOKDialog("경고", response.getResMsg(), null);
-				return;
+				if ( "0000".equals( response.getResCode() ) )
+				{
+					String addInfoString = mapper.writeValueAsString( response.getData2() );
+					HashMap addInfo = mapper.readValue( addInfoString, new TypeReference<HashMap>(){});
+					String userString = mapper.writeValueAsString( addInfo.get("user") );
+					User user = mapper.readValue( userString, new TypeReference<User>(){});
+					application.setLoginUser(user);
+					
+					goMainActivity();
+					finish();
+				}
+				else
+				{
+					showOKDialog("경고", response.getResMsg(), null);
+					return;
+				}
 			}
 		}
 		catch( Exception ex )
@@ -182,14 +190,5 @@ public class MoreUserInfoActivity extends BaseActivity {
 	public void finish() {
 		// TODO Auto-generated method stub
 		super.finish();
-		overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
-	}
-	
-	@Override
-	public void onBackPressed() {
-		super.onBackPressed();
-		Intent intent = new Intent( getApplicationContext(), TermsAgreementActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		startActivity(intent);
 	}
 }

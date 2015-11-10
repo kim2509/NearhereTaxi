@@ -211,7 +211,7 @@ public class KakaoSignupActivity extends SampleSignupActivity{
 										String userString = mapper.writeValueAsString( response.getData2() );
 										User user = mapper.readValue(userString, new TypeReference<User>(){});
 										application.setLoginUser(user);
-										goTermsAgreementActivity( null );	
+										goMoreUserInfoActivity( null );	
 									}
 									else
 									{
@@ -281,9 +281,9 @@ public class KakaoSignupActivity extends SampleSignupActivity{
     	finish();
     }
     
-    public void goTermsAgreementActivity( View v )
+    public void goMoreUserInfoActivity( View v )
 	{
-		Intent intent = new Intent( this, TermsAgreementActivity.class);
+		Intent intent = new Intent( this, MoreUserInfoActivity.class);
 		startActivity(intent);
 		overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 		finish();

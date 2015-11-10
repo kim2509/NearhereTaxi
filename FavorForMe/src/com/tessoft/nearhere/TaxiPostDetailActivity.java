@@ -6,9 +6,17 @@ import java.util.HashMap;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.type.TypeReference;
+import org.json.JSONObject;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
@@ -25,15 +33,20 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.tessoft.common.Constants;
+import com.tessoft.common.OKDialogListener;
 import com.tessoft.common.TaxiPostReplyListAdapter;
+import com.tessoft.common.TransactionDelegate;
+import com.tessoft.common.UploadTask;
 import com.tessoft.common.Util;
 import com.tessoft.domain.APIResponse;
 import com.tessoft.domain.Post;
 import com.tessoft.domain.PostReply;
+import com.tessoft.domain.User;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -74,6 +87,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 	TaxiPostReplyListAdapter adapter = null;
 	Post post = null;
 	View header2 = null;
+	View fbHeader = null;
 	View headerPost = null;
 	View headerButtons = null;
 	GoogleMap map = null;
@@ -84,6 +98,8 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 	View footerPadding = null;
 	Button btnFinish = null;
 	
+	CallbackManager callbackManager;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		try
@@ -91,6 +107,9 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			super.onCreate(savedInstanceState);
 
 			header = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_header_person, null);
+			
+			fbHeader = getLayoutInflater().inflate(R.layout.taxi_main_list_header_fb, null);
+			
 			headerPost = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_header_post, null);
 			headerButtons = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_buttons, null);
 //			header = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_header1, null);
@@ -101,6 +120,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 
 			listMain = (ListView) findViewById(R.id.listMain);
 			listMain.addHeaderView(header, null, false );
+			listMain.addHeaderView(fbHeader, null, false );
 			listMain.addHeaderView(headerPost, null, false );
 			listMain.addHeaderView(headerButtons, null, false );
 			listMain.addHeaderView(header2 );
@@ -120,6 +140,8 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			inquiryPostDetail();
 			
 			setTitle("합승상세");
+			
+			setupFacebookLogin();
 		}
 		catch(Exception ex )
 		{
@@ -207,6 +229,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		.build();
 		
 		findViewById(R.id.btnViewProfile).setOnClickListener(this);
+		findViewById(R.id.btnFbLogin).setOnClickListener(this);
 	}
 
 	DisplayImageOptions options = null;
@@ -422,7 +445,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 
 			if ( "Guest".equals( application.getLoginUser().getType()))
 			{
-				showOKDialog("확인", "카카오연동 후에 등록하실 수 있습니다.\r\n\r\n메인 화면에서 카카오연동을 할 수 있습니다.", "kakaoLoginCheck" );
+				showOKDialog("확인", "SNS 계정연동 후에 등록하실 수 있습니다.\r\n\r\n메인 화면에서 SNS연동을 할 수 있습니다.", "kakaoLoginCheck" );
 				return;
 			}
 			
@@ -486,6 +509,15 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					adapter.setItemList( post.getPostReplies() );
 					adapter.notifyDataSetChanged();
 
+					if ( !Util.isEmptyString( application.getLoginUser().getFacebookID() ) || 
+							!post.getUser().getUserID().equals( application.getLoginUser().getUserID() ))
+					{
+						listMain.removeHeaderView(fbHeader);
+						findViewById(R.id.layoutFacebookLogin).setVisibility(ViewGroup.GONE);
+					}
+					else
+						findViewById(R.id.layoutFacebookLogin).setVisibility(ViewGroup.VISIBLE);
+					
 					boolean bAddedFooterButon = false;
 					if ( post.getUser().getUserID().equals( application.getLoginUser().getUserID() ) )
 					{
@@ -521,6 +553,43 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 				{
 					inquiryPostDetail();
 				}
+				else if ( requestCode == Constants.HTTP_PROFILE_IMAGE_UPLOAD )
+				{
+					String userString = mapper.writeValueAsString( response.getData2() );
+					User user = mapper.readValue(userString, new TypeReference<User>(){});
+					application.setLoginUser(user);
+					
+					user.setFacebookID(id);
+					user.setUserName(name);
+					
+					if ("male".equals( gender.toLowerCase() ) || "남성".equals( gender ))
+						user.setSex("M");
+					else
+						user.setSex("F");
+						
+					user.setFacebookURL(facebookURL);
+					user.setFacebookProfileImageURL(facebookProfileImageURL);
+					
+					listMain.setVisibility(ViewGroup.GONE);
+					findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
+					sendHttp("/taxi/updateFacebookInfo.do", mapper.writeValueAsString(user), Constants.HTTP_UPDATE_FACEBOOK_INFO );
+				}
+				else if ( requestCode == Constants.HTTP_UPDATE_FACEBOOK_INFO )
+				{
+					String addInfoString = mapper.writeValueAsString( response.getData() );
+					HashMap addInfo = mapper.readValue( addInfoString, new TypeReference<HashMap>(){});
+					String userString = mapper.writeValueAsString( addInfo.get("user") );
+					User user = mapper.readValue(userString, new TypeReference<User>(){});
+					application.setLoginUser(user);
+					
+					findViewById(R.id.marker_progress).setVisibility(ViewGroup.GONE);
+					listMain.setVisibility(ViewGroup.VISIBLE);
+					
+					inquiryPostDetail();
+					Intent resultIntent = new Intent();
+					resultIntent.putExtra("reload", true);
+					setResult(RESULT_OK, resultIntent);	
+				}
 			}
 			else
 			{
@@ -536,8 +605,12 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 	}
 
 	private void setPostData() throws Exception {
+		
+		String title = post.getMessage();
+		if ( title != null ) title = title.trim();
+		
 		TextView txtTitle = (TextView) headerPost.findViewById(R.id.txtTitle);
-		txtTitle.setText( post.getMessage() );
+		txtTitle.setText( title );
 		
 		TextView txtStatus = (TextView) headerPost.findViewById(R.id.txtStatus);
 		if ( "진행중".equals( post.getStatus() ) )
@@ -716,6 +789,8 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 
 		try
 		{
+			callbackManager.onActivityResult(requestCode, responseCode, data);
+			
 			if ( responseCode == RESULT_OK )
 			{
 				inquiryPostDetail();
@@ -723,7 +798,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 				Intent result = new Intent();
 				result.putExtra("reload", true);
 				setResult(RESULT_OK, result);	
-			}			
+			}
 		}
 		catch( Exception ex )
 		{
@@ -747,14 +822,11 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 				showYesNoDialog("확인", "정말 종료하시겠습니까?", "DIALOG_FINISH_POST");
 				return;
 			}
-			/*
-			else if ( id == R.id.btnDelete )
+			else if ( id == R.id.btnFbLogin )
 			{
-				showYesNoDialog("확인", "정말 삭제하시겠습니까?", "postDelete");
-				return;
+				findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
+				listMain.setVisibility(ViewGroup.GONE);
 			}
-			*/
-			
 		}
 		catch( Exception ex )
 		{
@@ -878,7 +950,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		
 		if ( "Guest".equals( application.getLoginUser().getType()))
 		{
-			showOKDialog("확인", "카카오연동 후에 등록하실 수 있습니다.\r\n\r\n메인 화면에서 카카오연동을 할 수 있습니다.", "kakaoLoginCheck" );
+			showOKDialog("확인", "SNS 계정연동 후에 등록하실 수 있습니다.\r\n\r\n메인 화면에서 SNS연동을 할 수 있습니다.", "kakaoLoginCheck" );
 			return;
 		}
 		
@@ -890,4 +962,123 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		startActivity(intent);
 		overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 	}
+	
+	private void setupFacebookLogin() {
+		LoginButton loginButton = (LoginButton) findViewById(R.id.btnFbLogin);
+		loginButton.setOnClickListener(this);
+		loginButton.setReadPermissions("user_friends");
+
+		callbackManager = CallbackManager.Factory.create();
+		// Callback registration
+		loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+		    @Override
+		    public void onSuccess(LoginResult loginResult) {
+		        // App code
+		    	try
+		    	{
+		    		GraphRequest request = GraphRequest.newMeRequest(
+		    		        loginResult.getAccessToken(),
+		    		        new GraphRequest.GraphJSONObjectCallback() {
+		    		            @Override
+		    		            public void onCompleted(
+		    		                   JSONObject object,
+		    		                   GraphResponse response) {
+		    		                // Application code
+		    		            	
+		    		            	listMain.setVisibility(ViewGroup.GONE);
+		    						findViewById(R.id.marker_progress).setVisibility(ViewGroup.VISIBLE);
+		    		            	registerUserProceed( object );
+		    		            }
+
+		    		        });
+		    		Bundle parameters = new Bundle();
+		    		parameters.putString("fields", "id,name,link,gender, first_name, last_name, picture.width(9999) ");
+		    		parameters.putString("locale","ko_KR");
+		    		request.setParameters(parameters);
+		    		request.executeAsync();
+		    	}
+		    	catch( Exception ex )
+		    	{
+		    	}
+		    	
+		    }
+
+		    @Override
+		    public void onCancel() {
+		        // App code
+		    	findViewById(R.id.marker_progress).setVisibility(ViewGroup.GONE);
+				listMain.setVisibility(ViewGroup.VISIBLE);
+		    }
+
+		    @Override
+		    public void onError(FacebookException exception) {
+		        // App code
+		    	findViewById(R.id.marker_progress).setVisibility(ViewGroup.GONE);
+				listMain.setVisibility(ViewGroup.VISIBLE);
+		    }
+		});
+	}
+	
+	String id = "";
+	String name = "";
+	String gender = "";
+	String facebookURL = "";
+	String facebookProfileImageURL = "";
+	
+	private void registerUserProceed( JSONObject object )
+	{
+		try
+		{
+			if ( object == null )
+			{
+				showOKDialog("오류", "로그인 데이터가 올바르지 않습니다.\r\n다시 시도해 주십시오.", null );
+				return;
+			}
+			
+			id = object.getString("id");
+			name = object.getString("name");
+			gender = object.getString("gender");
+			facebookURL = object.getString("link");
+			facebookProfileImageURL = "";
+			
+			if ( object.has("picture") && object.getJSONObject("picture") != null )
+			{
+				JSONObject pictureObj = object.getJSONObject("picture");
+				if ( pictureObj.has("data") )
+					facebookProfileImageURL = pictureObj.getJSONObject("data").getString("url");
+			}
+			
+			if ( !Util.isEmptyString( facebookProfileImageURL ) )
+			{
+				ImageLoader imageLoader = ImageLoader.getInstance();
+				
+				ImageSize targetSize = new ImageSize(640, 640);
+				imageLoader.loadImage( facebookProfileImageURL, targetSize, new SimpleImageLoadingListener() {
+					@Override
+					public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+
+						if (loadedImage != null )
+						{
+							Log.d("imageResult", "image loaded. " + loadedImage.getWidth() + " " + loadedImage.getHeight() );
+							new UploadTask( getApplicationContext(), application.getLoginUser().getUserID() , 
+									Constants.HTTP_PROFILE_IMAGE_UPLOAD, TaxiPostDetailActivity.this ).execute( loadedImage );
+						}
+					}
+
+					@Override
+					public void onLoadingFailed(String imageUri, View view,
+							FailReason failReason) {
+						// TODO Auto-generated method stub
+						super.onLoadingFailed(imageUri, view, failReason);
+						Log.d("debug", "onLoadingFailed:" + failReason );
+					}
+				});
+			}
+		}
+		catch( Exception ex )
+		{
+			application.debug(ex.getMessage());
+		}
+	}
+	
 }

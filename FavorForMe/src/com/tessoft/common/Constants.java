@@ -32,4 +32,7 @@ public class Constants {
 	public static final int HTTP_LOGOUT = 1040;
 	public static final int HTTP_GET_RANDOM_ID_V2 = 1050;
 	public static final int HTTP_PROFILE_IMAGE_UPLOAD = 1060;
+	public static final int HTTP_UPDATE_FACEBOOK_INFO = 1070;
+	
+	public static final int ACTIVITY_REQ_CODE_FB_CONNECT = 3000;
 }
