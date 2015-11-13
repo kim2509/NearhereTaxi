@@ -78,8 +78,8 @@ public class Util {
 	{
 		Date dDepartureDateTime = null;
 		Date now = new Date();
-		String nowDate = "";
-		String departureDate = "";
+		String nowDateString = "";
+		String departureDateString = "";
 		
 		String result = "";
 		try
@@ -87,16 +87,19 @@ public class Util {
 			dDepartureDateTime = getDateFromString(departureDateTime, "yyyy-MM-dd HH:mm:ss");
 			result = getDateStringFromDate(dDepartureDateTime,  "yyyy-MM-dd HH:mm");
 			
+			Date today = getDateFromString( getNow("yyyy-MM-dd"), "yyyy-MM-dd" );
+			Date departureDate = getDateFromString(departureDateTime, "yyyy-MM-dd");
+			
 			long diff = now.getTime() - dDepartureDateTime.getTime();
-			long diffDays = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+			long diffDays = TimeUnit.DAYS.convert(today.getTime() - departureDate.getTime(), TimeUnit.MILLISECONDS);
 			long diffHours = TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS);
 			long diffMinutes = TimeUnit.MINUTES.convert(diff, TimeUnit.MILLISECONDS);
 			
-			nowDate = Util.getDateStringFromDate(now, "yyyy-MM-dd");
-			departureDate = Util.getDateStringFromDate(dDepartureDateTime, "yyyy-MM-dd");
+			nowDateString = Util.getDateStringFromDate(now, "yyyy-MM-dd");
+			departureDateString = Util.getDateStringFromDate(dDepartureDateTime, "yyyy-MM-dd");
 			
 			if ( diffDays > 0 ||
-					( diffDays == 0 && diffHours > 0 && !nowDate.equals(departureDate)))
+					( diffDays == 0 && diffHours > 0 && !nowDateString.equals(departureDateString)))
 			{
 				// 오늘 이전
 				if ( diffDays == 0 )
@@ -106,7 +109,7 @@ public class Util {
 				else // 5일 이상
 					result = getDateStringFromDate(dDepartureDateTime,  "MM월 dd일") + " 출발"; 
 			}
-			else if ( diffDays == 0 && nowDate.equals(departureDate) )
+			else if ( diffDays == 0 && nowDateString.equals(departureDateString) )
 			{
 				// 오늘
 				diffMinutes -= diffHours * 60;
@@ -132,7 +135,7 @@ public class Util {
 					result += " 출발예정";
 				}
 			}
-			else if ( diffDays < 0 || ( diffDays == 0 && !nowDate.equals(departureDate) ) )
+			else if ( diffDays < 0 || ( diffDays == 0 && !nowDateString.equals(departureDateString) ) )
 			{
 				// 오늘 이후
 				if ( diffDays < 0 )

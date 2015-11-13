@@ -13,6 +13,7 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
@@ -107,6 +108,9 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 			super.onCreate(savedInstanceState);
 
 			header = getLayoutInflater().inflate(R.layout.taxi_post_detail_list_header_person, null);
+
+			if ( !FacebookSdk.isInitialized() )
+				FacebookSdk.sdkInitialize(getApplicationContext());
 			
 			fbHeader = getLayoutInflater().inflate(R.layout.taxi_main_list_header_fb, null);
 			
@@ -507,24 +511,32 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					setPostData();
 
 					adapter.setItemList( post.getPostReplies() );
-					adapter.notifyDataSetChanged();
 
 					if ( !Util.isEmptyString( application.getLoginUser().getFacebookID() ) || 
 							!post.getUser().getUserID().equals( application.getLoginUser().getUserID() ))
 					{
 						listMain.removeHeaderView(fbHeader);
-						findViewById(R.id.layoutFacebookLogin).setVisibility(ViewGroup.GONE);
+						LinearLayout layoutFacebookLogin = (LinearLayout) findViewById(R.id.layoutFacebookLogin);
+						if ( layoutFacebookLogin != null )
+							layoutFacebookLogin.setVisibility(ViewGroup.GONE);
 					}
 					else
-						findViewById(R.id.layoutFacebookLogin).setVisibility(ViewGroup.VISIBLE);
+					{
+						LinearLayout layoutFacebookLogin = (LinearLayout) findViewById(R.id.layoutFacebookLogin);
+						if ( layoutFacebookLogin != null )
+							layoutFacebookLogin.setVisibility(ViewGroup.VISIBLE);
+					}
 					
 					boolean bAddedFooterButon = false;
+					
 					if ( post.getUser().getUserID().equals( application.getLoginUser().getUserID() ) )
 					{
-						listMain.removeFooterView(footer2);
+						if ( listMain.getFooterViewsCount() == 3 )
+							listMain.removeFooterView(footer2);
+						
 						listMain.addFooterView(footer2, null, false );
 						bAddedFooterButon = true;
-						findViewById(R.id.btnSendMessage).setVisibility(ViewGroup.GONE);						
+						findViewById(R.id.btnSendMessage).setVisibility(ViewGroup.GONE);					
 					}
 					else
 					{
@@ -534,7 +546,9 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 					
 					if ( bAddedFooterButon == false && Constants.bAdminMode )
 					{
-						listMain.removeFooterView(footer2);
+						if ( listMain.getFooterViewsCount() == 3 )
+							listMain.removeFooterView(footer2);
+						
 						listMain.addFooterView(footer2, null, false );
 					}
 				}
@@ -600,7 +614,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 		}
 		catch( Exception ex )
 		{
-			catchException(this, ex);
+//			catchException(this, ex);
 		}
 	}
 
@@ -644,7 +658,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 				if ( post.getDepartureTime().indexOf("지금") >= 0 )
 					departureDateTime = Util.getFormattedDateString(post.getCreatedDate(), "MM-dd HH:mm") + " 출발";
 				else
-					departureDateTime = post.getDepartureDate() + " " + post.getDepartureTime() + " 출발";
+					departureDateTime = Util.getFormattedDateString(post.getCreatedDate(), "MM-dd HH:mm") + " " + post.getDepartureTime() + " 출발";
 			}
 			else
 			{

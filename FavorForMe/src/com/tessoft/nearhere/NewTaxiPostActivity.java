@@ -106,6 +106,9 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 			txtDepartureDate = (TextView) findViewById(R.id.txtDepartureDate);
 			txtDepartureTime = (TextView) findViewById(R.id.txtDepartureTime);
 			
+			txtDepartureDate.setText( Util.getNow("yyyy-MM-dd") );
+			txtDepartureTime.setText( Util.getNow("HH:mm") );
+			
 			edtMessage = (EditText) findViewById(R.id.edtMessage);
 			
 			Button btnSend = (Button) findViewById(R.id.btnSend);

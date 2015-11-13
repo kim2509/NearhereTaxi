@@ -594,7 +594,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 	@Override
 	public void onConnectionFailed(ConnectionResult arg0) {
 		// TODO Auto-generated method stub
-
+		application.debug("[MainActivity] playservice is onConnectionFailed.[" + arg0 + "]");
 	}
 
 	@Override

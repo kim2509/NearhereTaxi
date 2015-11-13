@@ -97,7 +97,8 @@ public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> implements
 				txtUserName = (TextView) row.findViewById(R.id.txtUserName);
 				txtDeleteReply = (TextView) row.findViewById(R.id.txtDeleteReply);
 			}
-
+			
+			
 			TextView txtMessage = (TextView) row.findViewById(R.id.txtMessage);
 			txtMessage.setText( item.getMessage() );
 			
@@ -110,29 +111,32 @@ public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> implements
 			else
 				txtDistance.setVisibility(ViewGroup.GONE);
 			
-			if ( !Util.isEmptyString( item.getUser().getProfileImageURL() ) )
+			if ( item.getUser() != null )
 			{
-				ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
-						item.getUser().getProfileImageURL() , imageView, options );	
+				if ( !Util.isEmptyString( item.getUser().getProfileImageURL() ) )
+				{
+					ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
+							item.getUser().getProfileImageURL() , imageView, options );	
+				}
+				else
+				{
+					ImageLoader.getInstance().cancelDisplayTask(imageView);
+					imageView.setImageResource(R.drawable.no_image);
+				}
+				
+				if ( Util.isEmptyString( item.getUser().getUserName() ) )
+					txtUserName.setText( item.getUser().getUserID() );
+				else
+					txtUserName.setText( item.getUser().getUserName() );
+				
+				if ( item.getUser().getUserID().equals( loginUser.getUserID() ) )
+					txtDeleteReply.setVisibility(ViewGroup.VISIBLE);
+				else
+					txtDeleteReply.setVisibility(ViewGroup.INVISIBLE);
 			}
-			else
-			{
-				ImageLoader.getInstance().cancelDisplayTask(imageView);
-				imageView.setImageResource(R.drawable.no_image);
-			}
-			
-			if ( Util.isEmptyString( item.getUser().getUserName() ) )
-				txtUserName.setText( item.getUser().getUserID() );
-			else
-				txtUserName.setText( item.getUser().getUserName() );
 			
 			TextView txtCreatedDate = (TextView) row.findViewById(R.id.txtCreatedDate);
 			txtCreatedDate.setText( Util.getFormattedDateString( item.getCreatedDate(), "HH:mm"));
-			
-//			if ( item.getUser().getUserID().equals( loginUser.getUserID() ) )
-//				txtDeleteReply.setVisibility(ViewGroup.VISIBLE);
-//			else
-//				txtDeleteReply.setVisibility(ViewGroup.INVISIBLE);
 			
 			row.setTag( item );
 		}
