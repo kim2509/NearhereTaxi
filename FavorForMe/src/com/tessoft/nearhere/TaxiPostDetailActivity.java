@@ -658,7 +658,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 				if ( post.getDepartureTime().indexOf("지금") >= 0 )
 					departureDateTime = Util.getFormattedDateString(post.getCreatedDate(), "MM-dd HH:mm") + " 출발";
 				else
-					departureDateTime = Util.getFormattedDateString(post.getCreatedDate(), "MM-dd HH:mm") + " " + post.getDepartureTime() + " 출발";
+					departureDateTime = Util.getFormattedDateString(post.getCreatedDate(), "MM-dd") + " " + post.getDepartureTime() + " 출발";
 			}
 			else
 			{
