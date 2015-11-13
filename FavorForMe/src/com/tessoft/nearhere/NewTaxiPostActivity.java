@@ -418,9 +418,6 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 				Double.parseDouble( post.getLongitude() ));
 		txtDestination.setText( post.getToAddress() );
 	
-		txtDepartureDate.setText( Util.getString( post.getDepartureDate() ) );
-		txtDepartureTime.setText( Util.getString( post.getDepartureTime() ) );
-		
 		ArrayAdapter<CharSequence> adapter = (ArrayAdapter<CharSequence>) spSexInfo.getAdapter();
 		spSexInfo.setSelection( adapter.getPosition( post.getSexInfo() ) );
 		adapter = (ArrayAdapter<CharSequence>) spNumOfUsers.getAdapter();
