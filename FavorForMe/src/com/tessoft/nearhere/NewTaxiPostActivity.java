@@ -396,7 +396,10 @@ public class NewTaxiPostActivity extends BaseActivity implements OnClickListener
 			}
 			else
 			{
-				showOKDialog("합승내역 등록도중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
+				if ( !Util.isEmptyString( response.getResMsg() ))
+					showOKDialog( response.getResMsg(), null);
+				else
+					showOKDialog("합승내역 등록도중 오류가 발생했습니다.\r\n다시 시도해 주십시오.", null);
 			}
 
 		}
