@@ -47,7 +47,7 @@ public class IntroActivity extends BaseActivity {
 			super.onCreate(savedInstanceState);
 
 			// 어드민 설정을 읽는다.
-//			checkIfAdminUser();
+			checkIfAdminUser();
 			
 			// 카카오톡 세션을 초기화 한다.
 			Session.initialize(this);
@@ -366,6 +366,7 @@ public class IntroActivity extends BaseActivity {
 		    String userID = "";
 		    String pw = "";
 		    String pushOffOnNewPost = "";
+		    String server = "";
 		    
 		    for ( int i = 0; i < tokens.length; i++ )
 		    {
@@ -379,6 +380,8 @@ public class IntroActivity extends BaseActivity {
 		    		pw = value;
 		    	else if ( "pushOffOnNewPost".equals( key ) )
 		    		pushOffOnNewPost = value;
+		    	else if ( "server".equals( key ) )
+		    		server = value.trim();
 		    }
 		    
 		    if (!"이근처합승".equals(pw.trim())) 
@@ -389,6 +392,11 @@ public class IntroActivity extends BaseActivity {
 		    
 		    if ( "Y".equals( pushOffOnNewPost.trim() ) ) Constants.bPushOffOnNewPost = true;
 		    else Constants.bPushOffOnNewPost = false;
+		    
+		    if ( "REAL".equals( server ) )
+		    	Constants.bReal = true;
+		    else if ( "DEV".equals( server ) )
+		    	Constants.bReal = false;
 		    
 		    Constants.bAdminMode = true;
 		    

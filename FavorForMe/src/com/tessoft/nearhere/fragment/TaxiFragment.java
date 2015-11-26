@@ -22,6 +22,7 @@ import com.tessoft.nearhere.MainActivity;
 import com.tessoft.nearhere.NewTaxiPostActivity;
 import com.tessoft.nearhere.R;
 import com.tessoft.nearhere.SafetyKeeperActivity;
+import com.tessoft.nearhere.ShareMyLocationActivity;
 import com.tessoft.nearhere.TaxiPostDetailActivity;
 import com.tessoft.nearhere.UserListActivity;
 import com.tessoft.nearhere.UserProfileActivity;
@@ -677,11 +678,16 @@ public class TaxiFragment extends BaseFragment
 				showDialog();
 			else if ( v.getId() == R.id.btnKeeper )
 			{
+				/*
 				Intent intent = new Intent( getActivity(), SafetyKeeperActivity.class);
 				startActivity(intent);
 				getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
 				
 				sendHttp("/taxi/statistics.do?name=safetyKeeper", mapper.writeValueAsString( application.getLoginUser() ), HTTP_SAFETY_KEEPER_CLICKED );
+				*/
+				Intent intent = new Intent( getActivity(), ShareMyLocationActivity.class);
+				startActivity(intent);
+				getActivity().overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.stay);
 			}
 			else if ( v.getId() == R.id.txtNumOfUsers )
 			{
