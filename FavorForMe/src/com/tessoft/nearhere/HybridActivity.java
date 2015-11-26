@@ -32,7 +32,7 @@ public class HybridActivity extends BaseActivity{
 			webView.clearView();
 			webView.setWebViewClient( webViewClient );
 			webView.setWebChromeClient(new WebChromeClient());
-			webView.loadUrl( Constants.serverURL + "/taxi/" + getIntent().getExtras().getString("url"));
+			webView.loadUrl( Constants.getServerURL() + "/taxi/" + getIntent().getExtras().getString("url"));
 			
 			Button btnRefresh = (Button) findViewById(R.id.btnRefresh);
 			btnRefresh.setOnClickListener(new OnClickListener() {

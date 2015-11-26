@@ -115,36 +115,36 @@ public class HttpTransactionReturningString extends AsyncTask<Object, Integer, S
 		if ( url == null || url.isEmpty() ) throw new Exception("요청 URL 이 올바르지 않습니다.");
 		
 		if ( Constants.bReal == false )
-			return Constants.serverURL + url;
+			return Constants.getServerURL() + url;
 		
 		if ( url.indexOf("/taxi/getRandomID.do") >= 0 )
-			return Constants.serverSSLURL + url;
+			return Constants.getServerSSLURL() + url;
 		if ( url.indexOf("/taxi/getRandomIDV2.do") >= 0 )
-			return Constants.serverSSLURL + url;
+			return Constants.getServerSSLURL() + url;
 		else if ( url.indexOf("/taxi/insertTermsAgreement.do") >= 0 )
-			return Constants.serverSSLURL + url;
+			return Constants.getServerSSLURL() + url;
 		else if ( url.indexOf("/taxi/login.do") >= 0 )
-			return Constants.serverSSLURL + url;
+			return Constants.getServerSSLURL() + url;
 		else if ( url.indexOf("/taxi/logout.do") >= 0 )
-			return Constants.serverSSLURL + url;
+			return Constants.getServerSSLURL() + url;
 		else if ( url.indexOf("/taxi/getUserInfo.do") >= 0 )
-			return Constants.serverSSLURL + url;
+			return Constants.getServerSSLURL() + url;
 		else if ( url.indexOf("/taxi/updateUserJobTitle.do") >= 0 )
-			return Constants.serverSSLURL + url;
+			return Constants.getServerSSLURL() + url;
 		else if ( url.indexOf("/taxi/updateUserBirthday.do") >= 0 )
-			return Constants.serverSSLURL + url;
+			return Constants.getServerSSLURL() + url;
 		else if ( url.indexOf("/taxi/updateUserInfo.do") >= 0 )
-			return Constants.serverSSLURL + url;
+			return Constants.getServerSSLURL() + url;
 		else if ( url.indexOf("/taxi/getUserPushMessage.do") >= 0 )
-			return Constants.serverSSLURL + url;
+			return Constants.getServerSSLURL() + url;
 		else if ( url.indexOf("/taxi/getUserMessageList.do") >= 0 )
-			return Constants.serverSSLURL + url;
+			return Constants.getServerSSLURL() + url;
 		else if ( url.indexOf("/taxi/getUserMessage.do") >= 0 )
-			return Constants.serverSSLURL + url;
+			return Constants.getServerSSLURL() + url;
 		else if ( url.indexOf("/taxi/sendUserMessage.do") >= 0 )
-			return Constants.serverSSLURL + url;
+			return Constants.getServerSSLURL() + url;
 		else
-			return Constants.serverURL + url;
+			return Constants.getServerURL() + url;
 	}
 
 	protected void onProgressUpdate(Integer... progress) {

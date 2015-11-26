@@ -418,7 +418,7 @@ public class MyInfoFragment extends BaseFragment implements OnClickListener {
 
 					if ( user != null && user.getProfileImageURL() != null && user.getProfileImageURL().isEmpty() == false )
 					{
-						ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
+						ImageLoader.getInstance().displayImage( Constants.getThumbnailImageURL() + 
 								user.getProfileImageURL() , imgProfile, options );
 						imgProfile.setTag( user.getProfileImageURL() );
 					}

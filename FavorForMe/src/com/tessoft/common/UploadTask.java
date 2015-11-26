@@ -47,7 +47,7 @@ public class UploadTask extends AsyncTask<Bitmap, Void, String> {
 
 		try {
 			HttpPost httppost = new HttpPost(
-					Constants.serverURL + "/taxi/uploadUserProfilePhoto.do"); // server
+					Constants.getServerURL() + "/taxi/uploadUserProfilePhoto.do"); // server
 
 			MultipartEntity reqEntity = new MultipartEntity();
 			reqEntity.addPart("file", this.fileName + ".png", in);

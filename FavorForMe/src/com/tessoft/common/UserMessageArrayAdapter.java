@@ -91,7 +91,7 @@ public class UserMessageArrayAdapter extends ArrayAdapter<UserMessage> {
 				if ( item.getFromUser() != null && item.getFromUser().getProfileImageURL() != null && 
 						!"".equals( item.getFromUser().getProfileImageURL() ) )
 				{
-					ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
+					ImageLoader.getInstance().displayImage( Constants.getThumbnailImageURL() + 
 							item.getFromUser().getProfileImageURL() , imgProfile);
 					
 					TextView txtUserName = (TextView) row.findViewById(R.id.txtUserName);

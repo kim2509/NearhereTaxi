@@ -275,7 +275,7 @@ implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener, Ad
 		{
 			if ( !Util.isEmptyString( application.getLoginUser().getProfileImageURL() ))
 			{
-				ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
+				ImageLoader.getInstance().displayImage( Constants.getThumbnailImageURL() + 
 						application.getLoginUser().getProfileImageURL() , imageView, options );
 			}
 			

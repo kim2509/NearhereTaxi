@@ -45,9 +45,9 @@ public class EventViewerActivity extends BaseActivity {
 			webView.setWebChromeClient(new WebChromeClient());
 			
 			if ( getIntent().getExtras().containsKey("ssl") && "true".equals( getIntent().getExtras().getString("ssl") ) )
-				webView.loadUrl( Constants.serverSSLURL + "/taxi/eventDetail.do?eventSeq=" + eventSeq + "&pushNo=" + pushNo );
+				webView.loadUrl( Constants.getServerSSLURL() + "/taxi/eventDetail.do?eventSeq=" + eventSeq + "&pushNo=" + pushNo );
 			else
-				webView.loadUrl( Constants.serverURL + "/taxi/eventDetail.do?eventSeq=" + eventSeq + "&pushNo=" + pushNo );
+				webView.loadUrl( Constants.getServerURL() + "/taxi/eventDetail.do?eventSeq=" + eventSeq + "&pushNo=" + pushNo );
 		}
 		catch( Exception ex )
 		{

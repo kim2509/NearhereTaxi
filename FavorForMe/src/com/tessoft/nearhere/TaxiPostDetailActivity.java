@@ -680,7 +680,7 @@ implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, 
 	private void setUserData() {
 		if ( !Util.isEmptyString(post.getUser().getProfileImageURL()))
 		{
-			ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
+			ImageLoader.getInstance().displayImage( Constants.getThumbnailImageURL() + 
 					post.getUser().getProfileImageURL() , imgProfile, options );
 		}
 

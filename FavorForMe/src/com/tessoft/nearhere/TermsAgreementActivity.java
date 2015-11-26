@@ -54,9 +54,9 @@ public class TermsAgreementActivity extends BaseActivity {
 			webView3 = (WebView) findViewById(R.id.webView3);
 			webView3.setWebViewClient( webViewClient );
 			
-			webView1.loadUrl( Constants.serverURL + "/taxi/getUserTerms.do?type=nearhere&version=1.0");
-			webView2.loadUrl( Constants.serverURL + "/taxi/getUserTerms.do?type=personal&version=1.0");
-			webView3.loadUrl( Constants.serverURL + "/taxi/getUserTerms.do?type=location&version=1.0");
+			webView1.loadUrl( Constants.getServerURL() + "/taxi/getUserTerms.do?type=nearhere&version=1.0");
+			webView2.loadUrl( Constants.getServerURL() + "/taxi/getUserTerms.do?type=personal&version=1.0");
+			webView3.loadUrl( Constants.getServerURL() + "/taxi/getUserTerms.do?type=location&version=1.0");
 		}
 		catch( Exception ex )
 		{

@@ -115,7 +115,7 @@ public class TaxiPostReplyListAdapter extends ArrayAdapter<PostReply> implements
 			{
 				if ( !Util.isEmptyString( item.getUser().getProfileImageURL() ) )
 				{
-					ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
+					ImageLoader.getInstance().displayImage( Constants.getThumbnailImageURL() + 
 							item.getUser().getProfileImageURL() , imageView, options );	
 				}
 				else

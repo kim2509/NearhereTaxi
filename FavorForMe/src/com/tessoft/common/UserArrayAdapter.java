@@ -116,7 +116,7 @@ public class UserArrayAdapter extends ArrayAdapter<User>{
 			if ( !Util.isEmptyString( user.getProfileImageURL() ))
 			{
 				ImageLoader.getInstance().displayImage( 
-						Constants.thumbnailImageURL + user.getProfileImageURL() , imageView, options );	
+						Constants.getThumbnailImageURL() + user.getProfileImageURL() , imageView, options );	
 			}
 			else
 			{

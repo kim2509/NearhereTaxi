@@ -125,7 +125,7 @@ public class TaxiArrayAdapter extends ArrayAdapter<Post> implements OnClickListe
 			
 			if ( item.getUser() != null && !Util.isEmptyString( item.getUser().getProfileImageURL() ) )
 			{
-				ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
+				ImageLoader.getInstance().displayImage( Constants.getThumbnailImageURL() + 
 						item.getUser().getProfileImageURL() , imageView, options );
 			}
 			else

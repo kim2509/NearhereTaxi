@@ -41,7 +41,7 @@ public class PhotoViewer extends BaseActivity {
 				display.getSize(size);
 				
 				ImageSize targetSize = new ImageSize(size.x, size.y);
-				imageLoader.loadImage( Constants.imageURL + imgURL, targetSize, new SimpleImageLoadingListener() {
+				imageLoader.loadImage( Constants.getImageURL() + imgURL, targetSize, new SimpleImageLoadingListener() {
 				    @Override
 				    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
 			

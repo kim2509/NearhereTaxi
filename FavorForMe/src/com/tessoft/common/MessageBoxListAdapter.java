@@ -66,7 +66,7 @@ public class MessageBoxListAdapter extends ArrayAdapter<UserMessage> {
 			if ( item.getUser() != null && item.getUser().getProfileImageURL() != null && 
 					!"".equals( item.getUser().getProfileImageURL() ) )
 			{
-				ImageLoader.getInstance().displayImage( Constants.thumbnailImageURL + 
+				ImageLoader.getInstance().displayImage( Constants.getThumbnailImageURL() + 
 						item.getUser().getProfileImageURL() , imgProfile);
 			}
 			

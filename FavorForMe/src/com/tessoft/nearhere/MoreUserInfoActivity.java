@@ -69,7 +69,7 @@ public class MoreUserInfoActivity extends BaseActivity {
 			{
 				findViewById(R.id.layoutProfileImage).setVisibility(ViewGroup.VISIBLE);
 				ImageView imgProfile = (ImageView) findViewById(R.id.imgProfile);
-				ImageLoader.getInstance().displayImage(Constants.thumbnailImageURL + application.getLoginUser().getProfileImageURL(), imgProfile, options );
+				ImageLoader.getInstance().displayImage(Constants.getThumbnailImageURL() + application.getLoginUser().getProfileImageURL(), imgProfile, options );
 			}
 			else
 				findViewById(R.id.layoutProfileImage).setVisibility(ViewGroup.GONE);

@@ -51,7 +51,7 @@ public class MainFragment extends BaseFragment {
 			webView.clearView();
 			webView.setWebViewClient( webViewClient );
 			webView.setWebChromeClient(new WebChromeClient());
-			webView.loadUrl( Constants.serverURL + "/taxi/index.do");
+			webView.loadUrl( Constants.getServerURL() + "/taxi/index.do");
 
 			Button btnRefresh = (Button) rootView.findViewById(R.id.btnRefresh);
 			btnRefresh.setOnClickListener(new OnClickListener() {

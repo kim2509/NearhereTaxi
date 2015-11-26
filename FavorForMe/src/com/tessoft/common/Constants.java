@@ -2,21 +2,9 @@ package com.tessoft.common;
 
 public class Constants {
 
-	public static boolean bReal = true;
+	public static boolean bReal = false;
 	
 	public static String protocol = "http://";
-	
-	public static String serverURL = bReal ? 
-			"http://www.hereby.co.kr/nearhere" : "http://192.168.10.110:8080/nearhere";
-	
-	public static String serverSSLURL = bReal ? 
-			"https://www.hereby.co.kr/nearhere" : "http://192.168.10.110:8080/nearhere";
-	
-	public static String thumbnailImageURL = bReal ? 
-			"http://www.hereby.co.kr/thumbnail/" : "http://192.168.10.110/thumbnail/";
-	
-	public static String imageURL = bReal ? 
-			"http://www.hereby.co.kr/image/" : "http://192.168.10.110/image/";
 	
 	public static String FAIL = "9999";
 	
@@ -35,4 +23,24 @@ public class Constants {
 	public static final int HTTP_UPDATE_FACEBOOK_INFO = 1070;
 	
 	public static final int ACTIVITY_REQ_CODE_FB_CONNECT = 3000;
+	
+	public static String getServerURL()
+	{
+		return Constants.bReal ? "http://www.hereby.co.kr/nearhere" : "http://192.168.10.110:8080/nearhere";
+	}
+	
+	public static String getServerSSLURL()
+	{
+		return Constants.bReal ? "https://www.hereby.co.kr/nearhere" : "http://192.168.10.110:8080/nearhere";
+	}
+	
+	public static String getThumbnailImageURL()
+	{
+		return Constants.bReal ? "http://www.hereby.co.kr/thumbnail/" : "http://192.168.10.110/thumbnail/";
+	}
+	
+	public static String getImageURL()
+	{
+		return Constants.bReal ? "http://www.hereby.co.kr/image/" : "http://192.168.10.110/image/";
+	}
 }

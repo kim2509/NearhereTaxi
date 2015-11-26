@@ -72,7 +72,7 @@ public class NoticeListAdapter extends BaseExpandableListAdapter {
 			WebView webView = (WebView) view.findViewById(R.id.webView);
 			webView.clearView();
 			webView.setWebViewClient( webViewClient );
-			webView.loadUrl( Constants.serverURL + "/taxi/getNotice.do?noticeID=" + item.getNoticeID() );
+			webView.loadUrl( Constants.getServerURL() + "/taxi/getNotice.do?noticeID=" + item.getNoticeID() );
 		}
 		catch( Exception ex )
 		{
