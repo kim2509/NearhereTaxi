@@ -221,6 +221,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/NoTitleBarTheme" >
         </activity>
+        <activity
+            android:name=".RealtimeShareMyLocationActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoTitleBarTheme" >
+        </activity>
     </application>
 
 </manifest>
